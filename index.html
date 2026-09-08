@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>UPTECH Campus 3D — วิทยาลัยสารพัดช่างอุดรธานี (ระบบนำทางผู้มาติดต่อ)</title>
+
+  <!-- MapLibre GL JS -->
+  <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --ink-950: #080c14;
+      --ink-900: #0e1626;
+      --ink-850: #121c30;
+      --ink-800: #18253d;
+      --ink-700: #223452;
+      --line: rgba(255, 255, 255, 0.1);
+      --line-subtle: rgba(255, 255, 255, 0.06);
+      --accent: #ff9838;
+      --accent-soft: rgba(255, 152, 56, 0.16);
+      --text-hi: #f8fafc;
+      --text-mid: #cbd5e1;
+      --text-lo: #94a3b8;
+      --highlight: #ffe600;
+
+      /* สีหมวดหมู่อาคารตามหน้าที่ (ออกแบบสำหรับบุคคลภายนอก) */
+      --cat-admin: #f59e0b;
+      /* สีทองอำพัน: จุดติดต่อราชการ / ต้อนรับ / ประชาสัมพันธ์ */
+      --cat-security: #ef4444;
+      /* สีแดงสัญญาณ: ป้อมยาม / ประตูทางเข้า-ออก */
+      --cat-academic: #0284c7;
+      /* สีฟ้ามหาสมุทร: อาคารเรียน / ฝึกอบรม / ห้องปฏิบัติการ */
+      --cat-library: #10b981;
+      /* สีเขียวมรกต: วิทยบริการ & ห้องสมุด */
+      --cat-dining: #f97316;
+      /* สีส้มอมแดง: โรงอาหาร / คาเฟ่ / สหกรณ์ */
+      --cat-hall: #ec4899;
+      /* สีชมพูมาเจนต้า: หอประชุมใหญ่ / สันทนาการ */
+      --cat-parking: #64748b;
+      /* สีเทาสเลท: ที่จอดรถ / อาคารสนับสนุน */
+      --cat-facility: #06b6d4;
+      /* สีฟ้าคราม: ห้องน้ำบริการประชาชน / จุดบริการ */
+      --cat-residential: #818cf8;
+      /* สีม่วงลาเวนเดอร์: หอพัก / ที่พักอาศัย (พื้นที่สงวน) */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--ink-950);
+      font-family: 'Noto Sans Thai', 'Sora', sans-serif;
+      color: var(--text-hi);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* ============================================================
+     TOP BAR & VISITOR SHORTCUTS
+  ============================================================ */
+    .top-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 20px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      pointer-events: auto;
+      background: rgba(14, 22, 38, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--line);
+      padding: 9px 18px 9px 12px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f59e0b, #ff7824);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Sora', sans-serif;
+      font-weight: 800;
+      color: #120c02;
+      font-size: 16px;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-family: 'Sora', 'Noto Sans Thai', sans-serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: .2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-text p {
+      margin: 2px 0 0;
+      font-size: 11px;
+      color: var(--text-lo);
+    }
+
+    .cam-controls {
+      display: flex;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .cam-btn {
+      background: rgba(14, 22, 38, 0.82);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      color: var(--text-hi);
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .18s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .cam-btn:hover {
+      background: rgba(28, 44, 72, 0.95);
+      border-color: rgba(255, 255, 255, 0.22);
+      transform: translateY(-1px);
+    }
+
+    .cam-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* ── แถบปุ่มด่วนสำหรับบุคคลภายนอก (Visitor Quick Navigation) ── */
+    .visitor-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      overflow-x: auto;
+      padding: 2px 2px 6px;
+      scrollbar-width: none;
+    }
+
+    .visitor-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .visitor-label {
+      background: rgba(14, 22, 38, 0.92);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fbbf24;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #fbbf24;
+      animation: pulseDot 2s infinite;
+    }
+
+    @keyframes pulseDot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(1.4);
+      }
+    }
+
+    .v-chip {
+      background: rgba(18, 28, 48, 0.88);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      color: var(--text-mid);
+      padding: 6px 13px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all .18s ease;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+    }
+
+    .v-chip:hover {
+      background: rgba(34, 52, 82, 0.95);
+      color: var(--text-hi);
+      border-color: var(--text-mid);
+      transform: translateY(-1px);
+    }
+
+    .v-chip.v-gold {
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fef3c7;
+    }
+
+    .v-chip.v-gold:hover {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: #f59e0b;
+    }
+
+    .v-chip.v-green {
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #d1fae5;
+    }
+
+    .v-chip.v-green:hover {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+    }
+
+    .v-chip.v-orange {
+      border-color: rgba(249, 115, 22, 0.45);
+      color: #ffedd5;
+    }
+
+    .v-chip.v-orange:hover {
+      background: rgba(249, 115, 22, 0.2);
+      border-color: #f97316;
+    }
+
+    /* ============================================================
+     SIDEBAR: SEARCH + CATEGORY FILTER + LIST
+  ============================================================ */
+    .sidebar {
+      position: absolute;
+      top: 128px;
+      left: 20px;
+      bottom: 22px;
+      width: 320px;
+      background: rgba(14, 22, 38, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      z-index: 9;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+      transition: transform .3s cubic-bezier(.2, .9, .25, 1);
+    }
+
+    .sidebar-head {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid var(--line-subtle);
+    }
+
+    .sidebar-head-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-head-title label {
+      font-size: 11px;
+      color: var(--text-lo);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .building-count-badge {
+      font-size: 10.5px;
+      background: var(--ink-800);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ink-800);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 12px;
+      transition: border-color .15s;
+    }
+
+    .search-box:focus-within {
+      border-color: var(--accent);
+    }
+
+    .search-box svg {
+      flex-shrink: 0;
+      opacity: .6;
+    }
+
+    .search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-hi);
+      font-size: 13px;
+      width: 100%;
+      font-family: 'Noto Sans Thai', sans-serif;
+    }
+
+    .search-box input::placeholder {
+      color: var(--text-lo);
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      color: var(--text-lo);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0 2px;
+      display: none;
+    }
+
+    .clear-btn.show {
+      display: block;
+    }
+
+    /* ── Filter Chips ── */
+    .category-filter {
+      padding: 8px 12px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--line-subtle);
+      background: rgba(10, 15, 26, 0.3);
+    }
+
+    .category-filter::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-btn {
+      background: var(--ink-850);
+      border: 1px solid var(--line);
+      color: var(--text-lo);
+      font-size: 11px;
+      font-family: 'Noto Sans Thai', sans-serif;
+      padding: 5px 10px;
+      border-radius: 14px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all .15s ease;
+    }
+
+    .filter-btn:hover {
+      background: var(--ink-700);
+      color: var(--text-hi);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: #120c02;
+      font-weight: 700;
+      border-color: var(--accent);
+      box-shadow: 0 2px 10px rgba(255, 152, 56, 0.35);
+    }
+
+    .building-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 10px 14px;
+    }
+
+    .building-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .building-list::-webkit-scrollbar-thumb {
+      background: var(--ink-700);
+      border-radius: 4px;
+    }
+
+    .list-section-title {
+      font-size: 10px;
+      color: var(--text-lo);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      font-weight: 700;
+      padding: 10px 8px 4px;
+    }
+
+    .b-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all .14s ease;
+      margin-bottom: 2px;
+    }
+
+    .b-item:hover {
+      background: var(--ink-800);
+      transform: translateX(3px);
+    }
+
+    .b-item.active {
+      background: rgba(255, 152, 56, 0.14);
+      border: 1px solid rgba(255, 152, 56, 0.35);
+    }
+
+    .b-item.disabled {
+      cursor: default;
+      opacity: .5;
+    }
+
+    .b-item.disabled:hover {
+      background: transparent;
+      transform: none;
+    }
+
+    .b-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .b-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .b-name {
+      font-size: 12.5px;
+      line-height: 1.35;
+      font-weight: 600;
+      color: var(--text-hi);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .b-sub {
+      font-size: 10.5px;
+      color: var(--text-lo);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .b-arrow {
+      color: var(--text-lo);
+      opacity: .4;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+     MAP LEGEND (คำอธิบายสัญลักษณ์สี)
+     - บนคอม/แล็ปท็อป: วางที่ left: 356px (ถัดจาก sidebar กว้าง 320px + margin 20px) ไม่ให้บังกัน
+  ============================================================ */
+    .map-legend {
+      position: absolute;
+      bottom: 24px;
+      left: 356px;
+      width: 320px;
+      background: rgba(14, 22, 38, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      z-index: 8;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      transition: all .25s ease;
+    }
+
+    .legend-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.03);
+      user-select: none;
+    }
+
+    .legend-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-arrow {
+      font-size: 10px;
+      color: var(--text-lo);
+      transition: transform .2s;
+    }
+
+    .map-legend.collapsed .legend-arrow {
+      transform: rotate(180deg);
+    }
+
+    .legend-body {
+      padding: 6px 12px 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      transition: max-height .25s ease, opacity .2s;
+      max-height: 220px;
+    }
+
+    .map-legend.collapsed .legend-body {
+      max-height: 0;
+      padding: 0 12px;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 10.5px;
+      color: var(--text-mid);
+      cursor: pointer;
+      padding: 3px 4px;
+      border-radius: 6px;
+      transition: background .12s;
+    }
+
+    .legend-item:hover {
+      background: var(--ink-800);
+      color: var(--text-hi);
+    }
+
+    .legend-swatch {
+      width: 11px;
+      height: 11px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ── แถบดึงขยาย Drawer บนมือถือ ── */
+    .drawer-handle-bar {
+      display: none;
+      justify-content: center;
+      padding: 6px 0 10px;
+      cursor: pointer;
+    }
+
+    .drawer-handle {
+      width: 44px;
+      height: 4.5px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      transition: background 0.15s ease;
+    }
+
+    .drawer-handle-bar:hover .drawer-handle {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    /* ============================================================
+     3D HOVER TOOLTIP (แสดงเฉพาะ Laptop / PC ที่มีเมาส์ Hover เท่านั้น)
+  ============================================================ */
+    .hover-tooltip {
+      position: absolute;
+      background: rgba(10, 15, 26, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px 11px;
+      pointer-events: none;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity .15s ease, transform .1s ease;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+    }
+
+    /* ซ่อน Tooltip บนอุปกรณ์ Touchscreen หรือจอที่ไม่มีเมาส์ Hover โดยเด็ดขาด */
+    @media (hover: none),
+    (pointer: coarse) {
+      .hover-tooltip {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+    }
+
+    .hover-tooltip.show {
+      opacity: 1;
+    }
+
+    .ht-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .ht-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-hi);
+      line-height: 1.2;
+    }
+
+    .ht-cat {
+      font-size: 10px;
+      color: var(--text-lo);
+    }
+
+    /* ============================================================
+     INFO CARD (BUILDING DETAIL & VISITOR GUIDE)
+  ============================================================ */
+    .info-card {
+      position: absolute;
+      top: 128px;
+      right: 20px;
+      bottom: 22px;
+      width: 350px;
+      background: rgba(14, 22, 38, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateX(420px);
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.55);
+      transition: transform .35s cubic-bezier(.2, .9, .25, 1), opacity .3s;
+    }
+
+    .info-card.open {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .info-hero {
+      height: 130px;
+      position: relative;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--ink-850), var(--ink-700));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      filter: blur(50px);
+      opacity: .35;
+    }
+
+    .info-hero-icon {
+      font-size: 48px;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.4));
+    }
+
+    .visitor-star-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(245, 158, 11, 0.22);
+      border: 1px solid rgba(245, 158, 11, 0.6);
+      color: #fde68a;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10.5px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      backdrop-filter: blur(8px);
+      z-index: 3;
+    }
+
+    .info-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-hi);
+      font-size: 13px;
+      transition: background .15s, transform .1s;
+      z-index: 3;
+    }
+
+    .info-close:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+
+    .info-body {
+      padding: 18px 20px 22px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .info-body::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .info-body::-webkit-scrollbar-thumb {
+      background: var(--ink-700);
+      border-radius: 4px;
+    }
+
+    .type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--ink-800);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 5px 12px 5px 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .type-badge .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .info-id {
+      font-size: 11px;
+      color: var(--text-lo);
+      margin-bottom: 4px;
+    }
+
+    .info-body h2 {
+      font-family: 'Sora', 'Noto Sans Thai', sans-serif;
+      font-size: 18px;
+      margin: 0 0 10px;
+      line-height: 1.35;
+      font-weight: 700;
+    }
+
+    /* ── กล่องข้อความช่วยเหลือบุคคลภายนอก (Visitor Guide Box) ── */
+    .visitor-tip-box {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .vtb-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+
+    .vtb-desc {
+      font-size: 12.5px;
+      color: #f1f5f9;
+      line-height: 1.55;
+    }
+
+    .info-desc {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.65;
+      margin-bottom: 16px;
+      background: var(--ink-850);
+      border: 1px solid var(--line-subtle);
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+
+    /* Action buttons */
+    .info-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .btn-action {
+      flex: 1;
+      padding: 9px 10px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      transition: all .15s ease;
+    }
+
+    .btn-nav {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #fff;
+      border-color: #38bdf8;
+    }
+
+    .btn-nav:hover {
+      background: linear-gradient(135deg, #0369a1, #075985);
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+    }
+
+    .btn-copy {
+      background: var(--ink-800);
+      color: var(--text-hi);
+    }
+
+    .btn-copy:hover {
+      background: var(--ink-700);
+    }
+
+    .dummy-gallery {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .dummy-gallery div {
+      flex: 1;
+      aspect-ratio: 1/1;
+      border-radius: 10px;
+      background: repeating-linear-gradient(45deg, var(--ink-800), var(--ink-800) 6px, var(--ink-700) 6px, var(--ink-700) 12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-lo);
+      font-size: 9.5px;
+      text-align: center;
+      padding: 4px;
+      border: 1px solid var(--line-subtle);
+    }
+
+    .info-note {
+      font-size: 11px;
+      color: var(--text-lo);
+      background: rgba(255, 152, 56, 0.08);
+      border: 1px dashed rgba(255, 152, 56, 0.3);
+      border-radius: 10px;
+      padding: 9px 12px;
+    }
+
+    /* ============================================================
+     TOAST
+  ============================================================ */
+    .toast {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(14, 22, 38, 0.95);
+      border: 1px solid var(--accent);
+      color: var(--text-hi);
+      padding: 10px 20px;
+      border-radius: 14px;
+      font-size: 12.5px;
+      z-index: 30;
+      opacity: 0;
+      transition: all .25s ease;
+      pointer-events: none;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ============================================================
+     RESPONSIVE (MOBILE & TABLET)
+  ============================================================ */
+    @media (max-width:768px) {
+      .top-container {
+        padding: 10px 12px;
+      }
+
+      .brand-text p {
+        display: none;
+      }
+
+      .cam-btn span {
+        display: none;
+      }
+
+      .cam-btn {
+        padding: 8px 10px;
+      }
+
+      /* ซ่อน Tooltip บนมือถือโดยเด็ดขาด (ไม่ให้ขึ้นมาบังข้อมูล) */
+      .hover-tooltip {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+
+      /* แผนผังสีบนมือถือ: วางไว้เหนือ Drawer เล็กน้อย และซ่อนเป็นค่าเริ่มต้น */
+      .map-legend {
+        left: 12px;
+        right: 12px;
+        width: auto;
+        bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+        z-index: 9;
+      }
+
+      .drawer-handle-bar {
+        display: flex;
+      }
+
+      /* เมนูค้นหา/Sidebar ด้านล่างบนมือถือ: ยกสูงขึ้นให้พ้นขอบจอ ไม่โดนจอกิน พร้อมรองรับ safe-area */
+      .sidebar {
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 65%;
+        /* ตอนพับ: โผล่ขึ้นมาให้เห็น Handle Bar + หัวข้อ + กล่องค้นหาพอดีเป๊ะ */
+        transform: translateY(calc(100% - 110px - env(safe-area-inset-bottom, 0px)));
+        border-radius: 22px 22px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.65);
+        z-index: 12;
+      }
+
+      .sidebar.expanded {
+        transform: translateY(0);
+      }
+
+      .sidebar-head {
+        padding: 6px 16px 10px;
+      }
+
+      /* การ์ดรายละเอียดอาคารบนมือถือ */
+      .info-card {
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        height: 75%;
+        border-radius: 24px 24px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        transform: translateY(120%);
+        z-index: 25;
+      }
+
+      .info-card.open {
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="map"></div>
+
+  <!-- ============ 3D HOVER TOOLTIP ============ -->
+  <div id="hoverTooltip" class="hover-tooltip">
+    <div class="ht-dot" id="htDot"></div>
+    <div>
+      <div class="ht-name" id="htName">ชื่ออาคาร</div>
+      <div class="ht-cat" id="htCat">หมวดหมู่</div>
+    </div>
+  </div>
+
+  <!-- ============ TOP CONTAINER ============ -->
+  <div class="top-container">
+    <!-- Brand + Camera Controls -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">UP</div>
+        <div class="brand-text">
+          <h1>UPTECH Campus 3D</h1>
+          <p>วิทยาลัยสารพัดช่างอุดรธานี • แผนที่บริการบุคคลภายนอก</p>
+        </div>
+      </div>
+      <div class="cam-controls">
+        <button class="cam-btn" id="btnReset" title="รีเซ็ตมุมมอง">↺ <span>รีเซ็ตมุมมอง</span></button>
+        <button class="cam-btn" id="btnTop" title="มุมมองด้านบน 2D">⬇ <span>มุมมองบน</span></button>
+        <button class="cam-btn" id="btnToggleLegend" title="สลับการแสดงผังสี">🎨 <span>ผังสี</span></button>
+      </div>
+    </div>
+
+    <!-- แถบปุ่มด่วนสำหรับบุคคลภายนอก (Visitor Quick Jump) -->
+    <div class="visitor-nav">
+      <div class="visitor-label"><span class="pulse-dot"></span> ผู้มาติดต่อ:</div>
+      <button class="v-chip v-gold" data-bid="11">🏛️ อาคารอำนวยการ (ติดต่อราชการ)</button>
+      <button class="v-chip v-gold" data-bid="17">ℹ️ ประชาสัมพันธ์</button>
+      <button class="v-chip" data-bid="18" style="border-color:rgba(239,68,68,0.45); color:#fecaca;">🛡️
+        ป้อมยาม</button>
+      <button class="v-chip v-orange" data-bid="22">🍽️ โรงอาหาร</button>
+      <button class="v-chip v-orange" data-bid="19">☕ คาเฟ่</button>
+      <button class="v-chip v-green" data-bid="12">📚 วิทยบริการ/ห้องสมุด</button>
+      <button class="v-chip" data-bid="31" style="border-color:rgba(236,72,153,0.45); color:#fbcfe8;">🎪
+        หอประชุมใหญ่</button>
+      <button class="v-chip" data-bid="6" style="border-color:rgba(100,116,139,0.45); color:#e2e8f0;">🚗
+        ที่จอดรถผู้มาติดต่อ</button>
+    </div>
+  </div>
+
+  <!-- ============ SIDEBAR (SEARCH + LIST) ============ -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <div class="drawer-handle-bar" id="drawerHandleBar">
+        <div class="drawer-handle"></div>
+      </div>
+      <div class="sidebar-head-title">
+        <label>ค้นหาอาคาร & จุดติดต่อ</label>
+        <span class="building-count-badge" id="buildingCount">0 อาคาร</span>
+      </div>
+      <div class="search-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input id="searchInput" type="text" placeholder="พิมพ์ชื่ออาคาร หรือ แผนก เช่น ทะเบียน, หอประชุม..." />
+        <button class="clear-btn" id="clearSearch">✕</button>
+      </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="category-filter" id="catFilter">
+      <button class="filter-btn active" data-cat="all">ทั้งหมด</button>
+      <button class="filter-btn" data-cat="admin">🏛️ ติดต่อราชการ</button>
+      <button class="filter-btn" data-cat="academic">🎓 อาคารเรียน</button>
+      <button class="filter-btn" data-cat="library">📚 ห้องสมุด</button>
+      <button class="filter-btn" data-cat="dining">☕ อาหาร/คาเฟ่</button>
+      <button class="filter-btn" data-cat="hall">🎪 หอประชุม</button>
+      <button class="filter-btn" data-cat="parking">🚗 ที่จอดรถ</button>
+      <button class="filter-btn" data-cat="residential">🏠 ที่พัก</button>
+    </div>
+
+    <div class="building-list" id="buildingList"></div>
+  </div>
+
+  <!-- ============ MAP LEGEND (คำอธิบายสัญลักษณ์สี) ============ -->
+  <div class="map-legend" id="mapLegend">
+    <div class="legend-header" id="legendHeader">
+      <span class="legend-title">🎨 แผนผังสีแยกประเภทอาคาร</span>
+      <span class="legend-arrow">▲</span>
+    </div>
+    <div class="legend-body" id="legendBody">
+      <div class="legend-item" data-cat="admin"><span class="legend-swatch"
+          style="background:var(--cat-admin)"></span><span>ติดต่อราชการ/ต้อนรับ</span></div>
+      <div class="legend-item" data-cat="security"><span class="legend-swatch"
+          style="background:var(--cat-security)"></span><span>ป้อมยาม/ประตูทางเข้า</span></div>
+      <div class="legend-item" data-cat="academic"><span class="legend-swatch"
+          style="background:var(--cat-academic)"></span><span>อาคารเรียน/โรงฝึกงาน</span></div>
+      <div class="legend-item" data-cat="library"><span class="legend-swatch"
+          style="background:var(--cat-library)"></span><span>วิทยบริการ & ห้องสมุด</span></div>
+      <div class="legend-item" data-cat="dining"><span class="legend-swatch"
+          style="background:var(--cat-dining)"></span><span>โรงอาหาร & คาเฟ่</span></div>
+      <div class="legend-item" data-cat="hall"><span class="legend-swatch"
+          style="background:var(--cat-hall)"></span><span>หอประชุม & พิธีการ</span></div>
+      <div class="legend-item" data-cat="parking"><span class="legend-swatch"
+          style="background:var(--cat-parking)"></span><span>ลานจอดรถ & พัสดุ</span></div>
+      <div class="legend-item" data-cat="facility"><span class="legend-swatch"
+          style="background:var(--cat-facility)"></span><span>ห้องน้ำบริการประชาชน</span></div>
+      <div class="legend-item" data-cat="residential"><span class="legend-swatch"
+          style="background:var(--cat-residential)"></span><span>เขตหอพัก/ที่พักครู</span></div>
+    </div>
+  </div>
+
+  <!-- ============ INFO CARD (รายละเอียดอาคารสำหรับผู้มาเยือน) ============ -->
+  <div class="info-card" id="infoCard">
+    <div class="info-hero" id="infoHero">
+      <div class="hero-glow" id="heroGlow"></div>
+      <div class="visitor-star-badge" id="visitorStarBadge" style="display:none;">⭐ จุดบริการผู้มาติดต่อ</div>
+      <div class="info-close" id="infoClose" title="ปิด">✕</div>
+      <div class="info-hero-icon" id="infoHeroIcon">🏛️</div>
+    </div>
+
+    <div class="info-body">
+      <div class="type-badge" id="infoTypeBadge">
+        <div class="dot" id="infoDot"></div>
+        <span id="infoType">ประเภทอาคาร</span>
+      </div>
+
+      <div class="info-id" id="infoId">ID —</div>
+      <h2 id="infoName">ชื่ออาคาร</h2>
+
+      <!-- กล่องคำแนะนำสำหรับบุคคลภายนอก -->
+      <div class="visitor-tip-box" id="visitorTipBox">
+        <div class="vtb-title"><span>ℹ️</span> ข้อมูลสำหรับผู้มาติดต่อ</div>
+        <div class="vtb-desc" id="infoVisitorTip">จุดติดต่อสำคัญและคำแนะนำสำหรับผู้มาเยือน</div>
+      </div>
+
+      <!-- ปุ่ม Action สำหรับผู้มาติดต่อ -->
+      <div class="info-actions">
+        <button class="btn-action btn-nav" id="btnGoogleMaps" title="เปิดแผนที่นำทางด้วย Google Maps">
+          <span>📍</span> นำทาง (Google Maps)
+        </button>
+        <button class="btn-action btn-copy" id="btnCopyName" title="คัดลอกชื่ออาคาร">
+          <span>📋</span> คัดลอกชื่อ
+        </button>
+      </div>
+
+      <div class="info-desc" id="infoDesc">รายละเอียดอาคาร</div>
+
+      <div class="dummy-gallery">
+        <div>ภาพถ่ายอาคาร<br>(เร็วๆ นี้)</div>
+        <div>ผังชั้นภายใน<br>(เร็วๆ นี้)</div>
+        <div>จุดบริการ<br>(เร็วๆ นี้)</div>
+      </div>
+
+      <div class="info-note">🛈
+        ข้อมูลและรายละเอียดการบริการของอาคารนี้จัดทำขึ้นเพื่ออำนวยความสะดวกแก่บุคคลภายนอกและผู้ปกครอง</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* ======================================================================
+       1) ระบบจัดหมวดหมู่อาคารและข้อมูลแนะนำสำหรับบุคคลภายนอก
+       ====================================================================== */
+    const CATEGORY_MAP = {
+      admin: { name: 'ติดต่อราชการ & ต้อนรับ', icon: '🏛️', color: '#f59e0b' },
+      security: { name: 'ป้อมยาม & ประตูเข้า-ออก', icon: '🛡️', color: '#ef4444' },
+      academic: { name: 'อาคารเรียน & โรงฝึกงาน', icon: '🎓', color: '#0284c7' },
+      library: { name: 'วิทยบริการ & ห้องสมุด', icon: '📚', color: '#10b981' },
+      dining: { name: 'โรงอาหาร คาเฟ่ & สวัสดิการ', icon: '☕', color: '#f97316' },
+      hall: { name: 'หอประชุม & พิธีการ', icon: '🎪', color: '#ec4899' },
+      parking: { name: 'ลานจอดรถ & สนับสนุน', icon: '🚗', color: '#64748b' },
+      facility: { name: 'ห้องน้ำ & สุขาสาธารณะ', icon: '🚻', color: '#06b6d4' },
+      residential: { name: 'เขตที่พักอาศัย (ส่วนบุคคล)', icon: '🏠', color: '#818cf8' }
+    };
+
+    /* ฐานข้อมูลเฉพาะอาคาร: ให้ความสำคัญกับผู้มาติดต่อ (Outsiders) */
+    const VISITOR_BUILDINGS = {
+      11: {
+        name: 'อาคารอำนวยการ (อาคารหลัก)',
+        category: 'admin',
+        color: '#f59e0b',
+        clickable: true,
+        isStar: true,
+        starLabel: '⭐ จุดติดต่อหลักสำหรับผู้มาเยือน',
+        visitorTip: 'ศูนย์รวมงานบริหารและติดต่อราชการ: งานธุรการ, สารบรรณ, งานทะเบียนนักศึกษา, งานการเงิน และห้องผู้บริหาร (จันทร์-ศุกร์ 08:30 - 16:30 น.)',
+        desc: 'อาคารอำนวยการ 3 ชั้น ศูนย์กลางการบริหารงานของวิทยาลัยสารพัดช่างอุดรธานี ผู้มาติดต่อราชการ สมัครเรียน หรือติดต่อฝ่ายต่างๆ กรุณาติดต่อที่ชั้น 1'
+      },
+      17: {
+        name: 'จุดประชาสัมพันธ์ (ทางเข้าหลัก)',
+        category: 'admin',
+        color: '#f59e0b',
+        clickable: true,
+        isStar: true,
+        starLabel: '⭐ จุดแรกเข้า & สอบถามเส้นทาง',
+        visitorTip: 'สอบถามข้อมูลเบื้องต้น ตำแหน่งอาคาร แลกบัตรผ่านเข้าพื้นที่ และรับเอกสารแผ่นพับแนะนำวิทยาลัย',
+        desc: 'เคาน์เตอร์ประชาสัมพันธ์ต้อนรับผู้มาเยือน ตั้งอยู่ใกล้ประตูทางเข้าหลัก พร้อมเจ้าหน้าที่ให้คำแนะนำเส้นทาง'
+      },
+      18: {
+        name: 'ป้อมยาม (ประตูทางเข้า-ออกวิทยาลัย)',
+        category: 'security',
+        color: '#ef4444',
+        clickable: true,
+        isStar: true,
+        starLabel: '🛡️ จุดตรวจ & แลกบัตร',
+        visitorTip: 'ยานพาหนะบุคคลภายนอกกรุณาชะลอความเร็ว แลกบัตรประชาชนเพื่อรับบัตรผ่านเข้าออก และปฏิบัติตามคำแนะนำของเจ้าหน้าที่ รปภ.',
+        desc: 'จุดตรวจรักษาความปลอดภัย 24 ชั่วโมง ควบคุมการเข้า-ออกยานพาหนะของบุคลากรและบุคคลภายนอก'
+      },
+      4: {
+        name: 'ศูนย์บ่มเพาะผู้ประกอบการอาชีวศึกษา',
+        category: 'admin',
+        color: '#f59e0b',
+        clickable: true,
+        visitorTip: 'บริการส่งเสริมวิสาหกิจชุมชน พัฒนาผลิตภัณฑ์สิ่งประดิษฐ์นักศึกษา และให้คำปรึกษาการเริ่มต้นธุรกิจ',
+        desc: 'ศูนย์ประสานงานและบ่มเพาะผู้ประกอบการใหม่ เสริมสร้างทักษะธุรกิจและจำหน่ายผลิตภัณฑ์ฝีมือนักศึกษา'
+      },
+      12: {
+        name: 'อาคารวิทยบริการและห้องสมุด',
+        category: 'library',
+        color: '#10b981',
+        clickable: true,
+        isStar: true,
+        starLabel: '📚 แหล่งเรียนรู้ & ห้องสมุดดิจิทัล',
+        visitorTip: 'บริการสืบค้นอินเทอร์เน็ต หนังสือวิชาการ พื้นที่ Co-Working Space เปิดต้อนรับประชาชนและนักศึกษา',
+        desc: 'อาคารแหล่งเรียนรู้ทันสมัย พร้อมห้องสืบค้นข้อมูลคอมพิวเตอร์ ห้องอ่านหนังสือเงียบสงบ และบริการวารสาร'
+      },
+      22: {
+        name: 'โรงอาหารกลางวิทยาลัย',
+        category: 'dining',
+        color: '#f97316',
+        clickable: true,
+        isStar: true,
+        starLabel: '🍽️ ศูนย์อาหาร & เครื่องดื่ม',
+        visitorTip: 'บริการอาหารปรุงสด สะอาด ถูกสุขอนามัย น้ำดื่มและผลไม้ เปิดบริการ 07:00 - 15:30 น. รองรับทั้งผู้มาติดต่อและนักศึกษา',
+        desc: 'โรงอาหารเปิดโล่งพร้อมร้านจำหน่ายอาหารหลากหลายประเภท เครื่องดื่ม และพื้นที่นั่งรับประทานอาหารกว้างขวาง'
+      },
+      19: {
+        name: 'คาเฟ่สารพัดช่าง (Coffee & Drinks)',
+        category: 'dining',
+        color: '#f97316',
+        clickable: true,
+        visitorTip: 'จุดรับรองผู้มาเยือน บริการกาแฟสด ชา เครื่องดื่มเย็น เบเกอรี่ และจุดนั่งพักคอยบรรยากาศเป็นกันเอง',
+        desc: 'ร้านกาแฟและเครื่องดื่มสำหรับผู้มาเยือนและอาจารย์ บริหารจัดการเพื่อการฝึกทักษะอาชีพของนักศึกษา'
+      },
+      16: {
+        name: 'ร้านค้าสหกรณ์และบริการสวัสดิการ',
+        category: 'dining',
+        color: '#f97316',
+        clickable: true,
+        visitorTip: 'จำหน่ายเครื่องเขียน ชุดฝึกงาน เครื่องดื่ม และของใช้ทั่วไป',
+        desc: 'ศูนย์บริการสวัสดิการและร้านค้าสหกรณ์วิทยาลัย'
+      },
+      31: {
+        name: 'อาคารอเนกประสงค์ (หอประชุมใหญ่)',
+        category: 'hall',
+        color: '#ec4899',
+        clickable: true,
+        isStar: true,
+        starLabel: 'หอประชุมใหญ่ & จัดกิจกรรม',
+        visitorTip: 'สถานที่จัดกิจกรรมสำคัญของวิทยาลัย',
+        desc: 'หอประชุม '
+      },
+      6: {
+        name: 'ลานจอดรถผู้มาติดต่อ (หน้าศูนย์บ่มเพาะ)',
+        category: 'parking',
+        color: '#64748b',
+        clickable: true,
+        isStar: true,
+        starLabel: '🚗 ที่จอดรถแนะนำสำหรับผู้มาเยือน',
+        visitorTip: 'จุดจอดรถยนต์และรถจักรยานยนต์สำหรับบุคคลภายนอก อยู่ใกล้ประตูทางเข้า สะดวกต่อการเดินไปอาคารอำนวยการ',
+        desc: 'ลานจอดรถกลางแจ้งใกล้ทางเข้าวิทยาลัย ออกแบบเพื่อรองรับผู้มาติดต่อราชการโดยเฉพาะ'
+      },
+      8: {
+        name: 'โรงจอดรถวิทยาลัย 1',
+        category: 'parking',
+        color: '#64748b',
+        clickable: true,
+        visitorTip: 'โรงจอดรถในร่มสำหรับรถยนต์และรถจักรยานยนต์',
+        desc: 'โรงจอดรถในร่มพร้อมหลังคาบังแดด'
+      },
+      9: {
+        name: 'จุดจอดรถจักรยานยนต์ 2',
+        category: 'parking',
+        color: '#64748b',
+        clickable: true,
+        visitorTip: 'จุดจอดรถจักรยานยนต์',
+        desc: 'พื้นที่จอดรถจักรยานยนต์'
+      },
+      10: {
+        name: 'จุดจอดรถจักรยานยนต์ 3',
+        category: 'parking',
+        color: '#64748b',
+        clickable: true,
+        visitorTip: 'จุดจอดรถจักรยานยนต์',
+        desc: 'พื้นที่จอดรถจักรยานยนต์'
+      },
+      23: {
+        name: 'อาคารพัสดุกลาง',
+        category: 'parking',
+        color: '#64748b',
+        clickable: true,
+        visitorTip: 'ติดต่อส่งของ/พัสดุกลาง ',
+        desc: 'คลังพัสดุของวิทยาลัย'
+      },
+      24: {
+        name: 'ห้องน้ำบริการประชาชนและนักศึกษา 1',
+        category: 'facility',
+        color: '#06b6d4',
+        clickable: true,
+        visitorTip: 'ห้องน้ำสาธารณะแยกชาย-หญิง สะอาด สะดวก อยู่ใกล้โรงอาหารและสนามกลาง',
+        desc: 'ห้องสุขาบริการสาธารณะสำหรับบุคคลภายนอกและนักศึกษา'
+      },
+      25: {
+        name: 'ห้องน้ำบริการประชาชน 2',
+        category: 'facility',
+        color: '#06b6d4',
+        clickable: true,
+        visitorTip: 'ห้องน้ำบริการสาธารณะ',
+        desc: 'ห้องสุขาบริการสาธารณะ'
+      },
+      1: {
+        name: 'อาคารเรียนและปฏิบัติการ 3 (วิชาชีพระยะสั้น)',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'จัดการเรียนการสอนหลักสูตรวิชาชีพระยะสั้นสำหรับประชาชนทั่วไป',
+        desc: 'อาคารเรียน 4 ชั้น สำหรับหลักสูตรฝึกอาชีพประชาชนและบุคคลภายนอกที่ต้องการเสริมสร้างรายได้'
+      },
+      3: {
+        name: 'อาคารเรียนและปฏิบัติการ 4 (แผนกช่างไฟฟ้า)',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'แผนกวิชาช่างไฟฟ้ากำลังและพลังงานทดลอง ห้องปฏิบัติการหม้อแปลงและมอเตอร์ไฟฟ้า',
+        desc: 'ศูนย์การเรียนรู้ด้านวิศวกรรมไฟฟ้าและเครื่องกลไฟฟ้า'
+      },
+      7: {
+        name: 'ห้องเรียนและบริการตัดผมชาย',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        isStar: true,
+        starLabel: '✂️ บริการตัดผมประชาชนราคาประหยัด',
+        visitorTip: 'เปิดบริการตัดผมชายให้กับบุคคลภายนอกในราคาย่อมเยา โดยนักเรียนหลักสูตรวิชาชีพภายใต้การควบคุมของครูผู้สอน',
+        desc: 'ห้องปฏิบัติการฝึกทักษะการตัดผม ออกแบบทรงผมชาย และบริการประชาชนในชุมชน'
+      },
+      13: {
+        name: 'อาคารเรียนและปฏิบัติการ 2 (ช่างอิเล็กทรอนิกส์)',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'ห้องปฏิบัติการไมโครคอนโทรลเลอร์ อิเล็กทรอนิกส์อัจฉริยะ และระบบสื่อสารโทรคมนาคม',
+        desc: 'อาคารเรียนแผนกช่างอิเล็กทรอนิกส์และเทคโนโลยีสารสนเทศ'
+      },
+      14: {
+        name: 'อาคารเรียนและปฏิบัติการ 1',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'ห้องเรียนทฤษฎีรวม ห้องปฏิบัติการภาษาต่างประเทศ และห้องเรียนหมวดวิชาสามัญ',
+        desc: 'อาคารเรียนทฤษฎีหลัก 3 ชั้น สำหรับนักเรียน ปวช. และ ปวส. ทุกแผนก'
+      },
+      15: {
+        name: 'ห้องปฏิบัติการกิจกรรมและลีลาศ',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'ห้องกิจกรรมพัฒนาทักษะชีวิตและบุคลิกภาพ',
+        desc: 'ห้องกระจกปรับอากาศสำหรับกิจกรรมเข้าจังหวะและการแสดงออก'
+      },
+      21: {
+        name: 'อาคารเรียนและปฏิบัติการ 5',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'อาคารแผนก ช่างยนต์ คอมพิวเตอร์กราฟิก และบัญชี',
+        desc: 'อาคารเรียนสูง 4 ชั้น จัดการเรียนการสอนและการทดสอบทักษะวิชาชีพชั้นสูง'
+      },
+      26: {
+        name: 'โรงฝึกงานช่างยนต์ 1',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'ศูนย์ทดสอบและซ่อมบำรุงยานพาหนะ เครื่องยนต์ ระบบเบรก และระบบส่งกำลัง',
+        desc: 'โรงฝึกปฏิบัติงานช่างยนต์'
+      },
+      29: {
+        name: 'โรงฝึกงานช่างกลโรงงานและเครื่องมือกล',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'โรงงานฝึกทักษะงานกลึง งานกัด เครื่องมือกล และงานปรับโลหะพื้นฐาน',
+        desc: 'โรงฝึกปฏิบัติงานช่างกลโรงงานและเครื่องมือกล'
+      },
+      30: {
+        name: 'โรงฝึกงานประภทวิชาอุตสาหกรรม',
+        category: 'academic',
+        color: '#0284c7',
+        clickable: true,
+        visitorTip: 'โรงงานฝึกทักษะงานอุตสาหกรรมเครื่องกลและโลหะการ',
+        desc: 'โรงฝึกปฏิบัติงานช่างอุตสาหกรรมและเครื่องมือกล'
+      },
+      2: {
+        name: 'หอพักนักศึกษาภายในวิทยาลัย',
+        category: 'residential',
+        color: '#818cf8',
+        clickable: true,
+        visitorTip: 'เขตที่พักนักศึกษา บุคคลภายนอกกรุณาติดต่อผู้ดูแลหอพักที่เคาน์เตอร์ชั้น 1 ก่อนเข้าพบนักศึกษา',
+        desc: 'หอพักนักศึกษาในกำกับของวิทยาลัยเพื่ออำนวยความสะดวกแก่นักเรียนที่อยู่ห่างไกล'
+      }
+    };
+
+    /* ค่าคงที่แผนที่: แยกมุมมองเริ่มต้นตามอุปกรณ์ (Device-Specific Default View)
+       - โทรศัพท์มือถือ (Phone): bearing 185, zoom 17
+       - แท็บเล็ต (Tablet) และคอมพิวเตอร์ (PC): ใช้ค่าเดิม (bearing 95, zoom 18) */
+    const GEOJSON_PATH = './uptech.geojson';
+    const CAMPUS_CENTER = [102.788900, 17.398900];
+
+    function isPhoneDevice() {
+      const isNarrow = window.innerWidth <= 640;
+      const isMobileUA = /Android.*Mobile|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      return isNarrow || (isMobileUA && window.innerWidth < 768);
+    }
+
+    function getDefaultView() {
+      if (isPhoneDevice()) {
+        return { zoom: 17, pitch: 40, bearing: 185 };
+      }
+      return { zoom: 18, pitch: 40, bearing: 95 };
+    }
+
+    const DEFAULT_VIEW = getDefaultView();
+    const TOP_VIEW = { zoom: 17.6, pitch: 0, bearing: 0 };
+
+    const CAMPUS_BOUNDARY = {
+      type: "Feature",
+      properties: {},
+      geometry: {
+        type: "Polygon",
+        coordinates: [[
+          [102.7889667, 17.4000284],
+          [102.7892493, 17.3999042],
+          [102.7894823, 17.400272],
+          [102.7899321, 17.4000538],
+          [102.7886845, 17.3970481],
+          [102.7876226, 17.3975387],
+          [102.7889667, 17.4000284]
+        ]]
+      }
+    };
+
+    function computeBounds(feature, padDeg) {
+      const ring = feature.geometry.coordinates[0];
+      let minLng = Infinity, minLat = Infinity, maxLng = -Infinity, maxLat = -Infinity;
+      ring.forEach(([lng, lat]) => {
+        minLng = Math.min(minLng, lng); maxLng = Math.max(maxLng, lng);
+        minLat = Math.min(minLat, lat); maxLat = Math.max(maxLat, lat);
+      });
+      return [minLng - padDeg, minLat - padDeg, maxLng + padDeg, maxLat + padDeg];
+    }
+
+    const RASTER_BOUNDS = computeBounds(CAMPUS_BOUNDARY, 0.0015);
+    const PAN_BOUNDS = computeBounds(CAMPUS_BOUNDARY, 0.0020);
+
+    /* ======================================================================
+       2) MapLibre GL Map Setup
+       ====================================================================== */
+    const mapStyle = {
+      version: 8,
+      sources: {
+        "satellite": {
+          type: "raster",
+          tiles: [
+            "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          ],
+          tileSize: 256,
+          bounds: RASTER_BOUNDS,
+          maxzoom: 19,
+          attribution: "Esri, Maxar, Earthstar Geographics"
+        }
+      },
+      layers: [
+        { id: "bg", type: "background", paint: { "background-color": "#080c14" } },
+        { id: "satellite-layer", type: "raster", source: "satellite", minzoom: 0, maxzoom: 20 }
+      ]
+    };
+
+    const map = new maplibregl.Map({
+      container: "map",
+      style: mapStyle,
+      center: CAMPUS_CENTER,
+      zoom: DEFAULT_VIEW.zoom,
+      pitch: DEFAULT_VIEW.pitch,
+      bearing: DEFAULT_VIEW.bearing,
+      antialias: true,
+      maxPitch: 75,
+      minZoom: 16,
+      maxZoom: 19,
+      renderWorldCopies: false,
+      maxBounds: [
+        [PAN_BOUNDS[0], PAN_BOUNDS[1]],
+        [PAN_BOUNDS[2], PAN_BOUNDS[3]]
+      ]
+    });
+
+    map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "bottom-right");
+    map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+
+    let buildingsData = null;
+    let selectedId = null;
+    let currentCategoryFilter = 'all';
+
+    /* ======================================================================
+       3) MAP LOAD & LAYERS
+       ====================================================================== */
+    map.on('load', () => {
+
+      /* ไฟ 3D ทิศทางเฉียงเพื่อให้เงาตกกระทบข้างอาคารเกิดมิติตามธรรมชาติ */
+      map.setLight({
+        anchor: 'map',
+        color: '#fff9f0',
+        intensity: 0.58,
+        position: [1.5, 215, 32]
+      });
+
+      /* เส้นขอบเขตวิทยาลัย */
+      map.addSource('campus-boundary', { type: 'geojson', data: CAMPUS_BOUNDARY });
+      map.addLayer({
+        id: 'campus-boundary-line',
+        type: 'line',
+        source: 'campus-boundary',
+        paint: {
+          'line-color': '#ff9838',
+          'line-width': 2,
+          'line-opacity': 0.65,
+          'line-dasharray': [3, 2]
+        }
+      });
+
+      /* โหลด Source อาคาร */
+      map.addSource('buildings', {
+        type: 'geojson',
+        data: GEOJSON_PATH,
+        promoteId: 'bid_id'
+      });
+
+      /* เลเยอร์ 3D Fill-Extrusion พร้อมสีที่แยกตามประเภทชัดเจน */
+      map.addLayer({
+        id: 'buildings-3d',
+        type: 'fill-extrusion',
+        source: 'buildings',
+        paint: {
+          'fill-extrusion-color': [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], '#ffe600',
+            ['boolean', ['feature-state', 'hovered'], false], '#ffffff',
+            ['coalesce', ['get', 'color'], '#0284c7']
+          ],
+          'fill-extrusion-height': ['coalesce', ['to-number', ['get', 'height']], 3],
+          'fill-extrusion-base': ['coalesce', ['to-number', ['get', 'base_height']], 0],
+          'fill-extrusion-opacity': 0.94,
+          'fill-extrusion-vertical-gradient': true
+        }
+      });
+
+      /* เส้นขอบหลังคาอาคารเพื่อเน้นรูปทรงให้คมชัดบนภาพดาวเทียม */
+      map.addLayer({
+        id: 'buildings-roof-line',
+        type: 'line',
+        source: 'buildings',
+        paint: {
+          'line-color': '#ffffff',
+          'line-width': 1.2,
+          'line-opacity': 0.35
+        }
+      });
+
+      /* ดึงข้อมูล GeoJSON และประมวลผลข้อมูลแนะนำสำหรับผู้มาเยือน */
+      fetch(GEOJSON_PATH).then(r => r.json()).then(data => {
+        // Enrich ทุก Feature ด้วยสี ข้อมูลผู้มาติดต่อ และหมวดหมู่
+        data.features.forEach(f => {
+          const bid = f.properties.bid_id;
+          const meta = VISITOR_BUILDINGS[bid];
+          if (meta) {
+            Object.assign(f.properties, meta);
+          } else {
+            // อาคารอื่นๆ เช่น บ้านพักครู หรือสิ่งปลูกสร้าง
+            const p = f.properties;
+            const name = (p.name || '').toLowerCase();
+            if (name.includes('บ้านพัก') || name.includes('หอพัก')) {
+              p.category = 'residential';
+              p.color = '#818cf8';
+              p.visitorTip = 'เขตที่พักอาศัยบุคลากร (พื้นที่ส่วนบุคคล)';
+            } else if (name.includes('จอดรถ')) {
+              p.category = 'parking';
+              p.color = '#64748b';
+              p.visitorTip = 'จุดจอดรถวิทยาลัย';
+            } else {
+              p.category = p.type === 'deco' ? 'parking' : 'academic';
+              p.color = p.type === 'deco' ? '#64748b' : '#0284c7';
+              p.visitorTip = 'อาคารและสิ่งอำนวยความสะดวกภายในวิทยาลัย';
+            }
+          }
+        });
+
+        buildingsData = data;
+        // อัปเดตข้อมูลบนแผนที่เพื่อให้สี extruded สะท้อนข้อมูลใหม่ทันที
+        if (map.getSource('buildings')) {
+          map.getSource('buildings').setData(data);
+        }
+        renderBuildingList(data.features);
+      }).catch(err => {
+        showToast('ไม่พบไฟล์ uptech.geojson — โปรดวางไฟล์ไว้โฟลเดอร์เดียวกับ index.html');
+        console.error(err);
+      });
+
+      if (typeof map.setFog === 'function') map.setFog(null);
+    });
+
+    /* ======================================================================
+       4) INTERACTIONS & 3D HOVER TOOLTIP
+       ====================================================================== */
+    function isClickable(props) {
+      const v = props && props.clickable;
+      return v === true || String(v).toUpperCase() === 'TRUE';
+    }
+
+    function getCentroid(feature) {
+      let coords = feature.geometry.coordinates;
+      let ring = feature.geometry.type === 'Polygon' ? coords[0] : coords[0][0];
+      let sx = 0, sy = 0;
+      ring.forEach(([x, y]) => { sx += x; sy += y; });
+      return [sx / ring.length, sy / ring.length];
+    }
+
+    const hoverTooltip = document.getElementById('hoverTooltip');
+    const htDot = document.getElementById('htDot');
+    const htName = document.getElementById('htName');
+    const htCat = document.getElementById('htCat');
+    let hoveredId = null;
+
+    // ตรวจสอบว่าเป็นการใช้งานด้วยเมาส์บน Laptop / PC หรือไม่
+    function isDesktopPointer() {
+      return window.innerWidth > 768 && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    }
+
+    map.on('mousemove', 'buildings-3d', (e) => {
+      if (!e.features.length) return;
+      const f = e.features[0];
+      const p = f.properties;
+
+      map.getCanvas().style.cursor = isClickable(p) ? 'pointer' : '';
+
+      // ป้องกันไม่ให้ Tooltip แสดงบนมือถือหรืออุปกรณ์ Touch Screen (ให้ทำงานเฉพาะบน Laptop/PC ที่มีเมาส์ Hover เท่านั้น)
+      if (!isDesktopPointer()) {
+        hoverTooltip.classList.remove('show');
+        return;
+      }
+
+      // Tooltip สำหรับ Laptop / PC
+      if (p.name && p.name !== '-') {
+        const catCfg = CATEGORY_MAP[p.category] || CATEGORY_MAP.academic;
+        htDot.style.background = p.color || catCfg.color;
+        htName.textContent = p.name;
+        htCat.textContent = (catCfg.icon + ' ' + catCfg.name);
+
+        hoverTooltip.style.left = e.point.x + 'px';
+        hoverTooltip.style.top = e.point.y + 'px';
+        hoverTooltip.classList.add('show');
+      }
+
+      // Feature state hover
+      if (f.id !== undefined) {
+        if (hoveredId !== null && hoveredId !== f.id) {
+          map.setFeatureState({ source: 'buildings', id: hoveredId }, { hovered: false });
+        }
+        hoveredId = f.id;
+        map.setFeatureState({ source: 'buildings', id: hoveredId }, { hovered: true });
+      }
+    });
+
+    map.on('mouseleave', 'buildings-3d', () => {
+      map.getCanvas().style.cursor = '';
+      hoverTooltip.classList.remove('show');
+      if (hoveredId !== null) {
+        map.setFeatureState({ source: 'buildings', id: hoveredId }, { hovered: false });
+        hoveredId = null;
+      }
+    });
+
+    map.on('click', 'buildings-3d', (e) => {
+      hoverTooltip.classList.remove('show');
+      const f = e.features[0];
+      if (!isClickable(f.properties)) return;
+      focusBuilding(f);
+    });
+
+    function focusBuilding(feature) {
+      hoverTooltip.classList.remove('show');
+      const center = getCentroid(feature);
+      const props = feature.properties;
+
+      setSelected(props.bid_id);
+
+      map.flyTo({
+        center: center,
+        zoom: 18.8,
+        pitch: 62,
+        bearing: map.getBearing() + 15,
+        speed: 0.9,
+        curve: 1.3,
+        essential: true
+      });
+
+      openInfoCard(feature);
+    }
+
+    function setSelected(bid) {
+      if (selectedId !== null) {
+        map.setFeatureState({ source: 'buildings', id: selectedId }, { selected: false });
+      }
+      selectedId = bid;
+      if (bid !== null) {
+        map.setFeatureState({ source: 'buildings', id: bid }, { selected: true });
+      }
+      // อัปเดตการเน้นใน Sidebar list ด้วย
+      document.querySelectorAll('.b-item').forEach(el => {
+        el.classList.toggle('active', Number(el.dataset.bid) === bid);
+      });
+    }
+
+    /* ======================================================================
+       5) INFO CARD (รายละเอียดสำหรับบุคคลภายนอก)
+       ====================================================================== */
+    const infoCard = document.getElementById('infoCard');
+    let currentFeature = null;
+
+    function openInfoCard(feature) {
+      currentFeature = feature;
+      const props = feature.properties;
+      const cat = CATEGORY_MAP[props.category] || CATEGORY_MAP.academic;
+
+      // Header & Icon
+      document.getElementById('infoHeroIcon').textContent = cat.icon;
+      document.getElementById('heroGlow').style.background = props.color || cat.color;
+
+      // Star Badge
+      const starEl = document.getElementById('visitorStarBadge');
+      if (props.isStar) {
+        starEl.textContent = props.starLabel || '⭐ จุดบริการผู้มาเยือน';
+        starEl.style.display = 'flex';
+      } else {
+        starEl.style.display = 'none';
+      }
+
+      // Type Pill Badge
+      document.getElementById('infoType').textContent = cat.name;
+      document.getElementById('infoDot').style.background = props.color || cat.color;
+
+      // Title & ID
+      document.getElementById('infoId').textContent = 'รหัสอาคาร #' + (props.bid_id ?? '—');
+      document.getElementById('infoName').textContent = props.name || 'ไม่ระบุชื่ออาคาร';
+
+      // Visitor Tip
+      document.getElementById('infoVisitorTip').textContent =
+        props.visitorTip || 'อาคารและพื้นที่ให้บริการของวิทยาลัยสารพัดช่างอุดรธานี';
+
+      // Description
+      document.getElementById('infoDesc').textContent =
+        props.desc || props.description || 'ยังไม่มีรายละเอียดเพิ่มเติมสำหรับอาคารนี้';
+
+      infoCard.classList.add('open');
+
+      // ขยาย sidebar บน mobile ลงเพื่อให้เห็นการ์ดชัด
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.remove('expanded');
+      }
+    }
+
+    document.getElementById('infoClose').addEventListener('click', () => {
+      infoCard.classList.remove('open');
+      setSelected(null);
+      currentFeature = null;
+    });
+
+    /* ปุ่มนำทาง Google Maps */
+    document.getElementById('btnGoogleMaps').addEventListener('click', () => {
+      if (!currentFeature) return;
+      const [lng, lat] = getCentroid(currentFeature);
+      const name = encodeURIComponent(currentFeature.properties.name || 'UPTECH');
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=&travelmode=driving`;
+      window.open(url, '_blank');
+      showToast('กำลังเปิดเส้นทางใน Google Maps...');
+    });
+
+    /* ปุ่มคัดลอกชื่ออาคาร */
+    document.getElementById('btnCopyName').addEventListener('click', () => {
+      if (!currentFeature) return;
+      const name = currentFeature.properties.name || '';
+      navigator.clipboard.writeText(name).then(() => {
+        showToast(`คัดลอก "${name}" สำเร็จ!`);
+      }).catch(() => {
+        showToast('ไม่สามารถคัดลอกข้อความได้');
+      });
+    });
+
+    /* ======================================================================
+       6) SIDEBAR: ค้นหา + ตัวกรองหมวดหมู่ + รายการอาคาร
+       ====================================================================== */
+    const buildingList = document.getElementById('buildingList');
+    const searchInput = document.getElementById('searchInput');
+    const clearSearch = document.getElementById('clearSearch');
+    const buildingCount = document.getElementById('buildingCount');
+
+    function renderBuildingList(features, query = '', category = 'all') {
+      const q = query.trim().toLowerCase();
+      const filtered = [];
+
+      features.forEach(f => {
+        const p = f.properties;
+        const name = (p.name || '').toLowerCase();
+        const desc = (p.desc || p.description || '').toLowerCase();
+        const tip = (p.visitorTip || '').toLowerCase();
+
+        // กรองตาม Text
+        if (q && !name.includes(q) && !desc.includes(q) && !tip.includes(q)) return;
+
+        // กรองตาม Category
+        if (category !== 'all') {
+          if (category === 'admin' && p.category !== 'admin' && p.category !== 'security') return;
+          else if (category !== 'admin' && p.category !== category) return;
+        }
+
+        filtered.push(f);
+      });
+
+      buildingCount.textContent = `${filtered.length} อาคาร`;
+
+      // แยกกลุ่ม อาคารสำคัญ/ผู้มาติดต่อ กับ สิ่งปลูกสร้างทั่วไป
+      const starItems = [];
+      const normalItems = [];
+
+      filtered.forEach(f => {
+        if (f.properties.isStar) starItems.push(f);
+        else normalItems.push(f);
+      });
+
+      let html = '';
+      if (starItems.length) {
+        html += '<div class="list-section-title">⭐ จุดติดต่อสำคัญสำหรับผู้มาเยือน</div>';
+        starItems.forEach(f => html += buildingItemHTML(f));
+      }
+      if (normalItems.length) {
+        html += `<div class="list-section-title">${starItems.length ? 'อาคารและพื้นที่อื่นๆ' : 'ผลการค้นหา'}</div>`;
+        normalItems.forEach(f => html += buildingItemHTML(f));
+      }
+      if (!filtered.length) {
+        html = '<div class="list-section-title" style="text-align:center; padding:24px 10px;">ไม่พบอาคารตามเงื่อนไขที่เลือก</div>';
+      }
+
+      buildingList.innerHTML = html;
+
+      // ผูกคลิก
+      buildingList.querySelectorAll('.b-item[data-clickable="1"]').forEach(el => {
+        el.addEventListener('click', () => {
+          const bid = Number(el.dataset.bid);
+          const feature = buildingsData.features.find(ft => ft.properties.bid_id === bid);
+          if (feature) focusBuilding(feature);
+        });
+      });
+    }
+
+    function buildingItemHTML(f) {
+      const p = f.properties;
+      const clickable = isClickable(p);
+      const cat = CATEGORY_MAP[p.category] || CATEGORY_MAP.academic;
+      const color = p.color || cat.color;
+      const subText = p.visitorRole || (cat.icon + ' ' + cat.name);
+
+      return `
+    <div class="b-item ${clickable ? '' : 'disabled'} ${selectedId === p.bid_id ? 'active' : ''}"
+         data-bid="${p.bid_id}" data-clickable="${clickable ? 1 : 0}">
+      <div class="b-dot" style="background:${color}; color:${color}"></div>
+      <div class="b-text">
+        <div class="b-name">${p.name || 'ไม่ระบุชื่อ'}</div>
+        <div class="b-sub">${subText}</div>
+      </div>
+      ${clickable ? '<div class="b-arrow">›</div>' : ''}
+    </div>`;
+    }
+
+    /* Event Search Input */
+    searchInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      clearSearch.classList.toggle('show', val.length > 0);
+      if (buildingsData) renderBuildingList(buildingsData.features, val, currentCategoryFilter);
+    });
+
+    clearSearch.addEventListener('click', () => {
+      searchInput.value = '';
+      clearSearch.classList.remove('show');
+      if (buildingsData) renderBuildingList(buildingsData.features, '', currentCategoryFilter);
+    });
+
+    /* Event Category Filter Buttons */
+    document.querySelectorAll('#catFilter .filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#catFilter .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentCategoryFilter = btn.dataset.cat;
+        if (buildingsData) renderBuildingList(buildingsData.features, searchInput.value, currentCategoryFilter);
+      });
+    });
+
+    /* ======================================================================
+       7) VISITOR QUICK BAR BUTTONS
+       ====================================================================== */
+    document.querySelectorAll('.visitor-nav .v-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const bid = Number(chip.dataset.bid);
+        if (!buildingsData) return;
+        const feature = buildingsData.features.find(ft => ft.properties.bid_id === bid);
+        if (feature) focusBuilding(feature);
+      });
+    });
+
+    /* Legend items click to filter */
+    document.querySelectorAll('.legend-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const cat = item.dataset.cat;
+        const filterBtn = document.querySelector(`#catFilter .filter-btn[data-cat="${cat}"]`);
+        if (filterBtn) filterBtn.click();
+        showToast(`กรองหมวดหมู่: ${item.querySelector('span:last-child').textContent}`);
+      });
+    });
+
+    /* ======================================================================
+       8) CAMERA PRESETS & LEGEND TOGGLE
+       ====================================================================== */
+    document.getElementById('btnReset').addEventListener('click', () => {
+      setSelected(null);
+      infoCard.classList.remove('open');
+      const view = getDefaultView();
+      map.flyTo({ center: CAMPUS_CENTER, zoom: view.zoom, pitch: view.pitch, bearing: view.bearing, speed: 1.1 });
+      showToast('รีเซ็ตมุมมองแผนที่เริ่มต้น');
+    });
+
+    document.getElementById('btnTop').addEventListener('click', () => {
+      map.flyTo({ center: map.getCenter(), zoom: TOP_VIEW.zoom, pitch: TOP_VIEW.pitch, bearing: TOP_VIEW.bearing, speed: 1.1 });
+      showToast('เปลี่ยนเป็นมุมมองด้านบน 2D');
+    });
+
+    const mapLegend = document.getElementById('mapLegend');
+    // บนมือถือ ให้เริ่มต้นแบบย่อผังสีไว้ เพื่อไม่ให้บดบังพื้นที่แผนที่
+    if (window.innerWidth <= 768) {
+      mapLegend.classList.add('collapsed');
+    }
+
+    document.getElementById('legendHeader').addEventListener('click', () => {
+      mapLegend.classList.toggle('collapsed');
+    });
+    document.getElementById('btnToggleLegend').addEventListener('click', () => {
+      mapLegend.classList.toggle('collapsed');
+    });
+
+    /* ======================================================================
+       9) MOBILE DRAWER & TOAST
+       ====================================================================== */
+    const sidebar = document.getElementById('sidebar');
+    const sidebarHead = document.querySelector('.sidebar-head');
+    sidebarHead.addEventListener('click', (e) => {
+      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && window.innerWidth <= 768) {
+        sidebar.classList.toggle('expanded');
+      }
+    });
+
+    let toastTimer;
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.innerHTML = `<span>🔔</span> <span>${msg}</span>`;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+  </script>
+</body>
+
+</html>

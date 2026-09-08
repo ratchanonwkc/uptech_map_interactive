@@ -1,0 +1,2017 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "อาคารเรียนและปฎิบัตการ 3",
+                "bid_id": 1,
+                "height": 16,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "อาคารระยะสั้น",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788995,
+                            17.399987
+                        ],
+                        [
+                            102.788921,
+                            17.399832
+                        ],
+                        [
+                            102.789033,
+                            17.399781
+                        ],
+                        [
+                            102.789018,
+                            17.399745
+                        ],
+                        [
+                            102.789089,
+                            17.399713
+                        ],
+                        [
+                            102.789107,
+                            17.399752
+                        ],
+                        [
+                            102.789226,
+                            17.399694
+                        ],
+                        [
+                            102.789303,
+                            17.399837
+                        ],
+                        [
+                            102.788995,
+                            17.399987
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 2,
+                "name": "หอพักนักศึกษา",
+                "height": 16,
+                "base_height": 0,
+                "color": "#F4A261",
+                "description": "หอพักนักศึกษา",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.789409,
+                            17.400146
+                        ],
+                        [
+                            102.78928,
+                            17.3999
+                        ],
+                        [
+                            102.789378,
+                            17.399857
+                        ],
+                        [
+                            102.789511,
+                            17.400101
+                        ],
+                        [
+                            102.789409,
+                            17.400146
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 3,
+                "name": "อาคารเรียนและปฎิบัตการ 4",
+                "height": 16,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "ตึกไฟฟ้า",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.789845,
+                            17.399955
+                        ],
+                        [
+                            102.78989,
+                            17.400054
+                        ],
+                        [
+                            102.789526,
+                            17.40022
+                        ],
+                        [
+                            102.789481,
+                            17.400121
+                        ],
+                        [
+                            102.789845,
+                            17.399955
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 4,
+                "name": "ศูนย์พ่มเพาะวิทยาลัยสารพัดช่างอุดรธานี",
+                "height": 3.5,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "ศูนย์บ่มเพาะผู้ประกอบการอาชีวศึกษา วิทยาลัยสารพัดช่าง",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788846,
+                            17.399777
+                        ],
+                        [
+                            102.78882,
+                            17.399712
+                        ],
+                        [
+                            102.788881,
+                            17.399694
+                        ],
+                        [
+                            102.788907,
+                            17.399757
+                        ],
+                        [
+                            102.788846,
+                            17.399777
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 5,
+                "name": "-",
+                "height": 3.5,
+                "base_height": 0,
+                "color": "#cbd5e1",
+                "description": "-",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788959,
+                            17.399783
+                        ],
+                        [
+                            102.788946,
+                            17.39976
+                        ],
+                        [
+                            102.788971,
+                            17.399747
+                        ],
+                        [
+                            102.788985,
+                            17.399771
+                        ],
+                        [
+                            102.788959,
+                            17.399783
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 6,
+                "name": "ที่จอดรถ",
+                "height": 2.5,
+                "base_height": 0,
+                "color": "#495057",
+                "description": "ที่จอดรถ",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788834,
+                            17.399514
+                        ],
+                        [
+                            102.788849,
+                            17.399486
+                        ],
+                        [
+                            102.788944,
+                            17.399525
+                        ],
+                        [
+                            102.78893,
+                            17.399553
+                        ],
+                        [
+                            102.788834,
+                            17.399514
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 7,
+                "name": "ห้องเรียนตัดผมชาย",
+                "height": 3.5,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "ตัดผมชาย",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788928,
+                            17.39962
+                        ],
+                        [
+                            102.788815,
+                            17.399663
+                        ],
+                        [
+                            102.788783,
+                            17.399591
+                        ],
+                        [
+                            102.7889,
+                            17.399552
+                        ],
+                        [
+                            102.788928,
+                            17.39962
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 8,
+                "name": "โรงจอดรถวิทยาลัย",
+                "height": 3,
+                "base_height": 0,
+                "color": "#495057",
+                "description": "โรงจอดรถ",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.789311,
+                            17.399374
+                        ],
+                        [
+                            102.789376,
+                            17.39934
+                        ],
+                        [
+                            102.789472,
+                            17.399528
+                        ],
+                        [
+                            102.789413,
+                            17.399557
+                        ],
+                        [
+                            102.789311,
+                            17.399374
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 9,
+                "name": "ที่จอดรถ",
+                "height": 2.5,
+                "base_height": 0,
+                "color": "#495057",
+                "description": "ที่จอดรถ",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.789075,
+                            17.399456
+                        ],
+                        [
+                            102.789092,
+                            17.399422
+                        ],
+                        [
+                            102.789179,
+                            17.399454
+                        ],
+                        [
+                            102.789163,
+                            17.39949
+                        ],
+                        [
+                            102.789075,
+                            17.399456
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 10,
+                "name": "ที่จอดรถ",
+                "height": 2.5,
+                "base_height": 0,
+                "color": "#495057",
+                "description": "ที่จอดรถ",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788887,
+                            17.399335
+                        ],
+                        [
+                            102.788872,
+                            17.399301
+                        ],
+                        [
+                            102.788956,
+                            17.399263
+                        ],
+                        [
+                            102.78897,
+                            17.399296
+                        ],
+                        [
+                            102.788887,
+                            17.399335
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 11,
+                "name": "อาคารอำนวยการ",
+                "height": 12,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "อาคารอำนวยการ",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788832,
+                            17.399294
+                        ],
+                        [
+                            102.78869,
+                            17.399016
+                        ],
+                        [
+                            102.788824,
+                            17.398955
+                        ],
+                        [
+                            102.788968,
+                            17.399233
+                        ],
+                        [
+                            102.788832,
+                            17.399294
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "height": 10,
+                "base_height": 0,
+                "color": "#1D3557",
+                "type": "building",
+                "clickable": "TRUE",
+                "description": "อาคารวิทยบริการและห้องสมุด",
+                "bid_id": 12,
+                "name": "อาคารวิทยบริการและห้องสมุด"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.789252,
+                            17.399049
+                        ],
+                        [
+                            102.789381,
+                            17.399302
+                        ],
+                        [
+                            102.789199,
+                            17.399382
+                        ],
+                        [
+                            102.789069,
+                            17.399125
+                        ],
+                        [
+                            102.789252,
+                            17.399049
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 13,
+                "name": "อาคารเรียนและปฎิบัตการ 2",
+                "height": 12,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "อาคารแผนกอิเล็ก",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788967,
+                            17.399028
+                        ],
+                        [
+                            102.789237,
+                            17.398902
+                        ],
+                        [
+                            102.789288,
+                            17.398993
+                        ],
+                        [
+                            102.789014,
+                            17.399122
+                        ],
+                        [
+                            102.788967,
+                            17.399028
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 14,
+                "name": "อาคารเรียนและปฎิบัตการ 1",
+                "height": 10,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "อาคารเรียน",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788564,
+                            17.398822
+                        ],
+                        [
+                            102.789016,
+                            17.398608
+                        ],
+                        [
+                            102.789072,
+                            17.398709
+                        ],
+                        [
+                            102.788836,
+                            17.398825
+                        ],
+                        [
+                            102.788865,
+                            17.398874
+                        ],
+                        [
+                            102.788776,
+                            17.398918
+                        ],
+                        [
+                            102.788749,
+                            17.398874
+                        ],
+                        [
+                            102.788626,
+                            17.398937
+                        ],
+                        [
+                            102.788564,
+                            17.398822
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 15,
+                "name": "ห้องเรียนลีลาศ",
+                "height": 3.5,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "ห้องลีลาศ",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.789168,
+                            17.39891
+                        ],
+                        [
+                            102.789118,
+                            17.398821
+                        ],
+                        [
+                            102.789223,
+                            17.398773
+                        ],
+                        [
+                            102.789268,
+                            17.398863
+                        ],
+                        [
+                            102.789168,
+                            17.39891
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 16,
+                "name": "สหการและอื่นๆ",
+                "height": 3,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "สหการ",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788863,
+                            17.398866
+                        ],
+                        [
+                            102.788841,
+                            17.39883
+                        ],
+                        [
+                            102.789057,
+                            17.398723
+                        ],
+                        [
+                            102.789074,
+                            17.398759
+                        ],
+                        [
+                            102.788863,
+                            17.398866
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 17,
+                "name": "ประชาสัมพันธ์",
+                "height": 3,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "ประชาสัมพันธ์",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788606,
+                            17.398948
+                        ],
+                        [
+                            102.788552,
+                            17.398972
+                        ],
+                        [
+                            102.788522,
+                            17.398915
+                        ],
+                        [
+                            102.788574,
+                            17.39889
+                        ],
+                        [
+                            102.788606,
+                            17.398948
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 18,
+                "name": "ป้อมยาม",
+                "height": 3,
+                "base_height": 0,
+                "color": "#E63946",
+                "description": "ป้อมยาม",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788476,
+                            17.399036
+                        ],
+                        [
+                            102.788432,
+                            17.398967
+                        ],
+                        [
+                            102.788464,
+                            17.39895
+                        ],
+                        [
+                            102.788509,
+                            17.399019
+                        ],
+                        [
+                            102.788476,
+                            17.399036
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 19,
+                "name": "คาเฟ่",
+                "height": 3,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "คาเฟ่",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788425,
+                            17.39896
+                        ],
+                        [
+                            102.788383,
+                            17.398882
+                        ],
+                        [
+                            102.788426,
+                            17.398862
+                        ],
+                        [
+                            102.788469,
+                            17.39894
+                        ],
+                        [
+                            102.788425,
+                            17.39896
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 20,
+                "name": "ร้านค้าเก่า",
+                "height": 3,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "ร้านค้าเก่า",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788379,
+                            17.398873
+                        ],
+                        [
+                            102.788326,
+                            17.398771
+                        ],
+                        [
+                            102.788367,
+                            17.398751
+                        ],
+                        [
+                            102.78842,
+                            17.398855
+                        ],
+                        [
+                            102.788379,
+                            17.398873
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 21,
+                "name": "อาคารเรียนและปฎิบัตการ 5",
+                "height": 16,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "อาคารเรียน",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.7885,
+                            17.39881
+                        ],
+                        [
+                            102.788264,
+                            17.398366
+                        ],
+                        [
+                            102.788484,
+                            17.398256
+                        ],
+                        [
+                            102.788722,
+                            17.398707
+                        ],
+                        [
+                            102.7885,
+                            17.39881
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "bid_id": 22,
+                "name": "โรงอาหาร",
+                "height": 4,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "โรงอาหาร",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788754,
+                            17.398712
+                        ],
+                        [
+                            102.788693,
+                            17.398576
+                        ],
+                        [
+                            102.788941,
+                            17.398456
+                        ],
+                        [
+                            102.789011,
+                            17.398591
+                        ],
+                        [
+                            102.788754,
+                            17.398712
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "อาคารพัสดุกลาง",
+                "bid_id": 23,
+                "height": 4,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "อาคารพัสดุกลาง",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.78911,
+                            17.398747
+                        ],
+                        [
+                            102.78904,
+                            17.398605
+                        ],
+                        [
+                            102.789056,
+                            17.398596
+                        ],
+                        [
+                            102.78902,
+                            17.398524
+                        ],
+                        [
+                            102.789124,
+                            17.398475
+                        ],
+                        [
+                            102.789224,
+                            17.398699
+                        ],
+                        [
+                            102.78911,
+                            17.398747
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "ห้องน้ำ",
+                "bid_id": 24,
+                "height": 2.5,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "ห้องน้ำ",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.789032,
+                            17.39848
+                        ],
+                        [
+                            102.788999,
+                            17.398416
+                        ],
+                        [
+                            102.788999,
+                            17.398416
+                        ],
+                        [
+                            102.789047,
+                            17.398393
+                        ],
+                        [
+                            102.789079,
+                            17.398457
+                        ],
+                        [
+                            102.789032,
+                            17.39848
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "ห้องน้ำ",
+                "bid_id": 25,
+                "height": 2.5,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "ห้องน้ำ",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788996,
+                            17.398411
+                        ],
+                        [
+                            102.788962,
+                            17.398352
+                        ],
+                        [
+                            102.78901,
+                            17.398329
+                        ],
+                        [
+                            102.789044,
+                            17.398389
+                        ],
+                        [
+                            102.788996,
+                            17.398411
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "โรงฝึกงาน",
+                "bid_id": 26,
+                "height": 6,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "โรงฝึกงาน",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788729,
+                            17.398509
+                        ],
+                        [
+                            102.788603,
+                            17.398293
+                        ],
+                        [
+                            102.788655,
+                            17.398265
+                        ],
+                        [
+                            102.788614,
+                            17.398197
+                        ],
+                        [
+                            102.788782,
+                            17.398107
+                        ],
+                        [
+                            102.788946,
+                            17.398399
+                        ],
+                        [
+                            102.788729,
+                            17.398509
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักนักการภารโรง",
+                "bid_id": 27,
+                "height": 6,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักนักการภารโรง",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788882,
+                            17.398204
+                        ],
+                        [
+                            102.788844,
+                            17.398126
+                        ],
+                        [
+                            102.788944,
+                            17.398079
+                        ],
+                        [
+                            102.788986,
+                            17.398153
+                        ],
+                        [
+                            102.788882,
+                            17.398204
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักนักการภารโรง",
+                "color": "#E9C46A",
+                "description": "บ้านพักนักการภารโรง",
+                "height": 10,
+                "base_height": 0,
+                "bid_id": 28,
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788228,
+                            17.39742
+                        ],
+                        [
+                            102.788175,
+                            17.397311
+                        ],
+                        [
+                            102.788471,
+                            17.397178
+                        ],
+                        [
+                            102.78852,
+                            17.397289
+                        ],
+                        [
+                            102.788228,
+                            17.39742
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "โรงฝึกงาน",
+                "bid_id": 29,
+                "height": 6,
+                "base_height": 0,
+                "color": "#1D3557",
+                "description": "โรงฝึกงาน",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788106,
+                            17.398357
+                        ],
+                        [
+                            102.787988,
+                            17.398149
+                        ],
+                        [
+                            102.788452,
+                            17.397929
+                        ],
+                        [
+                            102.788562,
+                            17.398133
+                        ],
+                        [
+                            102.788106,
+                            17.398357
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "description": "โรงฝึกงาน",
+                "type": "building",
+                "clickable": "TRUE",
+                "color": "#1D3557",
+                "name": "โรงฝึกงาน",
+                "bid_id": 30,
+                "height": 6,
+                "base_height": 0
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.78787,
+                            17.397921
+                        ],
+                        [
+                            102.787779,
+                            17.397749
+                        ],
+                        [
+                            102.788081,
+                            17.397608
+                        ],
+                        [
+                            102.788167,
+                            17.397771
+                        ],
+                        [
+                            102.78787,
+                            17.397921
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "อาคารอเนกประสงค์",
+                "bid_id": 31,
+                "height": 10,
+                "base_height": 0,
+                "color": "#4A4E69",
+                "description": "อาคารอเนกประสงค์",
+                "type": "building",
+                "clickable": "TRUE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788016,
+                            17.398101
+                        ],
+                        [
+                            102.787913,
+                            17.39792
+                        ],
+                        [
+                            102.788322,
+                            17.397709
+                        ],
+                        [
+                            102.78842,
+                            17.397892
+                        ],
+                        [
+                            102.788016,
+                            17.398101
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 32,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788828,
+                            17.3981
+                        ],
+                        [
+                            102.788784,
+                            17.398026
+                        ],
+                        [
+                            102.788867,
+                            17.397983
+                        ],
+                        [
+                            102.788912,
+                            17.398055
+                        ],
+                        [
+                            102.788828,
+                            17.3981
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 33,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788646,
+                            17.398047
+                        ],
+                        [
+                            102.788606,
+                            17.397973
+                        ],
+                        [
+                            102.788704,
+                            17.397926
+                        ],
+                        [
+                            102.788745,
+                            17.398001
+                        ],
+                        [
+                            102.788646,
+                            17.398047
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 34,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.78877,
+                            17.397987
+                        ],
+                        [
+                            102.78873,
+                            17.397912
+                        ],
+                        [
+                            102.78882,
+                            17.397871
+                        ],
+                        [
+                            102.788858,
+                            17.397944
+                        ],
+                        [
+                            102.78877,
+                            17.397987
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 35,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788589,
+                            17.397945
+                        ],
+                        [
+                            102.788551,
+                            17.397867
+                        ],
+                        [
+                            102.788645,
+                            17.397822
+                        ],
+                        [
+                            102.788685,
+                            17.397899
+                        ],
+                        [
+                            102.788589,
+                            17.397945
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 36,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788712,
+                            17.397884
+                        ],
+                        [
+                            102.788674,
+                            17.397811
+                        ],
+                        [
+                            102.788776,
+                            17.397764
+                        ],
+                        [
+                            102.788814,
+                            17.397837
+                        ],
+                        [
+                            102.788712,
+                            17.397884
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 37,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788813,
+                            17.397746
+                        ],
+                        [
+                            102.788898,
+                            17.397708
+                        ],
+                        [
+                            102.788945,
+                            17.397797
+                        ],
+                        [
+                            102.788859,
+                            17.397838
+                        ],
+                        [
+                            102.788813,
+                            17.397746
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 38,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788536,
+                            17.397837
+                        ],
+                        [
+                            102.788496,
+                            17.397764
+                        ],
+                        [
+                            102.788592,
+                            17.39772
+                        ],
+                        [
+                            102.788629,
+                            17.397794
+                        ],
+                        [
+                            102.788536,
+                            17.397837
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 39,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788623,
+                            17.397709
+                        ],
+                        [
+                            102.788721,
+                            17.39766
+                        ],
+                        [
+                            102.788755,
+                            17.39773
+                        ],
+                        [
+                            102.788659,
+                            17.397776
+                        ],
+                        [
+                            102.788623,
+                            17.397709
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 40,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788752,
+                            17.397644
+                        ],
+                        [
+                            102.78885,
+                            17.397598
+                        ],
+                        [
+                            102.788885,
+                            17.397667
+                        ],
+                        [
+                            102.788786,
+                            17.397715
+                        ],
+                        [
+                            102.788752,
+                            17.397644
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 42,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788479,
+                            17.397734
+                        ],
+                        [
+                            102.788437,
+                            17.39766
+                        ],
+                        [
+                            102.788537,
+                            17.397612
+                        ],
+                        [
+                            102.788576,
+                            17.397686
+                        ],
+                        [
+                            102.788479,
+                            17.397734
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 43,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788566,
+                            17.397595
+                        ],
+                        [
+                            102.788667,
+                            17.397547
+                        ],
+                        [
+                            102.788703,
+                            17.397618
+                        ],
+                        [
+                            102.788603,
+                            17.397667
+                        ],
+                        [
+                            102.788566,
+                            17.397595
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 44,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788689,
+                            17.39754
+                        ],
+                        [
+                            102.788791,
+                            17.397486
+                        ],
+                        [
+                            102.788833,
+                            17.39755
+                        ],
+                        [
+                            102.78873,
+                            17.397607
+                        ],
+                        [
+                            102.788689,
+                            17.39754
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 45,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788376,
+                            17.397555
+                        ],
+                        [
+                            102.788478,
+                            17.397506
+                        ],
+                        [
+                            102.788515,
+                            17.397576
+                        ],
+                        [
+                            102.788413,
+                            17.397628
+                        ],
+                        [
+                            102.788376,
+                            17.397555
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 46,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788548,
+                            17.397562
+                        ],
+                        [
+                            102.788508,
+                            17.397495
+                        ],
+                        [
+                            102.788607,
+                            17.397443
+                        ],
+                        [
+                            102.788645,
+                            17.397511
+                        ],
+                        [
+                            102.788548,
+                            17.397562
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักครู",
+                "bid_id": 47,
+                "height": 5,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788676,
+                            17.397501
+                        ],
+                        [
+                            102.788641,
+                            17.397436
+                        ],
+                        [
+                            102.788738,
+                            17.397386
+                        ],
+                        [
+                            102.788773,
+                            17.39745
+                        ],
+                        [
+                            102.788676,
+                            17.397501
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "หอพักครู",
+                "bid_id": 48,
+                "height": 16,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "หอพักครู",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.788655,
+                            17.397395
+                        ],
+                        [
+                            102.788539,
+                            17.397163
+                        ],
+                        [
+                            102.788646,
+                            17.397107
+                        ],
+                        [
+                            102.788763,
+                            17.39734
+                        ],
+                        [
+                            102.788655,
+                            17.397395
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "บ้านพักผู้อำนวยการ",
+                "bid_id": 49,
+                "height": 6,
+                "base_height": 0,
+                "color": "#E9C46A",
+                "description": "บ้านพักผู้อำนวยการ",
+                "type": "building",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.787778,
+                            17.397625
+                        ],
+                        [
+                            102.787729,
+                            17.397539
+                        ],
+                        [
+                            102.787834,
+                            17.397494
+                        ],
+                        [
+                            102.787877,
+                            17.397578
+                        ],
+                        [
+                            102.787778,
+                            17.397625
+                        ]
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "-",
+                "bid_id": 50,
+                "height": 2.5,
+                "base_height": 0,
+                "color": "#495057",
+                "description": "-",
+                "type": "deco",
+                "clickable": "FALSE"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            102.787921,
+                            17.397551
+                        ],
+                        [
+                            102.787859,
+                            17.397438
+                        ],
+                        [
+                            102.78806,
+                            17.397349
+                        ],
+                        [
+                            102.78811,
+                            17.397467
+                        ],
+                        [
+                            102.787921,
+                            17.397551
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
+}
