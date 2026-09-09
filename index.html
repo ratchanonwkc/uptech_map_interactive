@@ -1634,11 +1634,11 @@
         modelPath: './3d/bid_14.glb',
         fallbackModelPath: './3D/bid_14.glb',
         dimensions: { width: 53, depth: 14, height: 9 },
-        rotationDeg: 90,
+        rotationDeg: 88,
         altitudeOffset: 0,
         heading: 26,
         offsetX: 7,
-        offsetY: 2,
+        offsetY: -2,
         coordinates: [102.788775, 17.398800],
         preload: true
       },
@@ -1694,9 +1694,9 @@
         altitudeOffset: 0,
         heading: 26,
         offsetX: 8,
-        offsetY: 6,
+        offsetY: 4,
         coordinates: [102.788746, 17.398315],
-        preload: false
+        preload: true
       },
       {
         bid_id: 30,
@@ -1778,6 +1778,31 @@
     let campus3DLayer = null;
     let admin3DLayer = null;
 
+    // ติดตาม ID อาคารที่โมเดล 3D โหลดเสร็จและพร้อมแสดงผลแล้ว 100%
+    const loaded3DBuildingIds = new Set();
+
+    function getLoaded3DBuildingIds() {
+      return Array.from(loaded3DBuildingIds);
+    }
+
+    function notifyModelLoaded(bid) {
+      loaded3DBuildingIds.add(Number(bid));
+      const loadedList = getLoaded3DBuildingIds();
+      if (typeof map !== 'undefined' && map) {
+        if (map.getLayer('buildings-3d')) {
+          map.setFilter('buildings-3d', ['!', ['in', ['to-number', ['get', 'bid_id']], ['literal', loadedList]]]);
+          map.setPaintProperty('buildings-3d', 'fill-extrusion-height', [
+            'case',
+            ['in', ['to-number', ['get', 'bid_id']], ['literal', loadedList]], 0,
+            ['coalesce', ['to-number', ['get', 'height']], 3]
+          ]);
+        }
+        if (map.getLayer('buildings-roof-line')) {
+          map.setFilter('buildings-roof-line', ['!', ['in', ['to-number', ['get', 'bid_id']], ['literal', loadedList]]]);
+        }
+      }
+    }
+
     function createCampus3DLayer() {
       // ใช้ Campus Center เป็นจุดอ้างอิงหลักที่เสถียร (Anchor Origin)
       const anchorCoords = CAMPUS_CENTER;
@@ -1803,36 +1828,31 @@
           this.gl = gl;
           this.camera = new THREE.Camera();
           this.scene = new THREE.Scene();
+
+          // 1) เพิ่มประสิทธิภาพ Raycaster: เปิด firstHitOnly และใช้ Proxy Bounding Box
           this.raycaster = new THREE.Raycaster();
+          this.raycaster.firstHitOnly = true;
 
           this.buildingsContainer = new THREE.Group();
           this.scene.add(this.buildingsContainer);
 
-          this.loadedModels = new Map(); // bid_id -> THREE.Group
+          this.loadedModels = new Map();     // bid_id -> THREE.Group
           this.loadingModels = new Set();
-          this.raycastMeshes = [];       // array of meshes with userData.bid_id
+          this.raycastProxies = [];          // Lightweight Invisible Proxy Box Meshes for ultra-fast raycasting
           this.originalMaterials = new Map();
 
           this.selectedBid = null;
           this.hoveredBid = null;
 
-          // 1) แสงสภาพแวดล้อมเสมือนจริงสำหรับโมเดลทุกหลัง
-          const ambientLight = new THREE.AmbientLight(0xffffff, 0.95);
+          // 2) แสงสภาพแวดล้อมที่สมดุลและเป็นธรรมชาติ ไม่จ้าหรือเรืองแสงพลาสติก
+          const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
           this.scene.add(ambientLight);
 
-          const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334455, 0.55);
-          hemiLight.position.set(0, 50, 0);
-          this.scene.add(hemiLight);
-
-          const sunLight = new THREE.DirectionalLight(0xfff6e6, 1.35);
-          sunLight.position.set(50, 80, 40);
+          const sunLight = new THREE.DirectionalLight(0xfffaed, 0.85);
+          sunLight.position.set(40, 70, 30);
           this.scene.add(sunLight);
 
-          const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.55);
-          fillLight.position.set(-40, 50, -40);
-          this.scene.add(fillLight);
-
-          // 2) WebGLRenderer
+          // 3) WebGLRenderer พร้อม ACESFilmicToneMapping ป้องกันสีฟุ้ง/ขาววาบ
           this.renderer = new THREE.WebGLRenderer({
             canvas: mapInstance.getCanvas(),
             context: gl,
@@ -1842,36 +1862,68 @@
           if ('outputEncoding' in this.renderer && THREE.sRGBEncoding) {
             this.renderer.outputEncoding = THREE.sRGBEncoding;
           }
+          this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+          this.renderer.toneMappingExposure = 1.0;
 
-          // 3) DRACOLoader + GLTFLoader (Single Instance แชร์ร่วมกันทุกโมเดล)
-          this.dracoLoader = new THREE.DRACOLoader();
+          // 4) Single Shared Instance: LoadingManager + DRACOLoader + GLTFLoader
+          this.loadingManager = new THREE.LoadingManager();
+          this.dracoLoader = new THREE.DRACOLoader(this.loadingManager);
           this.dracoLoader.setDecoderPath(DRACO_DECODER_PATH);
           this.dracoLoader.preload();
 
-          this.gltfLoader = new THREE.GLTFLoader();
+          this.gltfLoader = new THREE.GLTFLoader(this.loadingManager);
           this.gltfLoader.setDRACOLoader(this.dracoLoader);
 
-          // 4) สั่งโหลดโมเดลที่กำหนด preload: true
+          // 5) Progressive Queue: โหลดโมเดลทีละหลังแบบ Asynchronous ไม่บล็อก Main Thread / Map Canvas
+          this.loadQueue = [];
+          this.isProcessingQueue = false;
+
           CUSTOM_MODELS_CONFIG.forEach(cfg => {
             if (cfg.preload) {
-              this.loadBuildingModel(cfg.bid_id);
+              this.queueBuildingLoad(cfg.bid_id);
             }
           });
         },
 
-        // โหลดโมเดล 3D ประจำอาคาร (รองรับทั้ง DRACO และ GLB ธรรมดา)
-        loadBuildingModel: function (bid) {
-          const cfg = getModelConfig(bid);
-          if (!cfg || this.loadedModels.has(bid) || this.loadingModels.has(bid)) return;
+        // จัดคิวโหลดแบบ Progressive ไม่บล็อก UI
+        queueBuildingLoad: function (bid) {
+          const numBid = Number(bid);
+          if (this.loadedModels.has(numBid) || this.loadingModels.has(numBid) || this.loadQueue.includes(numBid)) return;
+          this.loadQueue.push(numBid);
+          this.processQueue();
+        },
 
-          this.loadingModels.add(bid);
+        processQueue: function () {
+          if (this.isProcessingQueue || this.loadQueue.length === 0) return;
+          this.isProcessingQueue = true;
 
-          // รองรับหลาย candidate paths เผื่อกรณีตัวพิมพ์เล็ก/ใหญ่ หรือตั้งชื่อตามชื่ออาคาร
+          const nextBid = this.loadQueue.shift();
+          // พักเข้าสู่ Macro-task เพื่อคืน Thread ให้ MapLibre วาดแผนที่และรับ Event เมาส์ได้อย่างราบรื่น
+          setTimeout(() => {
+            this.loadBuildingModel(nextBid, () => {
+              this.isProcessingQueue = false;
+              // เว้นระยะห่างเล็กน้อยระหว่างโมเดลเพื่อป้องกัน CPU/GPU Spike
+              setTimeout(() => this.processQueue(), 60);
+            });
+          }, 35);
+        },
+
+        // โหลดโมเดล 3D ประจำอาคาร (Progressive + Strip Glow + Proxy Mesh)
+        loadBuildingModel: function (bid, onComplete) {
+          const numBid = Number(bid);
+          const cfg = getModelConfig(numBid);
+          if (!cfg || this.loadedModels.has(numBid) || this.loadingModels.has(numBid)) {
+            if (onComplete) onComplete();
+            return;
+          }
+
+          this.loadingModels.add(numBid);
+
           const candidatePaths = [
             cfg.modelPath,
             cfg.fallbackModelPath,
-            `./3d/bid_${bid}.glb`,
-            `./3D/bid_${bid}.glb`,
+            `./3d/bid_${numBid}.glb`,
+            `./3D/bid_${numBid}.glb`,
             `./3d/${cfg.name}.glb`,
             `./3D/${cfg.name}.glb`
           ].filter(Boolean);
@@ -1881,8 +1933,9 @@
 
           const tryLoadNext = () => {
             if (currentIdx >= uniquePaths.length) {
-              console.warn(`[3D] ไม่พบไฟล์ 3D สำหรับอาคาร #${bid} (${cfg.name})`);
-              this.loadingModels.delete(bid);
+              console.warn(`[3D] ไม่พบไฟล์ 3D สำหรับอาคาร #${numBid} (${cfg.name})`);
+              this.loadingModels.delete(numBid);
+              if (onComplete) onComplete();
               return;
             }
 
@@ -1892,21 +1945,21 @@
               (gltf) => {
                 const model = gltf.scene;
                 const bGroup = new THREE.Group();
-                bGroup.userData = { bid_id: bid, config: cfg };
+                bGroup.userData = { bid_id: numBid, config: cfg };
 
+                // ปรับแต่ง Material: ล้างแสงเรืองที่ไม่เป็นธรรมชาติ (Strip Glow) และปรับพื้นผิวด้าน Matte
                 model.traverse((child) => {
                   if (child.isMesh) {
-                    child.userData = { bid_id: bid };
-                    this.raycastMeshes.push(child);
-                    if (child.material) {
-                      child.material.side = THREE.DoubleSide;
-                      child.material.needsUpdate = true;
-                      this.originalMaterials.set(child, {
-                        color: child.material.color ? child.material.color.clone() : new THREE.Color(0xffffff),
-                        emissive: child.material.emissive ? child.material.emissive.clone() : new THREE.Color(0x000000),
-                        emissiveIntensity: child.material.emissiveIntensity !== undefined ? child.material.emissiveIntensity : 1.0
-                      });
-                    }
+                    child.userData = { bid_id: numBid };
+                    const materials = Array.isArray(child.material) ? child.material : [child.material];
+                    materials.forEach((mat) => {
+                      if (!mat) return;
+                      mat.side = THREE.DoubleSide;
+                      if (mat.emissive) mat.emissive.setHex(0x000000); // ปิดแสงเรืองทั้งหมด
+                      if (mat.roughness !== undefined) mat.roughness = 0.7; // ผิวด้าน Matte สมจริง
+                      if (mat.metalness !== undefined) mat.metalness = 0.1; // ลดความมันวาวสะท้อนแสง
+                      mat.needsUpdate = true;
+                    });
                   }
                 });
 
@@ -1946,22 +1999,55 @@
                 // กำหนดตำแหน่ง Mercator Anchor
                 let coords = cfg.coordinates;
                 if (!coords && buildingsData && buildingsData.features) {
-                  const f = buildingsData.features.find(ft => Number(ft.properties.bid_id) === bid);
+                  const f = buildingsData.features.find(ft => Number(ft.properties.bid_id) === numBid);
                   if (f) coords = getCentroid(f);
                 }
                 this.updateBuildingPosition(bGroup, coords || CAMPUS_CENTER);
 
+                // สร้าง Invisible Low-Poly Proxy Box สำหรับ Raycasting โดยเฉพาะ (ลดคำนวณจากหลายหมื่นรูปเหลือ 1 กล่อง)
+                const proxyGeo = new THREE.BoxGeometry(targetW, targetH, targetD);
+                const proxyMat = new THREE.MeshBasicMaterial({ visible: false, wireframe: false });
+                const proxyMesh = new THREE.Mesh(proxyGeo, proxyMat);
+                proxyMesh.position.set(0, targetH / 2, 0);
+                proxyMesh.userData = { bid_id: numBid, isProxy: true };
+                bGroup.add(proxyMesh);
+                this.raycastProxies.push(proxyMesh);
+
                 bGroup.add(model);
                 this.buildingsContainer.add(bGroup);
-                this.loadedModels.set(bid, bGroup);
-                this.loadingModels.delete(bid);
+                this.loadedModels.set(numBid, bGroup);
+                this.loadingModels.delete(numBid);
 
-                if (this.map) this.map.triggerRepaint();
-                console.log(`✅ โหลดโมเดล 3D อาคาร #${bid} (${cfg.name}) สำเร็จจาก ${url}`);
+                // ซ่อน Polygon เดิมเฉพาะเมื่อโมเดล 3D โหลดเสร็จและพร้อมแสดงผล 100%
+                notifyModelLoaded(numBid);
+
+                // ค่อยๆ Fade in โมเดล 3D เข้ามาอย่างนุ่มนวล
+                let fadeStart = performance.now();
+                const fadeDuration = 300;
+                const fadeStep = () => {
+                  const elapsed = performance.now() - fadeStart;
+                  const progress = Math.min(elapsed / fadeDuration, 1.0);
+                  model.traverse((c) => {
+                    if (c.isMesh && !c.userData.isProxy && c.material) {
+                      const mats = Array.isArray(c.material) ? c.material : [c.material];
+                      mats.forEach(m => {
+                        m.transparent = progress < 1.0;
+                        m.opacity = progress;
+                      });
+                    }
+                  });
+                  if (this.map) this.map.triggerRepaint();
+                  if (progress < 1.0) {
+                    requestAnimationFrame(fadeStep);
+                  }
+                };
+                requestAnimationFrame(fadeStep);
+
+                console.log(`✅ โหลดโมเดล 3D อาคาร #${numBid} (${cfg.name}) สำเร็จ`);
+                if (onComplete) onComplete();
               },
               undefined,
               (err) => {
-                // หากโหลด URL นี้ไม่ผ่าน ให้ทดลอง candidate ถัดไป
                 tryLoadNext();
               }
             );
@@ -1978,14 +2064,13 @@
           const dx = (bMercator.x - anchorTransform.translateX) / anchorTransform.scale;
           const dz = (bMercator.y - anchorTransform.translateY) / anchorTransform.scale;
 
-          const ox = Number(cfg.offsetX) || 0; // เมตร: ค่าบวก (+) ขวา/ตะวันออก, ค่าลบ (-) ซ้าย/ตะวันตก
-          const oy = Number(cfg.offsetY) || 0; // เมตร: ค่าบวก (+) บน/เหนือ, ค่าลบ (-) ล่าง/ใต้
-          const alt = Number(cfg.altitudeOffset !== undefined ? cfg.altitudeOffset : (cfg.altitude || 0)); // เมตร: ลอยจากพื้นดิน
+          const ox = Number(cfg.offsetX) || 0;
+          const oy = Number(cfg.offsetY) || 0;
+          const alt = Number(cfg.altitudeOffset !== undefined ? cfg.altitudeOffset : (cfg.altitude || 0));
 
           bGroup.position.set(dx + ox, alt, dz - oy);
         },
 
-        // ฟังก์ชันช่วยปรับตำแหน่ง Offset แบบ Real-Time ผ่าน Console (F12) หรือโค้ด
         setOffset: function (bid, { x, y, altitude } = {}) {
           const cfg = getModelConfig(bid);
           if (!cfg) return;
@@ -1995,7 +2080,7 @@
             cfg.altitudeOffset = Number(altitude);
             cfg.altitude = Number(altitude);
           }
-          const bGroup = this.loadedModels.get(bid);
+          const bGroup = this.loadedModels.get(Number(bid));
           if (bGroup) {
             this.updateBuildingPosition(bGroup, cfg.coordinates);
             if (this.map) this.map.triggerRepaint();
@@ -2003,7 +2088,6 @@
           console.log(`📍 อาคาร #${bid} (${cfg.name}): offsetX=${cfg.offsetX}m, offsetY=${cfg.offsetY}m, altitudeOffset=${cfg.altitudeOffset || 0}m`);
         },
 
-        // ฟังก์ชันช่วยหมุนองศาแบบ Real-Time ผ่าน Console (F12)
         setRotation: function (bid, degOffset) {
           const cfg = getModelConfig(bid);
           if (!cfg) return;
@@ -2016,15 +2100,20 @@
         },
 
         ensureBuildingLoaded: function (bid) {
-          if (getModelConfig(bid) && !this.loadedModels.has(bid)) {
-            this.loadBuildingModel(bid);
+          const numBid = Number(bid);
+          if (getModelConfig(numBid) && !this.loadedModels.has(numBid)) {
+            // ดันขึ้นหน้าสุดของคิวเพื่อโหลดทันที
+            const idx = this.loadQueue.indexOf(numBid);
+            if (idx > -1) this.loadQueue.splice(idx, 1);
+            this.loadQueue.unshift(numBid);
+            this.processQueue();
           }
         },
 
         updateCentroid: function (bid, coords) {
           const cfg = getModelConfig(bid);
           if (cfg) cfg.coordinates = coords;
-          const bGroup = this.loadedModels.get(bid);
+          const bGroup = this.loadedModels.get(Number(bid));
           if (bGroup) {
             this.updateBuildingPosition(bGroup, coords);
             if (this.map) this.map.triggerRepaint();
@@ -2032,7 +2121,7 @@
         },
 
         applyHeadingRotation: function (bid, degOffset) {
-          const targetBid = bid || 11;
+          const targetBid = Number(bid || 11);
           const cfg = getModelConfig(targetBid);
           if (!cfg) return;
           if (degOffset !== undefined) {
@@ -2050,7 +2139,9 @@
         },
 
         setSelected: function (bid) {
-          this.selectedBid = bid !== null ? Number(bid) : null;
+          const nextBid = bid !== null ? Number(bid) : null;
+          if (this.selectedBid === nextBid) return;
+          this.selectedBid = nextBid;
           this.updateVisualState();
         },
 
@@ -2062,29 +2153,41 @@
         },
 
         updateVisualState: function () {
-          this.raycastMeshes.forEach((mesh) => {
-            const orig = this.originalMaterials.get(mesh);
-            if (!orig || !mesh.material) return;
-            const meshBid = mesh.userData.bid_id;
+          let needsRepaint = false;
+          this.loadedModels.forEach((bGroup, bid) => {
+            const isSelected = this.selectedBid === bid;
+            const isHovered = this.hoveredBid === bid && !isSelected;
 
-            if (this.selectedBid === meshBid) {
-              // ไฮไลต์สีทองอำพันเมื่ออาคารถูกเลือก
-              mesh.material.emissive = new THREE.Color(0xf59e0b);
-              mesh.material.emissiveIntensity = 0.5;
-            } else if (this.hoveredBid === meshBid) {
-              // แสงเรืองสีขาวอ่อนๆ เมื่อเมาส์ชี้ (Hover)
-              mesh.material.emissive = new THREE.Color(0xffffff);
-              mesh.material.emissiveIntensity = 0.25;
-            } else {
-              mesh.material.emissive = orig.emissive.clone();
-              mesh.material.emissiveIntensity = orig.emissiveIntensity;
-            }
+            bGroup.traverse((child) => {
+              if (child.isMesh && !child.userData.isProxy && child.material) {
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach(m => {
+                  if (!m || !m.emissive) return;
+                  if (isSelected) {
+                    // ไฮไลต์สีทองอำพันนุ่มนวลแบบผิวด้าน ไม่ฟุ้งพลาสติก
+                    m.emissive.setHex(0x5a3e00);
+                    m.emissiveIntensity = 0.5;
+                    needsRepaint = true;
+                  } else if (isHovered) {
+                    // แสงเรืองบางเบาเฉพาะตอนชี้เมาส์
+                    m.emissive.setHex(0x222833);
+                    m.emissiveIntensity = 0.35;
+                    needsRepaint = true;
+                  } else {
+                    m.emissive.setHex(0x000000);
+                    m.emissiveIntensity = 0.0;
+                    needsRepaint = true;
+                  }
+                });
+              }
+            });
           });
-          if (this.map) this.map.triggerRepaint();
+          if (needsRepaint && this.map) this.map.triggerRepaint();
         },
 
+        // Raycasting รวดเร็วเป็นพิเศษผ่าน Low-Poly Proxy Boxes เท่านั้น
         raycast: function (point, lngLat) {
-          if (!this.raycastMeshes.length || !this.map) return null;
+          if (!this.raycastProxies.length || !this.map) return null;
           try {
             const freeCam = typeof this.map.getFreeCameraOptions === 'function' ? this.map.getFreeCameraOptions() : null;
             if (!freeCam || !freeCam.position || !lngLat) return null;
@@ -2105,16 +2208,11 @@
             this.raycaster.set(origin, dir);
             this.raycaster.near = 1;
             this.raycaster.far = 25000;
-            const intersects = this.raycaster.intersectObjects(this.raycastMeshes, false);
+            const intersects = this.raycaster.intersectObjects(this.raycastProxies, false);
             if (intersects && intersects.length > 0) {
-              for (const hit of intersects) {
-                let cur = hit.object;
-                while (cur && cur !== this.scene) {
-                  if (cur.userData && cur.userData.bid_id) {
-                    return { hit: true, bid_id: Number(cur.userData.bid_id), mesh: hit.object };
-                  }
-                  cur = cur.parent;
-                }
+              const hit = intersects[0];
+              if (hit.object && hit.object.userData && hit.object.userData.bid_id) {
+                return { hit: true, bid_id: Number(hit.object.userData.bid_id) };
               }
             }
           } catch (e) {
@@ -2162,7 +2260,7 @@
 
           this.renderer.resetState();
           this.renderer.render(this.scene, this.camera);
-          this.map.triggerRepaint();
+          // หมายเหตุ: ตัด this.map.triggerRepaint() ออกจาก render() เพื่อหยุด Infinite Loop 60fps ที่ทำให้เครื่องค้าง
         }
       };
     }
@@ -2201,12 +2299,12 @@
         promoteId: 'bid_id'
       });
 
-      /* เลเยอร์ 3D Fill-Extrusion (ซ่อนอาคารที่มี 3D Model อัตโนมัติเพื่อไม่ให้ทับซ้อน) */
+      /* เลเยอร์ 3D Fill-Extrusion (ซ่อนเฉพาะอาคารที่โมเดล 3D โหลดเสร็จและพร้อมแสดงผล 100%) */
       map.addLayer({
         id: 'buildings-3d',
         type: 'fill-extrusion',
         source: 'buildings',
-        filter: ['!', ['in', ['to-number', ['get', 'bid_id']], ['literal', get3DBuildingIds()]]],
+        filter: ['!', ['in', ['to-number', ['get', 'bid_id']], ['literal', getLoaded3DBuildingIds()]]],
         paint: {
           'fill-extrusion-color': [
             'case',
@@ -2216,7 +2314,7 @@
           ],
           'fill-extrusion-height': [
             'case',
-            ['in', ['to-number', ['get', 'bid_id']], ['literal', get3DBuildingIds()]], 0,
+            ['in', ['to-number', ['get', 'bid_id']], ['literal', getLoaded3DBuildingIds()]], 0,
             ['coalesce', ['to-number', ['get', 'height']], 3]
           ],
           'fill-extrusion-base': ['coalesce', ['to-number', ['get', 'base_height']], 0],
@@ -2225,12 +2323,12 @@
         }
       });
 
-      /* เส้นขอบหลังคาอาคารเพื่อเน้นรูปทรงให้คมชัดบนภาพดาวเทียม (ยกเว้นอาคารที่มีโมเดล 3D) */
+      /* เส้นขอบหลังคาอาคารเพื่อเน้นรูปทรงให้คมชัดบนภาพดาวเทียม (ยกเว้นอาคารที่โหลดโมเดล 3D แล้ว) */
       map.addLayer({
         id: 'buildings-roof-line',
         type: 'line',
         source: 'buildings',
-        filter: ['!', ['in', ['to-number', ['get', 'bid_id']], ['literal', get3DBuildingIds()]]],
+        filter: ['!', ['in', ['to-number', ['get', 'bid_id']], ['literal', getLoaded3DBuildingIds()]]],
         paint: {
           'line-color': '#ffffff',
           'line-width': 1.2,
@@ -2338,13 +2436,13 @@
         }
       }
 
-      // 2) ตรวจสอบควบคู่กับพื้นที่แปลงที่ดิน (Polygon Footprint) บนแผนที่ (บวก offset ของอาคาร)
+      // 2) ตรวจสอบควบคู่กับพื้นที่แปลงที่ดิน (Polygon Footprint) บนแผนที่ เฉพาะอาคารที่โมเดลโหลดเสร็จแล้ว
       if (buildingsData && buildingsData.features) {
-        const b3dIds = get3DBuildingIds();
+        const b3dIds = getLoaded3DBuildingIds();
         for (const bid of b3dIds) {
           const f = buildingsData.features.find(ft => Number(ft.properties.bid_id) === bid);
           if (f && f.geometry && f.geometry.coordinates) {
-            const cfg = CAMPUS_3D_REGISTRY[bid] || {};
+            const cfg = getModelConfig(bid) || {};
             const dLng = (Number(cfg.offsetX) || 0) * 0.0000095;
             const dLat = (Number(cfg.offsetY) || 0) * 0.0000090;
 
@@ -2370,8 +2468,14 @@
       return hit && hit.bid_id === 11;
     }
 
-    // ตรวจจับการเคลื่อนไหวเมาส์ทั่วทั้งแผนที่เพื่อรองรับทุกโมเดล 3D
+    let lastMouseMoveTime = 0;
+
+    // ตรวจจับการเคลื่อนไหวเมาส์ทั่วทั้งแผนที่เพื่อรองรับทุกโมเดล 3D (Throttled เพื่อป้องกันอาการกระตุก)
     map.on('mousemove', (e) => {
+      const now = performance.now();
+      if (now - lastMouseMoveTime < 24) return; // จำกัดความถี่การตรวจสอบ Raycast ไม่เกิน ~40fps
+      lastMouseMoveTime = now;
+
       const hit3D = check3DBuildingHit(e.point, e.lngLat);
       if (hit3D) {
         map.getCanvas().style.cursor = 'pointer';
