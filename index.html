@@ -1597,72 +1597,179 @@
        ====================================================================== */
     const DRACO_DECODER_PATH = 'https://www.gstatic.com/draco/versioned/decoders/1.5.6/';
 
-    const CAMPUS_3D_REGISTRY = {
-      11: {
+    /**
+     * ======================================================================
+     * 2. MODULAR MULTI-MODEL CONFIGURATION (CUSTOM_MODELS_CONFIG)
+     * ======================================================================
+     * จัดการโมเดล 3D (.glb) ทั้งหมดของวิทยาลัยไว้ที่ศูนย์กลาง
+     * - bid_id: รหัสอาคารจาก uptech.geojson
+     * - name: ชื่ออาคาร
+     * - modelPath: เส้นทางไฟล์โมเดล .glb
+     * - fallbackModelPath: เส้นทางสำรอง (เช่น สลับตัวพิมพ์เล็ก/ใหญ่ หรือไฟล์สำรอง)
+     * - dimensions: { width, depth, height } หน่วยเมตร สำหรับ Auto-scaling ผ่าน THREE.Box3
+     * - rotationDeg: องศาปรับหมุนชดเชยเพื่อทาบพอดีกับภาพถ่ายดาวเทียม
+     * - altitudeOffset: ค่าชดเชยความสูงลอยตัวจากพื้นดิน (เมตร)
+     * - coordinates: พิกัด Centroid เริ่มต้น (จะถูกปรับปรุงอัตโนมัติตาม GeoJSON ทันทีที่โหลดเสร็จ)
+     * - offsetX, offsetY: ชดเชยตำแหน่งแนวราบแบบละเอียด (เมตร)
+     * - preload: สั่งดาวน์โหลดล่วงหน้าทันทีเมื่อเปิดแผนที่
+     */
+    const CUSTOM_MODELS_CONFIG = [
+      {
         bid_id: 11,
         name: 'อาคารอำนวยการ',
-        modelPath: './3d/bid_11.glb',
+        modelPath: './3d/อาคารอำนวยการ.glb',
         fallbackModelPath: './3D/bid_11.glb',
-        // มิติสเกลเป้าหมายขนาดจริง (เมตร): กว้าง 34m, ลึก 16m, สูง 11.5m (~3 ชั้น)
-        targetWidth: 34,
-        targetDepth: 16,
-        targetHeight: 11.5,
-        // พิกัด Centroid อ้างอิงจาก GeoJSON (คำนวณถูกต้องตาม Polygon ของตึก)
-        coordinates: [102.788829, 17.399158],
-        offsetX: 0, // ขยับแนวนอน (เมตร): ค่าบวก (+) เลื่อนไปทางขวา/ตะวันออก, ค่าลบ (-) เลื่อนไปทางซ้าย/ตะวันตก
-        offsetY: 0, // ขยับแนวตั้ง (เมตร): ค่าบวก (+) เลื่อนขึ้นไปทางทิศเหนือ, ค่าลบ (-) เลื่อนลงมาทางทิศใต้
-        altitude: 0, // ความสูงลอยตัวจากพื้นดิน (เมตร)
+        dimensions: { width: 34, depth: 16, height: 11 },
+        rotationDeg: 180,
+        altitudeOffset: 0,
         heading: 26,
-        rotationOffsetDeg: 180, // กลับด้านหน้า-หลัง 180 องศา
-        scaleMultiplier: 1.0,
-        proportionalScale: false,
-        preload: true // Landmark หลัก: สั่งดาวน์โหลดทันทีเมื่อเปิดแผนที่
+        offsetX: 0,
+        offsetY: 0,
+        coordinates: [102.788829, 17.399158],
+        preload: true
       },
-      1: {
+      {
+        bid_id: 14,
+        name: 'อาคารเรียนและปฏิบัติการ 1',
+        modelPath: './3d/bid_14.glb',
+        fallbackModelPath: './3D/bid_14.glb',
+        dimensions: { width: 53, depth: 14, height: 9 },
+        rotationDeg: 90,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 7,
+        offsetY: 2,
+        coordinates: [102.788775, 17.398800],
+        preload: true
+      },
+      {
+        bid_id: 13,
+        name: 'อาคารเรียนและปฏิบัติการ 2 (ช่างอิเล็กทรอนิกส์)',
+        modelPath: './3d/bid_13.glb',
+        fallbackModelPath: './3D/bid_13.glb',
+        dimensions: { width: 30, depth: 15, height: 11 },
+        rotationDeg: 90,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 4,
+        offsetY: 2,
+        coordinates: [102.789127, 17.399011],
+        preload: true
+      },
+      {
+        bid_id: 21,
+        name: 'อาคารเรียนและปฏิบัติการ 5',
+        modelPath: './3d/bid_21.glb',
+        fallbackModelPath: './3D/bid_21.glb',
+        dimensions: { width: 56, depth: 26, height: 16 },
+        rotationDeg: 180,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 0,
+        offsetY: 0,
+        coordinates: [102.788492, 17.398535],
+        preload: true
+      },
+      {
+        bid_id: 29,
+        name: 'โรงฝึกงาน (ช่างกลโรงงานและเครื่องมือกล)',
+        modelPath: './3d/bid_29.glb',
+        fallbackModelPath: './3D/bid_29.glb',
+        dimensions: { width: 55, depth: 26, height: 6 },
+        rotationDeg: 90,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 4,
+        offsetY: 0,
+        coordinates: [102.788277, 17.398142],
+        preload: true
+      },
+      {
+        bid_id: 26,
+        name: 'โรงฝึกงานช่างยนต์ 1',
+        modelPath: './3d/bid_26.glb',
+        fallbackModelPath: './3D/bid_26.glb',
+        dimensions: { width: 28, depth: 26, height: 6 },
+        rotationDeg: 0,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 8,
+        offsetY: 6,
+        coordinates: [102.788746, 17.398315],
+        preload: false
+      },
+      {
+        bid_id: 30,
+        name: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม',
+        modelPath: './3d/bid_30.glb',
+        fallbackModelPath: './3D/bid_29.glb',
+        dimensions: { width: 55, depth: 26, height: 6 },
+        rotationDeg: 0,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 0,
+        offsetY: 0,
+        coordinates: [102.787974, 17.397762],
+        preload: false
+      },
+      {
+        bid_id: 2,
+        name: 'หอพักนักศึกษา (อาคาร 2)',
+        modelPath: './3d/bid_2.glb',
+        fallbackModelPath: './3D/bid_14.glb',
+        dimensions: { width: 53, depth: 14, height: 9 },
+        rotationDeg: 0,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 0,
+        offsetY: 0,
+        coordinates: [102.789394, 17.400001],
+        preload: false
+      },
+      {
         bid_id: 1,
         name: 'อาคารเรียนและปฏิบัติการ 3 (วิชาชีพระยะสั้น)',
         modelPath: './3d/bid_1.glb',
         fallbackModelPath: './3D/bid_1.glb',
-        // อาคารระยะสั้น: ตึก 4 ชั้น ขนาด 36m * 18m (สูงประมาณ 15 - 16 เมตร)
-        targetWidth: 36,
-        targetDepth: 18,
-        targetHeight: 15.5,
-        // พิกัด Centroid อ้างอิงจาก GeoJSON (พิกัดจริงที่ถูกต้อง)
-        coordinates: [102.789076, 17.399814],
-        offsetX: 4, // ขยับแนวนอน (เมตร): ค่าบวก (+) ขวา, ค่าลบ (-) ซ้าย
-        offsetY: 4, // ขยับแนวตั้ง (เมตร): ค่าบวก (+) ขึ้นเหนือ, ค่าลบ (-) ลงใต้
-        altitude: 0, // ความสูงลอยตัวจากพื้นดิน (เมตร)
+        dimensions: { width: 36, depth: 18, height: 15.5 },
+        rotationDeg: 270,
+        altitudeOffset: 0,
         heading: 26,
-        rotationOffsetDeg: 270,
-        scaleMultiplier: 1.0,
-        proportionalScale: false,
+        offsetX: 4,
+        offsetY: 4,
+        coordinates: [102.789076, 17.399814],
         preload: true
       },
-      12: {
+      {
         bid_id: 12,
         name: 'อาคารวิทยบริการและห้องสมุด',
         modelPath: './3d/bid_12.glb',
         fallbackModelPath: './3D/bid_12.glb',
-        // ห้องสมุด: ตึก 2 ชั้น ขนาด 30m * 22m (สูงประมาณ 8 - 8.5 เมตร)
-        targetWidth: 30,
-        targetDepth: 22,
-        targetHeight: 8.5,
-        // พิกัด Centroid อ้างอิงจาก GeoJSON (พิกัดจริงที่ถูกต้อง)
-        coordinates: [102.789231, 17.399181],
-        offsetX: 4, // ขยับแนวนอน (เมตร): ค่าบวก (+) ขวา, ค่าลบ (-) ซ้าย
-        offsetY: 6, // ขยับแนวตั้ง (เมตร): ค่าบวก (+) ขึ้นเหนือ, ค่าลบ (-) ลงใต้
-        altitude: 0, // ความสูงลอยตัวจากพื้นดิน (เมตร)
+        dimensions: { width: 30, depth: 22, height: 8.5 },
+        rotationDeg: 180,
+        altitudeOffset: 0,
         heading: 26,
-        rotationOffsetDeg: 180,
-        scaleMultiplier: 1.0,
-        proportionalScale: false,
+        offsetX: 4,
+        offsetY: 6,
+        coordinates: [102.789231, 17.399181],
         preload: true
       }
-    };
+    ];
+
+    // สร้าง Map Registry สำหรับค้นหาแบบ O(1) พร้อมคงความเข้ากันได้ย้อนหลัง
+    const CAMPUS_3D_REGISTRY = {};
+    CUSTOM_MODELS_CONFIG.forEach(cfg => {
+      CAMPUS_3D_REGISTRY[cfg.bid_id] = cfg;
+    });
+
+    // ฟังก์ชันค้นหา Config โมเดล 3D
+    function getModelConfig(bid) {
+      return CAMPUS_3D_REGISTRY[Number(bid)] || CUSTOM_MODELS_CONFIG.find(m => m.bid_id === Number(bid));
+    }
 
     // คืนค่ารายการ ID อาคารทั้งหมดที่มีโมเดล 3D เพื่อซ่อนกล่อง Extrusion เดิมอัตโนมัติ
     function get3DBuildingIds() {
-      return Object.keys(CAMPUS_3D_REGISTRY).map(Number);
+      return CUSTOM_MODELS_CONFIG.map(m => Number(m.bid_id));
     }
 
     // เพื่อความเข้ากันได้ย้อนหลัง
@@ -1672,8 +1779,8 @@
     let admin3DLayer = null;
 
     function createCampus3DLayer() {
-      // ใช้อาคาร 11 หรือ Campus Center เป็นจุดอ้างอิงหลัก (Anchor Origin)
-      const anchorCoords = CAMPUS_3D_REGISTRY[11]?.coordinates || CAMPUS_CENTER;
+      // ใช้ Campus Center เป็นจุดอ้างอิงหลักที่เสถียร (Anchor Origin)
+      const anchorCoords = CAMPUS_CENTER;
       let anchorMercator = maplibregl.MercatorCoordinate.fromLngLat(anchorCoords, 0);
 
       let anchorTransform = {
@@ -1744,8 +1851,8 @@
           this.gltfLoader = new THREE.GLTFLoader();
           this.gltfLoader.setDRACOLoader(this.dracoLoader);
 
-          // 4) สั่งโหลดโมเดลที่กำหนด preload: true (เช่น อาคารอำนวยการ #11)
-          Object.values(CAMPUS_3D_REGISTRY).forEach(cfg => {
+          // 4) สั่งโหลดโมเดลที่กำหนด preload: true
+          CUSTOM_MODELS_CONFIG.forEach(cfg => {
             if (cfg.preload) {
               this.loadBuildingModel(cfg.bid_id);
             }
@@ -1754,12 +1861,32 @@
 
         // โหลดโมเดล 3D ประจำอาคาร (รองรับทั้ง DRACO และ GLB ธรรมดา)
         loadBuildingModel: function (bid) {
-          const cfg = CAMPUS_3D_REGISTRY[bid];
+          const cfg = getModelConfig(bid);
           if (!cfg || this.loadedModels.has(bid) || this.loadingModels.has(bid)) return;
 
           this.loadingModels.add(bid);
 
-          const tryLoad = (url, isFallback = false) => {
+          // รองรับหลาย candidate paths เผื่อกรณีตัวพิมพ์เล็ก/ใหญ่ หรือตั้งชื่อตามชื่ออาคาร
+          const candidatePaths = [
+            cfg.modelPath,
+            cfg.fallbackModelPath,
+            `./3d/bid_${bid}.glb`,
+            `./3D/bid_${bid}.glb`,
+            `./3d/${cfg.name}.glb`,
+            `./3D/${cfg.name}.glb`
+          ].filter(Boolean);
+
+          const uniquePaths = [...new Set(candidatePaths)];
+          let currentIdx = 0;
+
+          const tryLoadNext = () => {
+            if (currentIdx >= uniquePaths.length) {
+              console.warn(`[3D] ไม่พบไฟล์ 3D สำหรับอาคาร #${bid} (${cfg.name})`);
+              this.loadingModels.delete(bid);
+              return;
+            }
+
+            const url = uniquePaths[currentIdx++];
             this.gltfLoader.load(
               url,
               (gltf) => {
@@ -1783,34 +1910,46 @@
                   }
                 });
 
+                // Auto-normalize และปรับขนาดโมเดลให้ตรงกับมิติโลกจริงในหน่วยเมตร
                 const bbox = new THREE.Box3().setFromObject(model);
                 const size = new THREE.Vector3();
                 bbox.getSize(size);
                 const center = new THREE.Vector3();
                 bbox.getCenter(center);
+
+                // ปรับให้อยู่กึ่งกลางฐาน footprint และวางแนบพื้นดิน (Y = 0)
                 model.position.set(-center.x, -bbox.min.y, -center.z);
 
-                const targetW = cfg.targetWidth || (size.x || 1);
-                const targetD = cfg.targetDepth || (size.z || 1);
-                const targetH = cfg.targetHeight || (size.y || 1);
-                const mult = cfg.scaleMultiplier || 1.0;
-                const sx = (targetW / (size.x || 1)) * mult;
-                const sy = (targetH / (size.y || 1)) * mult;
-                const sz = (targetD / (size.z || 1)) * mult;
+                const dims = cfg.dimensions || {};
+                const targetW = Number(dims.width || cfg.targetWidth || (size.x || 1));
+                const targetD = Number(dims.depth || cfg.targetDepth || (size.z || 1));
+                const targetH = Number(dims.height || cfg.targetHeight || (size.y || 1));
+                const mult = Number(cfg.scaleMultiplier) || 1.0;
+
+                const sx = ((size.x > 0.0001) ? (targetW / size.x) : 1) * mult;
+                const sy = ((size.y > 0.0001) ? (targetH / size.y) : 1) * mult;
+                const sz = ((size.z > 0.0001) ? (targetD / size.z) : 1) * mult;
 
                 if (cfg.proportionalScale) {
-                  const ps = (targetW / (size.x || 1)) * mult;
+                  const ps = ((size.x > 0.0001) ? (targetW / size.x) : 1) * mult;
                   model.scale.set(ps, ps, ps);
                 } else {
                   model.scale.set(sx, sy, sz);
                 }
 
-                const heading = cfg.heading !== undefined ? cfg.heading : 26;
-                const offset = cfg.rotationOffsetDeg || 0;
-                const rad = ((90 - heading) + offset) * (Math.PI / 180);
+                // หมุนโมเดลตามทิศ Heading + Rotation Offset ชดเชยองศา
+                const heading = cfg.heading !== undefined ? Number(cfg.heading) : 26;
+                const rotOffset = cfg.rotationDeg !== undefined ? Number(cfg.rotationDeg) : (Number(cfg.rotationOffsetDeg) || 0);
+                const rad = ((90 - heading) + rotOffset) * (Math.PI / 180);
                 bGroup.rotation.y = rad;
 
-                this.updateBuildingPosition(bGroup, cfg.coordinates);
+                // กำหนดตำแหน่ง Mercator Anchor
+                let coords = cfg.coordinates;
+                if (!coords && buildingsData && buildingsData.features) {
+                  const f = buildingsData.features.find(ft => Number(ft.properties.bid_id) === bid);
+                  if (f) coords = getCentroid(f);
+                }
+                this.updateBuildingPosition(bGroup, coords || CAMPUS_CENTER);
 
                 bGroup.add(model);
                 this.buildingsContainer.add(bGroup);
@@ -1818,65 +1957,72 @@
                 this.loadingModels.delete(bid);
 
                 if (this.map) this.map.triggerRepaint();
-                console.log(`✅ โหลดโมเดล 3D อาคาร #${bid} (${cfg.name}) สำเร็จ`);
+                console.log(`✅ โหลดโมเดล 3D อาคาร #${bid} (${cfg.name}) สำเร็จจาก ${url}`);
               },
               undefined,
               (err) => {
-                if (!isFallback && cfg.fallbackModelPath) {
-                  tryLoad(cfg.fallbackModelPath, true);
-                } else {
-                  this.loadingModels.delete(bid);
-                }
+                // หากโหลด URL นี้ไม่ผ่าน ให้ทดลอง candidate ถัดไป
+                tryLoadNext();
               }
             );
           };
-          tryLoad(cfg.modelPath);
+
+          tryLoadNext();
         },
 
         updateBuildingPosition: function (bGroup, coords) {
           if (!coords || !coords.length) return;
           const bid = bGroup.userData?.bid_id;
-          const cfg = bGroup.userData?.config || CAMPUS_3D_REGISTRY[bid] || {};
+          const cfg = bGroup.userData?.config || getModelConfig(bid) || {};
           const bMercator = maplibregl.MercatorCoordinate.fromLngLat(coords, 0);
           const dx = (bMercator.x - anchorTransform.translateX) / anchorTransform.scale;
           const dz = (bMercator.y - anchorTransform.translateY) / anchorTransform.scale;
 
           const ox = Number(cfg.offsetX) || 0; // เมตร: ค่าบวก (+) ขวา/ตะวันออก, ค่าลบ (-) ซ้าย/ตะวันตก
           const oy = Number(cfg.offsetY) || 0; // เมตร: ค่าบวก (+) บน/เหนือ, ค่าลบ (-) ล่าง/ใต้
-          const alt = Number(cfg.altitude) || 0; // เมตร: ลอยจากพื้นดิน
+          const alt = Number(cfg.altitudeOffset !== undefined ? cfg.altitudeOffset : (cfg.altitude || 0)); // เมตร: ลอยจากพื้นดิน
 
           bGroup.position.set(dx + ox, alt, dz - oy);
         },
 
         // ฟังก์ชันช่วยปรับตำแหน่ง Offset แบบ Real-Time ผ่าน Console (F12) หรือโค้ด
         setOffset: function (bid, { x, y, altitude } = {}) {
-          const cfg = CAMPUS_3D_REGISTRY[bid];
+          const cfg = getModelConfig(bid);
           if (!cfg) return;
           if (x !== undefined) cfg.offsetX = Number(x);
           if (y !== undefined) cfg.offsetY = Number(y);
-          if (altitude !== undefined) cfg.altitude = Number(altitude);
+          if (altitude !== undefined) {
+            cfg.altitudeOffset = Number(altitude);
+            cfg.altitude = Number(altitude);
+          }
           const bGroup = this.loadedModels.get(bid);
           if (bGroup) {
             this.updateBuildingPosition(bGroup, cfg.coordinates);
             if (this.map) this.map.triggerRepaint();
           }
-          console.log(`📍 อาคาร #${bid} (${cfg.name}): offsetX=${cfg.offsetX}m, offsetY=${cfg.offsetY}m, altitude=${cfg.altitude}m`);
+          console.log(`📍 อาคาร #${bid} (${cfg.name}): offsetX=${cfg.offsetX}m, offsetY=${cfg.offsetY}m, altitudeOffset=${cfg.altitudeOffset || 0}m`);
         },
 
         // ฟังก์ชันช่วยหมุนองศาแบบ Real-Time ผ่าน Console (F12)
         setRotation: function (bid, degOffset) {
+          const cfg = getModelConfig(bid);
+          if (!cfg) return;
+          if (degOffset !== undefined) {
+            cfg.rotationDeg = degOffset;
+            cfg.rotationOffsetDeg = degOffset;
+          }
           this.applyHeadingRotation(bid, degOffset);
-          console.log(`🔄 อาคาร #${bid} (${CAMPUS_3D_REGISTRY[bid]?.name}): rotationOffsetDeg=${CAMPUS_3D_REGISTRY[bid]?.rotationOffsetDeg}°`);
+          console.log(`🔄 อาคาร #${bid} (${cfg.name}): rotationDeg=${cfg.rotationDeg}°`);
         },
 
         ensureBuildingLoaded: function (bid) {
-          if (CAMPUS_3D_REGISTRY[bid] && !this.loadedModels.has(bid)) {
+          if (getModelConfig(bid) && !this.loadedModels.has(bid)) {
             this.loadBuildingModel(bid);
           }
         },
 
         updateCentroid: function (bid, coords) {
-          const cfg = CAMPUS_3D_REGISTRY[bid];
+          const cfg = getModelConfig(bid);
           if (cfg) cfg.coordinates = coords;
           const bGroup = this.loadedModels.get(bid);
           if (bGroup) {
@@ -1887,13 +2033,16 @@
 
         applyHeadingRotation: function (bid, degOffset) {
           const targetBid = bid || 11;
-          const cfg = CAMPUS_3D_REGISTRY[targetBid];
+          const cfg = getModelConfig(targetBid);
           if (!cfg) return;
-          if (degOffset !== undefined) cfg.rotationOffsetDeg = degOffset;
+          if (degOffset !== undefined) {
+            cfg.rotationDeg = degOffset;
+            cfg.rotationOffsetDeg = degOffset;
+          }
           const bGroup = this.loadedModels.get(cfg.bid_id);
           if (bGroup) {
-            const heading = cfg.heading !== undefined ? cfg.heading : 26;
-            const offset = cfg.rotationOffsetDeg || 0;
+            const heading = cfg.heading !== undefined ? Number(cfg.heading) : 26;
+            const offset = cfg.rotationDeg !== undefined ? Number(cfg.rotationDeg) : (Number(cfg.rotationOffsetDeg) || 0);
             const rad = ((90 - heading) + offset) * (Math.PI / 180);
             bGroup.rotation.y = rad;
             if (this.map) this.map.triggerRepaint();
@@ -2065,7 +2214,11 @@
             ['boolean', ['feature-state', 'hovered'], false], '#ffffff',
             ['coalesce', ['get', 'color'], '#0284c7']
           ],
-          'fill-extrusion-height': ['coalesce', ['to-number', ['get', 'height']], 3],
+          'fill-extrusion-height': [
+            'case',
+            ['in', ['to-number', ['get', 'bid_id']], ['literal', get3DBuildingIds()]], 0,
+            ['coalesce', ['to-number', ['get', 'height']], 3]
+          ],
           'fill-extrusion-base': ['coalesce', ['to-number', ['get', 'base_height']], 0],
           'fill-extrusion-opacity': 0.94,
           'fill-extrusion-vertical-gradient': true
@@ -2085,11 +2238,12 @@
         }
       });
 
-      /* เพิ่ม Custom 3D Layer ของ Three.js (รองรับทุกอาคารใน CAMPUS_3D_REGISTRY) */
+      /* เพิ่ม Custom 3D Layer ของ Three.js (รองรับทุกอาคารใน CUSTOM_MODELS_CONFIG / CAMPUS_3D_REGISTRY) */
       campus3DLayer = createCampus3DLayer();
       admin3DLayer = campus3DLayer; // รักษาความเข้ากันได้ย้อนหลัง
       window.campus3DLayer = campus3DLayer;
       window.CAMPUS_3D_REGISTRY = CAMPUS_3D_REGISTRY;
+      window.CUSTOM_MODELS_CONFIG = CUSTOM_MODELS_CONFIG;
       map.addLayer(campus3DLayer);
 
       /* ดึงข้อมูล GeoJSON และประมวลผลข้อมูลแนะนำสำหรับผู้มาเยือน */
