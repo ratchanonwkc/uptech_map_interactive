@@ -727,6 +727,12 @@
       pointer-events: auto;
     }
 
+    /* ============================================================
+       INFO CARD TOP HERO (HEADER PHOTO & ICON BANNER)
+       - หากอาคารมีรูป: ขยายความสูงเป็น 205px แสดงภาพถ่ายขนาดใหญ่
+         พร้อมซ่อน banner icon และ hero glow ออกไปเลย
+       - หากอาคารไม่มีรูป: แสดง icon สถาปัตยกรรมและ hero glow ตามปกติ
+    ============================================================ */
     .info-hero {
       height: 130px;
       position: relative;
@@ -736,6 +742,62 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      transition: height 0.35s cubic-bezier(0.2, 0.9, 0.25, 1);
+      border-bottom: 1px solid var(--line-subtle);
+    }
+
+    .info-hero.has-photo {
+      height: 205px;
+      cursor: pointer;
+      background: var(--ink-950);
+    }
+
+    .info-hero-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      opacity: 0;
+      z-index: 1;
+      transition: opacity 0.35s ease, transform 0.45s ease;
+    }
+
+    .info-hero.has-photo .info-hero-img {
+      display: block;
+    }
+
+    .info-hero.has-photo .info-hero-img.loaded {
+      opacity: 1;
+    }
+
+    .info-hero.has-photo:hover .info-hero-img.loaded {
+      transform: scale(1.045);
+    }
+
+    /* Gradient overlay ด้านบนและด้านล่างของรูปภาพเพื่อให้อ่านตัวหนังสือและปุ่มปิดชัดเจน */
+    .info-hero-gradient {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom,
+          rgba(8, 12, 20, 0.65) 0%,
+          rgba(8, 12, 20, 0.05) 40%,
+          rgba(14, 22, 38, 0.75) 85%,
+          rgba(14, 22, 38, 1) 100%);
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .info-hero.has-photo .info-hero-gradient {
+      display: block;
+    }
+
+    /* เอาตัว banner icon และ hero glow ออกไปเลยเมื่ออาคารมีรูป */
+    .info-hero.has-photo .info-hero-icon,
+    .info-hero.has-photo .hero-glow {
+      display: none !important;
     }
 
     .hero-glow {
@@ -758,8 +820,8 @@
       position: absolute;
       top: 12px;
       left: 12px;
-      background: rgba(245, 158, 11, 0.22);
-      border: 1px solid rgba(245, 158, 11, 0.6);
+      background: rgba(14, 22, 38, 0.75);
+      border: 1px solid rgba(245, 158, 11, 0.7);
       color: #fde68a;
       padding: 4px 10px;
       border-radius: 20px;
@@ -768,8 +830,10 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      backdrop-filter: blur(8px);
-      z-index: 3;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 4;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
     }
 
     .info-close {
@@ -779,7 +843,9 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(8, 12, 20, 0.65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 1px solid var(--line);
       display: flex;
       align-items: center;
@@ -788,12 +854,39 @@
       color: var(--text-hi);
       font-size: 13px;
       transition: background .15s, transform .1s;
-      z-index: 3;
+      z-index: 4;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
     }
 
     .info-close:hover {
-      background: rgba(255, 255, 255, 0.15);
-      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.06);
+    }
+
+    /* ป้ายกำกับมุมล่างขวาของ Hero Photo */
+    .info-photo-badge {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      background: rgba(8, 12, 20, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-hi);
+      display: none;
+      align-items: center;
+      gap: 4px;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      z-index: 3;
+    }
+
+    .info-hero.has-photo .info-photo-badge {
+      display: flex;
     }
 
     .info-body {
@@ -925,27 +1018,6 @@
       background: var(--ink-700);
     }
 
-    .dummy-gallery {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .dummy-gallery div {
-      flex: 1;
-      aspect-ratio: 1/1;
-      border-radius: 10px;
-      background: repeating-linear-gradient(45deg, var(--ink-800), var(--ink-800) 6px, var(--ink-700) 6px, var(--ink-700) 12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-lo);
-      font-size: 9.5px;
-      text-align: center;
-      padding: 4px;
-      border: 1px solid var(--line-subtle);
-    }
-
     .info-note {
       font-size: 11px;
       color: var(--text-lo);
@@ -1073,6 +1145,10 @@
       .info-card.open {
         transform: translateY(0);
       }
+
+      .info-hero.has-photo {
+        height: 180px;
+      }
     }
   </style>
 </head>
@@ -1190,11 +1266,14 @@
 
   <!-- ============ INFO CARD (รายละเอียดอาคารสำหรับผู้มาเยือน) ============ -->
   <div class="info-card" id="infoCard">
-    <div class="info-hero" id="infoHero">
+    <div class="info-hero" id="infoHero" title="คลิกเพื่อดูภาพขนาดเต็ม">
+      <img id="infoImage" class="info-hero-img" src="" alt="ภาพถ่ายอาคาร" />
+      <div class="info-hero-gradient"></div>
       <div class="hero-glow" id="heroGlow"></div>
       <div class="visitor-star-badge" id="visitorStarBadge" style="display:none;">⭐ จุดบริการผู้มาติดต่อ</div>
       <div class="info-close" id="infoClose" title="ปิด">✕</div>
       <div class="info-hero-icon" id="infoHeroIcon">🏛️</div>
+      <div class="info-photo-badge" id="infoPhotoBadge" style="display:none;">📷 ภาพถ่ายสถานที่จริง</div>
     </div>
 
     <div class="info-body">
@@ -1224,12 +1303,6 @@
 
       <div class="info-desc" id="infoDesc">รายละเอียดอาคาร</div>
 
-      <div class="dummy-gallery">
-        <div>ภาพถ่ายอาคาร<br>(เร็วๆ นี้)</div>
-        <div>ผังชั้นภายใน<br>(เร็วๆ นี้)</div>
-        <div>จุดบริการ<br>(เร็วๆ นี้)</div>
-      </div>
-
       <div class="info-note">🛈
         ข้อมูลและรายละเอียดการบริการของอาคารนี้จัดทำขึ้นเพื่ออำนวยความสะดวกแก่บุคคลภายนอกและผู้ปกครอง</div>
     </div>
@@ -1253,45 +1326,45 @@
       residential: { name: 'เขตที่พักอาศัย (ส่วนบุคคล)', icon: '🏠', color: '#818cf8' }
     };
 
-    /* ฐานข้อมูลเฉพาะอาคาร: ให้ความสำคัญกับผู้มาติดต่อ (Outsiders) */
+    /* ฐานข้อมูลเฉพาะอาคาร: ให้ความสำคัญกับผู้มาติดต่อ (Outsiders) โดยยึดบริบทจริงของวิทยาลัย */
     const VISITOR_BUILDINGS = {
       11: {
-        name: 'อาคารอำนวยการ (อาคารหลัก)',
+        name: 'อาคารอำนวยการ',
         category: 'admin',
         color: '#f59e0b',
         clickable: true,
         isStar: true,
-        starLabel: '⭐ จุดติดต่อหลักสำหรับผู้มาเยือน',
-        visitorTip: 'ศูนย์รวมงานบริหารและติดต่อราชการ: งานธุรการ, สารบรรณ, งานทะเบียนนักศึกษา, งานการเงิน และห้องผู้บริหาร (จันทร์-ศุกร์ 08:30 - 16:30 น.)',
-        desc: 'อาคารอำนวยการ 3 ชั้น ศูนย์กลางการบริหารงานของวิทยาลัยสารพัดช่างอุดรธานี ผู้มาติดต่อราชการ สมัครเรียน หรือติดต่อฝ่ายต่างๆ กรุณาติดต่อที่ชั้น 1'
+        starLabel: '⭐ จุดติดต่อราชการหลัก',
+        visitorTip: 'ศูนย์รวมงานบริหารและติดต่อราชการ: งานทะเบียน, การเงิน, กิจการนักศึกษา, งานวิชาการ และห้องผู้บริหาร (จันทร์-ศุกร์ 08:30 - 16:30 น.)',
+        desc: 'อาคารอำนวยการ ศูนย์ประสานงานและจุดติดต่อราชการหลักของวิทยาลัย'
       },
       17: {
-        name: 'จุดประชาสัมพันธ์ (ทางเข้าหลัก)',
+        name: 'ประชาสัมพันธ์',
         category: 'admin',
         color: '#f59e0b',
         clickable: true,
         isStar: true,
-        starLabel: '⭐ จุดแรกเข้า & สอบถามเส้นทาง',
-        visitorTip: 'สอบถามข้อมูลเบื้องต้น ตำแหน่งอาคาร แลกบัตรผ่านเข้าพื้นที่ และรับเอกสารแผ่นพับแนะนำวิทยาลัย',
-        desc: 'เคาน์เตอร์ประชาสัมพันธ์ต้อนรับผู้มาเยือน ตั้งอยู่ใกล้ประตูทางเข้าหลัก พร้อมเจ้าหน้าที่ให้คำแนะนำเส้นทาง'
+        starLabel: '⭐ จุดแรกเข้า & สอบถามข้อมูล',
+        visitorTip: 'สอบถามข้อมูลทั่วไป ตำแหน่งอาคาร และขอคำแนะนำการติดต่อฝ่ายงานต่างๆ',
+        desc: 'จุดบริการประชาสัมพันธ์ ให้บริการข้อมูลข่าวสารทั่วไปและแนะนำสถานที่'
       },
       18: {
-        name: 'ป้อมยาม (ประตูทางเข้า-ออกวิทยาลัย)',
+        name: 'ป้อมยาม',
         category: 'security',
         color: '#ef4444',
         clickable: true,
         isStar: true,
         starLabel: '🛡️ จุดตรวจ & แลกบัตร',
-        visitorTip: 'ยานพาหนะบุคคลภายนอกกรุณาชะลอความเร็ว แลกบัตรประชาชนเพื่อรับบัตรผ่านเข้าออก และปฏิบัติตามคำแนะนำของเจ้าหน้าที่ รปภ.',
-        desc: 'จุดตรวจรักษาความปลอดภัย 24 ชั่วโมง ควบคุมการเข้า-ออกยานพาหนะของบุคลากรและบุคคลภายนอก'
+        visitorTip: 'ยานพาหนะบุคคลภายนอกกรุณาชะลอความเร็ว แลกบัตรเข้า-ออก และปฏิบัติตามคำแนะนำของเจ้าหน้าที่ รปภ.',
+        desc: 'ป้อมยามและจุดรักษาความปลอดภัย ตรวจคัดกรองยานพาหนะตลอด 24 ชั่วโมง'
       },
       4: {
-        name: 'ศูนย์บ่มเพาะผู้ประกอบการอาชีวศึกษา',
+        name: 'ศูนย์บ่มเพาะวิสาหกิจวิทยาลัยสารพัดช่างอุดรธานี',
         category: 'admin',
         color: '#f59e0b',
         clickable: true,
-        visitorTip: 'บริการส่งเสริมวิสาหกิจชุมชน พัฒนาผลิตภัณฑ์สิ่งประดิษฐ์นักศึกษา และให้คำปรึกษาการเริ่มต้นธุรกิจ',
-        desc: 'ศูนย์ประสานงานและบ่มเพาะผู้ประกอบการใหม่ เสริมสร้างทักษะธุรกิจและจำหน่ายผลิตภัณฑ์ฝีมือนักศึกษา'
+        visitorTip: 'ศูนย์บ่มเพาะวิสาหกิจ ให้คำปรึกษาและสนับสนุนธุรกิจสิ่งประดิษฐ์และผลิตภัณฑ์ของนักศึกษา',
+        desc: 'ศูนย์บ่มเพาะวิสาหกิจ วิทยาลัยสารพัดช่างอุดรธานี'
       },
       12: {
         name: 'อาคารวิทยบริการและห้องสมุด',
@@ -1299,195 +1372,291 @@
         color: '#10b981',
         clickable: true,
         isStar: true,
-        starLabel: '📚 แหล่งเรียนรู้ & ห้องสมุดดิจิทัล',
-        visitorTip: 'บริการสืบค้นอินเทอร์เน็ต หนังสือวิชาการ พื้นที่ Co-Working Space เปิดต้อนรับประชาชนและนักศึกษา',
-        desc: 'อาคารแหล่งเรียนรู้ทันสมัย พร้อมห้องสืบค้นข้อมูลคอมพิวเตอร์ ห้องอ่านหนังสือเงียบสงบ และบริการวารสาร'
+        starLabel: '📚 แหล่งเรียนรู้ & ห้องสมุด',
+        visitorTip: 'ชั้น 1: ห้องสมุดและศูนย์วิทยบริการ / ชั้น 2: ห้องคอมพิวเตอร์และห้องเรียนภาษาต่างประเทศ',
+        desc: 'อาคารวิทยบริการและห้องสมุด แหล่งค้นคว้าและบริการข้อมูลการเรียนรู้'
       },
       22: {
-        name: 'โรงอาหารกลางวิทยาลัย',
+        name: 'โรงอาหาร',
         category: 'dining',
         color: '#f97316',
         clickable: true,
         isStar: true,
         starLabel: '🍽️ ศูนย์อาหาร & เครื่องดื่ม',
-        visitorTip: 'บริการอาหารปรุงสด สะอาด ถูกสุขอนามัย น้ำดื่มและผลไม้ เปิดบริการ 07:00 - 15:30 น. รองรับทั้งผู้มาติดต่อและนักศึกษา',
-        desc: 'โรงอาหารเปิดโล่งพร้อมร้านจำหน่ายอาหารหลากหลายประเภท เครื่องดื่ม และพื้นที่นั่งรับประทานอาหารกว้างขวาง'
+        visitorTip: 'บริการอาหารและเครื่องดื่มสำหรับนักเรียนนักศึกษา บุคลากร และผู้มาติดต่อ (เปิดบริการวันทำการ)',
+        desc: 'โรงอาหารกลางของวิทยาลัยสารพัดช่างอุดรธานี'
       },
       19: {
-        name: 'คาเฟ่สารพัดช่าง (Coffee & Drinks)',
-        category: 'dining',
-        color: '#f97316',
-        clickable: true,
-        visitorTip: 'จุดรับรองผู้มาเยือน บริการกาแฟสด ชา เครื่องดื่มเย็น เบเกอรี่ และจุดนั่งพักคอยบรรยากาศเป็นกันเอง',
-        desc: 'ร้านกาแฟและเครื่องดื่มสำหรับผู้มาเยือนและอาจารย์ บริหารจัดการเพื่อการฝึกทักษะอาชีพของนักศึกษา'
+        name: 'คาเฟ่',
+        category: 'facility',
+        color: '#64748b',
+        clickable: false,
+        visitorTip: 'อาคารคาเฟ่เดิม (ปัจจุบันไม่ได้เปิดใช้งาน)',
+        desc: 'อาคารคาเฟ่เดิม (ปัจจุบันไม่ได้เปิดใช้งาน)'
+      },
+      20: {
+        name: 'ร้านค้าเก่า',
+        category: 'facility',
+        color: '#64748b',
+        clickable: false,
+        visitorTip: 'อาคารร้านค้าเดิม (ปัจจุบันไม่ได้เปิดใช้งาน)',
+        desc: 'อาคารร้านค้าเดิม (ปัจจุบันไม่ได้เปิดใช้งาน)'
       },
       16: {
-        name: 'ร้านค้าสหกรณ์และบริการสวัสดิการ',
+        name: 'สหการและอื่นๆ',
         category: 'dining',
         color: '#f97316',
         clickable: true,
-        visitorTip: 'จำหน่ายเครื่องเขียน ชุดฝึกงาน เครื่องดื่ม และของใช้ทั่วไป',
-        desc: 'ศูนย์บริการสวัสดิการและร้านค้าสหกรณ์วิทยาลัย'
+        visitorTip: 'ร้านค้าสหการ จำหน่ายเครื่องแบบนักเรียนนักศึกษา อุปกรณ์การเรียน เครื่องเขียน และของใช้ทั่วไป',
+        desc: 'ร้านค้าสหการและบริการสวัสดิการวิทยาลัย'
       },
       31: {
-        name: 'อาคารอเนกประสงค์ (หอประชุมใหญ่)',
+        name: 'โดมอเนกประสงค์',
         category: 'hall',
         color: '#ec4899',
         clickable: true,
         isStar: true,
-        starLabel: 'หอประชุมใหญ่ & จัดกิจกรรม',
-        visitorTip: 'สถานที่จัดกิจกรรมสำคัญของวิทยาลัย',
-        desc: 'หอประชุม '
+        starLabel: '🎪 อาคารโดมอเนกประสงค์',
+        visitorTip: 'สถานที่จัดกิจกรรมสำคัญ เช่น กิจกรรมลูกเสือ การแข่งขันกีฬา พิธีการ และกิจกรรมส่วนรวม',
+        desc: 'อาคารโดมอเนกประสงค์สำหรับกิจกรรมของวิทยาลัย'
       },
       6: {
-        name: 'ลานจอดรถผู้มาติดต่อ (หน้าศูนย์บ่มเพาะ)',
+        name: 'ที่จอดรถ',
         category: 'parking',
         color: '#64748b',
         clickable: true,
         isStar: true,
-        starLabel: '🚗 ที่จอดรถแนะนำสำหรับผู้มาเยือน',
-        visitorTip: 'จุดจอดรถยนต์และรถจักรยานยนต์สำหรับบุคคลภายนอก อยู่ใกล้ประตูทางเข้า สะดวกต่อการเดินไปอาคารอำนวยการ',
-        desc: 'ลานจอดรถกลางแจ้งใกล้ทางเข้าวิทยาลัย ออกแบบเพื่อรองรับผู้มาติดต่อราชการโดยเฉพาะ'
+        starLabel: '🚗 ที่จอดรถผู้มาติดต่อ',
+        visitorTip: 'ลานจอดรถสำหรับผู้มาติดต่อราชการ บริเวณด้านหน้าใกล้ทางเข้าและศูนย์บ่มเพาะวิสาหกิจ',
+        desc: 'พื้นที่ลานจอดรถสำหรับผู้มาติดต่อราชการ'
       },
       8: {
-        name: 'โรงจอดรถวิทยาลัย 1',
+        name: 'โรงจอดรถวิทยาลัย',
         category: 'parking',
         color: '#64748b',
         clickable: true,
-        visitorTip: 'โรงจอดรถในร่มสำหรับรถยนต์และรถจักรยานยนต์',
-        desc: 'โรงจอดรถในร่มพร้อมหลังคาบังแดด'
+        visitorTip: 'โรงจอดรถในร่มสำหรับรถส่วนกลางและยานพาหนะของบุคลากร',
+        desc: 'โรงจอดรถในร่มของวิทยาลัย'
       },
       9: {
-        name: 'จุดจอดรถจักรยานยนต์ 2',
+        name: 'ที่จอดรถ',
         category: 'parking',
         color: '#64748b',
         clickable: true,
-        visitorTip: 'จุดจอดรถจักรยานยนต์',
-        desc: 'พื้นที่จอดรถจักรยานยนต์'
+        visitorTip: 'ลานจอดรถสำหรับนักเรียน นักศึกษา และผู้มาติดต่อ',
+        desc: 'ลานจอดรถสำหรับนักเรียน นักศึกษา และผู้มาติดต่อ'
       },
       10: {
-        name: 'จุดจอดรถจักรยานยนต์ 3',
+        name: 'ที่จอดรถ',
         category: 'parking',
         color: '#64748b',
         clickable: true,
-        visitorTip: 'จุดจอดรถจักรยานยนต์',
-        desc: 'พื้นที่จอดรถจักรยานยนต์'
+        visitorTip: 'ลานจอดรถสำหรับนักเรียน นักศึกษา และผู้มาติดต่อ บริเวณใกล้โรงฝึกงาน',
+        desc: 'ลานจอดรถสำหรับนักเรียน นักศึกษา และผู้มาติดต่อ'
       },
       23: {
         name: 'อาคารพัสดุกลาง',
         category: 'parking',
         color: '#64748b',
         clickable: true,
-        visitorTip: 'ติดต่อส่งของ/พัสดุกลาง ',
-        desc: 'คลังพัสดุของวิทยาลัย'
+        visitorTip: 'อาคารงานพัสดุกลาง สำหรับจัดเก็บและดูแลครุภัณฑ์และวัสดุส่วนกลาง',
+        desc: 'อาคารงานพัสดุกลางของวิทยาลัย'
       },
       24: {
-        name: 'ห้องน้ำบริการประชาชนและนักศึกษา 1',
+        name: 'ห้องน้ำ 1',
         category: 'facility',
         color: '#06b6d4',
         clickable: true,
-        visitorTip: 'ห้องน้ำสาธารณะแยกชาย-หญิง สะอาด สะดวก อยู่ใกล้โรงอาหารและสนามกลาง',
-        desc: 'ห้องสุขาบริการสาธารณะสำหรับบุคคลภายนอกและนักศึกษา'
+        visitorTip: 'อาคารสุขาส่วนกลาง สำหรับนักเรียนนักศึกษา บุคลากร และผู้มาติดต่อราชการ',
+        desc: 'อาคารสุขาส่วนกลาง'
       },
       25: {
-        name: 'ห้องน้ำบริการประชาชน 2',
+        name: 'ห้องน้ำ 2',
         category: 'facility',
         color: '#06b6d4',
         clickable: true,
-        visitorTip: 'ห้องน้ำบริการสาธารณะ',
-        desc: 'ห้องสุขาบริการสาธารณะ'
+        visitorTip: 'อาคารสุขาส่วนกลาง บริเวณใกล้โรงฝึกงาน',
+        desc: 'อาคารสุขาส่วนกลาง'
       },
       1: {
-        name: 'อาคารเรียนและปฏิบัติการ 3 (วิชาชีพระยะสั้น)',
+        name: 'อาคารเรียนและปฎิบัตการ 3',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'จัดการเรียนการสอนหลักสูตรวิชาชีพระยะสั้นสำหรับประชาชนทั่วไป',
-        desc: 'อาคารเรียน 4 ชั้น สำหรับหลักสูตรฝึกอาชีพประชาชนและบุคคลภายนอกที่ต้องการเสริมสร้างรายได้'
+        visitorTip: 'หลักสูตรวิชาชีพระยะสั้น: เรียนทำอาหาร, ตัดผม, เสริมสวย, นวดแผนไทย และสปา',
+        desc: 'อาคารเรียนหลักสูตรวิชาชีพระยะสั้น สำหรับนักศึกษาและประชาชนทั่วไป'
       },
       3: {
-        name: 'อาคารเรียนและปฏิบัติการ 4 (แผนกช่างไฟฟ้า)',
+        name: 'อาคารเรียนและปฎิบัตการ 4',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'แผนกวิชาช่างไฟฟ้ากำลังและพลังงานทดลอง ห้องปฏิบัติการหม้อแปลงและมอเตอร์ไฟฟ้า',
-        desc: 'ศูนย์การเรียนรู้ด้านวิศวกรรมไฟฟ้าและเครื่องกลไฟฟ้า'
+        visitorTip: 'อาคารเรียนและฝึกปฏิบัติการของแผนกวิชาช่างไฟฟ้ากำลัง',
+        desc: 'อาคารเรียนและฝึกปฏิบัติการของแผนกวิชาช่างไฟฟ้ากำลัง'
       },
       7: {
-        name: 'ห้องเรียนและบริการตัดผมชาย',
+        name: 'ห้องเรียนตัดผมชาย',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
         isStar: true,
-        starLabel: '✂️ บริการตัดผมประชาชนราคาประหยัด',
-        visitorTip: 'เปิดบริการตัดผมชายให้กับบุคคลภายนอกในราคาย่อมเยา โดยนักเรียนหลักสูตรวิชาชีพภายใต้การควบคุมของครูผู้สอน',
-        desc: 'ห้องปฏิบัติการฝึกทักษะการตัดผม ออกแบบทรงผมชาย และบริการประชาชนในชุมชน'
+        starLabel: '✂️ บริการตัดผมชาย',
+        visitorTip: 'ห้องเรียนวิชาชีพตัดผมชาย และให้บริการตัดผมแก่ประชาชนทั่วไปและนักศึกษา',
+        desc: 'ห้องเรียนและฝึกปฏิบัติการตัดผมชาย'
       },
       13: {
-        name: 'อาคารเรียนและปฏิบัติการ 2 (ช่างอิเล็กทรอนิกส์)',
+        name: 'อาคารเรียนและปฎิบัตการ 2',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'ห้องปฏิบัติการไมโครคอนโทรลเลอร์ อิเล็กทรอนิกส์อัจฉริยะ และระบบสื่อสารโทรคมนาคม',
-        desc: 'อาคารเรียนแผนกช่างอิเล็กทรอนิกส์และเทคโนโลยีสารสนเทศ'
+        visitorTip: 'อาคารเรียนและฝึกปฏิบัติการของแผนกวิชาช่างอิเล็กทรอนิกส์',
+        desc: 'อาคารเรียนและฝึกปฏิบัติการของแผนกวิชาช่างอิเล็กทรอนิกส์'
       },
       14: {
-        name: 'อาคารเรียนและปฏิบัติการ 1',
+        name: 'อาคารเรียนและปฎิบัตการ 1',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'ห้องเรียนทฤษฎีรวม ห้องปฏิบัติการภาษาต่างประเทศ และห้องเรียนหมวดวิชาสามัญ',
-        desc: 'อาคารเรียนทฤษฎีหลัก 3 ชั้น สำหรับนักเรียน ปวช. และ ปวส. ทุกแผนก'
+        visitorTip: 'อาคารเรียนทั่วไป และห้องปฏิบัติการคอมพิวเตอร์ชั้น 2',
+        desc: 'อาคารเรียนทั่วไปและห้องปฏิบัติการคอมพิวเตอร์'
       },
       15: {
-        name: 'ห้องปฏิบัติการกิจกรรมและลีลาศ',
+        name: 'ห้องเรียนลีลาศ',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'ห้องกิจกรรมพัฒนาทักษะชีวิตและบุคลิกภาพ',
-        desc: 'ห้องกระจกปรับอากาศสำหรับกิจกรรมเข้าจังหวะและการแสดงออก'
+        visitorTip: 'ห้องเรียนและฝึกปฏิบัติการวิชาลีลาศ สำหรับกิจกรรมเข้าจังหวะและการแสดง',
+        desc: 'ห้องเรียนและฝึกปฏิบัติการวิชาลีลาศ'
       },
       21: {
-        name: 'อาคารเรียนและปฏิบัติการ 5',
+        name: 'อาคารเรียนและปฎิบัตการ 5',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'อาคารแผนก ช่างยนต์ คอมพิวเตอร์กราฟิก และบัญชี',
-        desc: 'อาคารเรียนสูง 4 ชั้น จัดการเรียนการสอนและการทดสอบทักษะวิชาชีพชั้นสูง'
+        visitorTip: 'ชั้น 1: แผนกช่างยนต์ / ชั้น 2: แผนกคอมพิวเตอร์กราฟิก / ชั้น 3: แผนกการบัญชี',
+        desc: 'อาคารเรียนและห้องปฏิบัติการของสาขาวิชาช่างยนต์ คอมพิวเตอร์กราฟิก และการบัญชี'
       },
       26: {
-        name: 'โรงฝึกงานช่างยนต์ 1',
+        name: 'โรงฝึกงาน',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'ศูนย์ทดสอบและซ่อมบำรุงยานพาหนะ เครื่องยนต์ ระบบเบรก และระบบส่งกำลัง',
-        desc: 'โรงฝึกปฏิบัติงานช่างยนต์'
+        visitorTip: 'โรงฝึกปฏิบัติงานของแผนกวิชาช่างยนต์ สำหรับฝึกซ่อมบำรุงยานยนต์',
+        desc: 'โรงฝึกปฏิบัติงานของแผนกวิชาช่างยนต์'
       },
       29: {
-        name: 'โรงฝึกงานช่างกลโรงงานและเครื่องมือกล',
+        name: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'โรงงานฝึกทักษะงานกลึง งานกัด เครื่องมือกล และงานปรับโลหะพื้นฐาน',
-        desc: 'โรงฝึกปฏิบัติงานช่างกลโรงงานและเครื่องมือกล'
+        visitorTip: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม: ช่างเชื่อม ช่างกระจกและอะลูมิเนียม',
+        desc: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม สำหรับฝึกปฏิบัติงานช่างเชื่อม ช่างกระจกและอะลูมิเนียม'
       },
       30: {
-        name: 'โรงฝึกงานประภทวิชาอุตสาหกรรม',
+        name: 'โรงฝึกงานแผนกช่างกลโรงงาน',
         category: 'academic',
         color: '#0284c7',
         clickable: true,
-        visitorTip: 'โรงงานฝึกทักษะงานอุตสาหกรรมเครื่องกลและโลหะการ',
-        desc: 'โรงฝึกปฏิบัติงานช่างอุตสาหกรรมและเครื่องมือกล'
+        visitorTip: 'โรงฝึกปฏิบัติงานของแผนกวิชาช่างกลโรงงาน สำหรับฝึกทักษะงานกลึง งานกัด และเครื่องมือกล',
+        desc: 'โรงฝึกปฏิบัติงานของแผนกวิชาช่างกลโรงงาน'
       },
       2: {
-        name: 'หอพักนักศึกษาภายในวิทยาลัย',
+        name: 'หอพักนักศึกษา',
         category: 'residential',
         color: '#818cf8',
         clickable: true,
-        visitorTip: 'เขตที่พักนักศึกษา บุคคลภายนอกกรุณาติดต่อผู้ดูแลหอพักที่เคาน์เตอร์ชั้น 1 ก่อนเข้าพบนักศึกษา',
-        desc: 'หอพักนักศึกษาในกำกับของวิทยาลัยเพื่ออำนวยความสะดวกแก่นักเรียนที่อยู่ห่างไกล'
+        visitorTip: 'อาคารหอพักนักศึกษา (พื้นที่พักอาศัยส่วนบุคคล) บุคคลภายนอกโปรดติดต่อเจ้าหน้าที่ดูแลหอพัก',
+        desc: 'อาคารหอพักนักศึกษาของวิทยาลัยสารพัดช่างอุดรธานี'
       }
     };
+
+    /* ======================================================================
+       ระบบจับคู่ภาพถ่ายอาคารเด่น (Building Image Mapping System)
+       เชื่อมโยงรหัส bid_id / ชื่ออาคาร เข้ากับไฟล์รูปถ่ายจริงในโฟลเดอร์ ./image/อาคาร/
+       ====================================================================== */
+    const IMAGE_BASE_PATH = './image/อาคาร/';
+
+    const BUILDING_IMAGE_MAP = {
+      1: 'อาคารระยะสั้น.jpg',                     // อาคารเรียนและปฎิบัตการ 3
+      2: 'หอพักนักศึกษา.jpg',                      // หอพักนักศึกษา
+      3: 'อาคารแผนกไฟฟ้า.jpg',                    // อาคารเรียนและปฎิบัตการ 4
+      4: 'ศูนย์บ่มเพาะวิสาหกิจ.jpg',               // ศูนย์บ่มเพาะวิสาหกิจ
+      7: 'ห้องเรียนตัดผมชาย.jpg',                 // ห้องเรียนตัดผมชาย
+      11: 'อำนวยการ.jpg',                         // อาคารอำนวยการ
+      12: 'อาคารวิทยบริการ.jpg',                   // อาคารวิทยบริการและห้องสมุด
+      13: 'อาคารแผนกอิเล็ก.jpg',                  // อาคารเรียนและปฎิบัตการ 2
+      14: 'อาคาร 1.jpg',                          // อาคารเรียนและปฎิบัตการ 1
+      15: 'ห้องเรียนลีลาศ.jpg',                   // ห้องเรียนลีลาศ
+      17: 'ห้องประชาสัมพันธ์.jpg',                // ประชาสัมพันธ์
+      18: 'ป้อมยาม.jpg',                          // ป้อมยาม
+      21: 'อาคาร5.jpg',                           // อาคารเรียนและปฎิบัตการ 5
+      22: 'หอประชุมโรงอาหาร.jpg',                 // โรงอาหาร / หอประชุมโรงอาหาร
+      23: 'งานพัสดุกลาง.jpg',                      // อาคารพัสดุกลาง
+      24: 'ห้องน้ำ1.jpg',                         // ห้องน้ำ 1
+      25: 'ห้องน้ำ2.jpg',                         // ห้องน้ำ 2
+      26: 'โรงฝึกงานช่างยนต์.jpg',                 // โรงฝึกงาน
+      29: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม.jpg',    // โรงฝึกงานประเภทวิชาอุตสาหกรรม
+      30: 'โรงฝึกงานแผนกช่างกลโรงงาน.jpg',        // โรงฝึกงานแผนกช่างกลโรงงาน
+      31: 'โดมหอประชุม.jpg',                      // โดมอเนกประสงค์
+    };
+
+    /**
+     * ค้นหา URL ภาพถ่ายอาคารตาม Properties จาก GeoJSON
+     * เรียงลำดับความสำคัญ: bid_id -> props.image -> คำค้นชื่อ/รายละเอียด -> null (เพื่อแสดง Fallback)
+     */
+    function getBuildingImageUrl(props) {
+      if (!props) return null;
+      const bid = Number(props.bid_id);
+
+      // 1. ตรวจสอบโดยตรงจาก bid_id ใน BUILDING_IMAGE_MAP
+      if (BUILDING_IMAGE_MAP[bid]) {
+        return encodeURI(`${IMAGE_BASE_PATH}${BUILDING_IMAGE_MAP[bid]}`);
+      }
+
+      // 2. ตรวจสอบฟิลด์ image หรือ photo หากมีระบุใน GeoJSON
+      if (props.image && typeof props.image === 'string' && props.image.trim() !== '') {
+        return props.image.trim();
+      }
+      if (props.photo && typeof props.photo === 'string' && props.photo.trim() !== '') {
+        return props.photo.trim();
+      }
+
+      // 3. ค้นหาแบบ Dynamic resolution ตามชื่ออาคาร หรือคำอธิบาย
+      const name = (props.name || '').trim();
+      const desc = (props.description || props.desc || '').trim();
+
+      const nameMatchRules = [
+        { regex: /อำนวยการ/, file: 'อำนวยการ.jpg' },
+        { regex: /วิทยบริการ|ห้องสมุด/, file: 'อาคารวิทยบริการ.jpg' },
+        { regex: /ป้อมยาม/, file: 'ป้อมยาม.jpg' },
+        { regex: /ประชาสัมพันธ์/, file: 'ห้องประชาสัมพันธ์.jpg' },
+        { regex: /บ่มเพาะ/, file: 'ศูนย์บ่มเพาะวิสาหกิจ.jpg' },
+        { regex: /โรงอาหาร/, file: 'หอประชุมโรงอาหาร.jpg' },
+        { regex: /หอพักนักศึกษา/, file: 'หอพักนักศึกษา.jpg' },
+        { regex: /ตัดผม/, file: 'ห้องเรียนตัดผมชาย.jpg' },
+        { regex: /ลีลาศ/, file: 'ห้องเรียนลีลาศ.jpg' },
+        { regex: /พัสดุกลาง|พัสดุ/, file: 'งานพัสดุกลาง.jpg' },
+        { regex: /ห้องน้ำ\s*1/, file: 'ห้องน้ำ1.jpg' },
+        { regex: /ห้องน้ำ\s*2/, file: 'ห้องน้ำ2.jpg' },
+        { regex: /ช่างกลโรงงาน/, file: 'โรงฝึกงานแผนกช่างกลโรงงาน.jpg' },
+        { regex: /อุตสาหกรรม/, file: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม.jpg' },
+        { regex: /ช่างยนต์/, file: 'โรงฝึกงานช่างยนต์.jpg' },
+        { regex: /ไฟฟ้า/, file: 'อาคารแผนกไฟฟ้า.jpg' },
+        { regex: /อิเล็ก/, file: 'อาคารแผนกอิเล็ก.jpg' },
+        { regex: /ระยะสั้น/, file: 'อาคารระยะสั้น.jpg' },
+        { regex: /โดม/, file: 'โดมหอประชุม.jpg' },
+        { regex: /อาคาร\s*1(?!\d)/, file: 'อาคาร 1.jpg' },
+        { regex: /อาคาร\s*5(?!\d)/, file: 'อาคาร5.jpg' }
+      ];
+
+      for (const rule of nameMatchRules) {
+        if (rule.regex.test(name) || rule.regex.test(desc)) {
+          return encodeURI(`${IMAGE_BASE_PATH}${rule.file}`);
+        }
+      }
+
+      return null;
+    }
 
     /* ค่าคงที่แผนที่: แยกมุมมองเริ่มต้นตามอุปกรณ์ (Device-Specific Default View)
        - โทรศัพท์มือถือ (Phone): bearing 185, zoom 17
@@ -1672,7 +1841,7 @@
       },
       {
         bid_id: 29,
-        name: 'โรงฝึกงาน (ช่างกลโรงงานและเครื่องมือกล)',
+        name: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม',
         modelPath: './3d/bid_29.glb',
         fallbackModelPath: './3D/bid_29.glb',
         dimensions: { width: 55, depth: 26, height: 6 },
@@ -1686,7 +1855,7 @@
       },
       {
         bid_id: 26,
-        name: 'โรงฝึกงานช่างยนต์ 1',
+        name: 'โรงฝึกงาน',
         modelPath: './3d/bid_26.glb',
         fallbackModelPath: './3D/bid_26.glb',
         dimensions: { width: 28, depth: 26, height: 6 },
@@ -1700,7 +1869,7 @@
       },
       {
         bid_id: 30,
-        name: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม',
+        name: 'โรงฝึกงานแผนกช่างกลโรงงาน',
         modelPath: './3d/bid_30.glb',
         fallbackModelPath: './3D/bid_29.glb',
         dimensions: { width: 55, depth: 26, height: 6 },
@@ -1714,7 +1883,7 @@
       },
       {
         bid_id: 2,
-        name: 'หอพักนักศึกษา (อาคาร 2)',
+        name: 'หอพักนักศึกษา',
         modelPath: './3d/bid_2.glb',
         fallbackModelPath: './3D/bid_14.glb',
         dimensions: { width: 53, depth: 14, height: 9 },
@@ -2346,12 +2515,20 @@
 
       /* ดึงข้อมูล GeoJSON และประมวลผลข้อมูลแนะนำสำหรับผู้มาเยือน */
       fetch(GEOJSON_PATH).then(r => r.json()).then(data => {
-        // Enrich ทุก Feature ด้วยสี ข้อมูลผู้มาติดต่อ และหมวดหมู่
+        // Enrich ทุก Feature ด้วยสี ข้อมูลผู้มาติดต่อ และหมวดหมู่ (โดยยึดข้อมูลหลักจาก uptech.geojson)
         data.features.forEach(f => {
+          const originalProps = Object.assign({}, f.properties);
           const bid = f.properties.bid_id;
           const meta = VISITOR_BUILDINGS[bid];
           if (meta) {
             Object.assign(f.properties, meta);
+            // ผูกข้อมูลตรงกับ uptech.geojson: รักษาชื่อและรายละเอียดแผนกแท้จริงจาก GeoJSON
+            if (originalProps.name && originalProps.name.trim() !== '-' && originalProps.name.trim() !== '') {
+              f.properties.name = originalProps.name;
+            }
+            if (originalProps.description && originalProps.description.trim() !== '-' && originalProps.description.trim() !== '') {
+              f.properties.description = originalProps.description;
+            }
           } else {
             // อาคารอื่นๆ เช่น บ้านพักครู หรือสิ่งปลูกสร้าง
             const p = f.properties;
@@ -2576,9 +2753,15 @@
 
     function focusBuilding(feature) {
       hoverTooltip.classList.remove('show');
-      const center = getCentroid(feature);
-      const props = feature.properties;
+      const props = (feature && feature.properties) ? feature.properties : {};
       const bid = Number(props.bid_id);
+
+      // ค้นหา feature ที่สมบูรณ์จาก buildingsData เพื่อให้ได้ Properties และ Geometry ที่ครบถ้วนที่สุด
+      const targetFeature = (buildingsData && buildingsData.features)
+        ? (buildingsData.features.find(ft => Number(ft.properties.bid_id) === bid) || feature)
+        : feature;
+
+      const center = getCentroid(targetFeature);
 
       // โหลดโมเดล 3D แบบ On-Demand ทันทีหากอาคารนี้มีไฟล์ 3D ใน Registry
       if (campus3DLayer && campus3DLayer.ensureBuildingLoaded) {
@@ -2597,7 +2780,7 @@
         essential: true
       });
 
-      openInfoCard(feature);
+      openInfoCard(targetFeature);
     }
 
     function setSelected(bid) {
@@ -2619,21 +2802,60 @@
     }
 
     /* ======================================================================
-       5) INFO CARD (รายละเอียดสำหรับบุคคลภายนอก)
+       5) INFO CARD (รายละเอียดสำหรับบุคคลภายนอก & ผูกข้อมูล uptech.geojson)
        ====================================================================== */
     const infoCard = document.getElementById('infoCard');
+    const infoHero = document.getElementById('infoHero');
+    const infoImage = document.getElementById('infoImage');
+    const infoPhotoBadge = document.getElementById('infoPhotoBadge');
     let currentFeature = null;
 
+    // การจัดการ Event โหลดภาพของ InfoCard
+    if (infoImage) {
+      infoImage.addEventListener('load', () => {
+        if (infoImage.getAttribute('src')) {
+          infoImage.classList.add('loaded');
+          infoHero.classList.add('has-photo');
+          infoHero.classList.remove('no-photo');
+          if (infoPhotoBadge) infoPhotoBadge.style.display = 'flex';
+        }
+      });
+
+      infoImage.addEventListener('error', () => {
+        // หากโหลดภาพไม่สำเร็จ ให้แสดงแบนเนอร์ไอคอนตามปกติ
+        infoImage.classList.remove('loaded');
+        infoHero.classList.remove('has-photo');
+        infoHero.classList.add('no-photo');
+        if (infoPhotoBadge) infoPhotoBadge.style.display = 'none';
+      });
+    }
+
+    // คลิกที่รูปภาพเพื่อเปิดดูภาพขนาดใหญ่ความละเอียดสูง
+    if (infoHero) {
+      infoHero.addEventListener('click', (e) => {
+        if (e.target.closest('#infoClose') || e.target.closest('#visitorStarBadge')) return;
+        if (!infoHero.classList.contains('has-photo')) return;
+        const currentSrc = infoImage ? infoImage.getAttribute('src') : null;
+        if (currentSrc) {
+          window.open(currentSrc, '_blank');
+        }
+      });
+    }
+
+    /**
+     * แสดงข้อมูลอาคารใน InfoCard โดยดึงค่าตรงจาก properties ใน uptech.geojson
+     * @param {Object} feature - GeoJSON Feature Object
+     */
     function openInfoCard(feature) {
       currentFeature = feature;
-      const props = feature.properties;
+      const props = (feature && feature.properties) ? feature.properties : {};
       const cat = CATEGORY_MAP[props.category] || CATEGORY_MAP.academic;
 
-      // Header & Icon
-      document.getElementById('infoHeroIcon').textContent = cat.icon;
-      document.getElementById('heroGlow').style.background = props.color || cat.color;
+      // 1) ไอคอนหมวดหมู่ & เอฟเฟกต์ Glow (สำหรับกรณีที่ไม่มีรูปภาพ)
+      document.getElementById('infoHeroIcon').textContent = cat.icon || '🏛️';
+      document.getElementById('heroGlow').style.background = props.color || cat.color || '#0284c7';
 
-      // Star Badge
+      // 2) ป้าย Star Badge (จุดบริการสำคัญ)
       const starEl = document.getElementById('visitorStarBadge');
       if (props.isStar) {
         starEl.textContent = props.starLabel || '⭐ จุดบริการผู้มาเยือน';
@@ -2642,27 +2864,67 @@
         starEl.style.display = 'none';
       }
 
-      // Type Pill Badge
-      document.getElementById('infoType').textContent = cat.name;
-      document.getElementById('infoDot').style.background = props.color || cat.color;
+      // 3) ป้ายประเภทอาคาร (Type Pill Badge)
+      document.getElementById('infoType').textContent = cat.name || 'อาคารทั่วไป';
+      document.getElementById('infoDot').style.background = props.color || cat.color || '#0284c7';
 
-      // Title & ID
-      document.getElementById('infoId').textContent = 'รหัสอาคาร #' + (props.bid_id ?? '—');
-      document.getElementById('infoName').textContent = props.name || 'ไม่ระบุชื่ออาคาร';
+      // 4) Dynamic Data Binding จาก uptech.geojson:
+      // Title / Building Name: properties.name
+      const rawName = typeof props.name === 'string' ? props.name.trim() : '';
+      const buildingName = (rawName && rawName !== '-') ? rawName : 'ไม่ระบุชื่ออาคาร';
+      document.getElementById('infoName').textContent = buildingName;
 
-      // Visitor Tip
-      document.getElementById('infoVisitorTip').textContent =
-        props.visitorTip || 'อาคารและพื้นที่ให้บริการของวิทยาลัยสารพัดช่างอุดรธานี';
+      // Building ID: properties.bid_id
+      const rawBid = props.bid_id;
+      const hasValidBid = rawBid !== undefined && rawBid !== null && String(rawBid).trim() !== '' && String(rawBid).trim() !== '-';
+      document.getElementById('infoId').textContent = hasValidBid ? `รหัสอาคาร #${rawBid}` : 'รหัสอาคาร —';
 
-      // Description
-      document.getElementById('infoDesc').textContent =
-        props.desc || props.description || 'ยังไม่มีรายละเอียดเพิ่มเติมสำหรับอาคารนี้';
+      // Visitor Tip (คำแนะนำเฉพาะสำหรับบุคคลภายนอก)
+      const tipText = (props.visitorTip && String(props.visitorTip).trim() !== '-')
+        ? String(props.visitorTip).trim()
+        : 'อาคารและพื้นที่ให้บริการของวิทยาลัยสารพัดช่างอุดรธานี';
+      document.getElementById('infoVisitorTip').textContent = tipText;
 
+      // Description / Departments: อ่านตรงจาก properties.description หรือ properties.desc
+      let descText = '';
+      if (props.description && String(props.description).trim() !== '' && String(props.description).trim() !== '-') {
+        descText = String(props.description).trim();
+      } else if (props.desc && String(props.desc).trim() !== '' && String(props.desc).trim() !== '-') {
+        descText = String(props.desc).trim();
+      } else if (props.visitorTip && String(props.visitorTip).trim() !== '') {
+        descText = String(props.visitorTip).trim();
+      } else {
+        descText = 'ยังไม่มีรายละเอียดข้อมูลแผนกหรือการบริการสำหรับอาคารนี้';
+      }
+      document.getElementById('infoDesc').textContent = descText;
+
+      // 5) Featured Building Photo at Top Hero:
+      // เอาตัว banner icon และ glow ออกไปเลยสำหรับอาคารที่มีรูป โดยเปลี่ยนหัวแบนเนอร์ด้านบนเป็นภาพถ่ายขนาดใหญ่
+      if (infoHero && infoImage) {
+        infoImage.classList.remove('loaded');
+        const photoUrl = getBuildingImageUrl(props);
+
+        if (photoUrl) {
+          infoHero.classList.add('has-photo');
+          infoHero.classList.remove('no-photo');
+          infoImage.src = photoUrl;
+          infoImage.alt = buildingName;
+          if (infoPhotoBadge) infoPhotoBadge.style.display = 'flex';
+        } else {
+          // หากไม่มีรูปภาพ: แสดง icon สถาปัตยกรรมและแสง Glow ตามเดิม
+          infoHero.classList.remove('has-photo');
+          infoHero.classList.add('no-photo');
+          infoImage.removeAttribute('src');
+          if (infoPhotoBadge) infoPhotoBadge.style.display = 'none';
+        }
+      }
+
+      // แสดง InfoCard
       infoCard.classList.add('open');
 
-      // ขยาย sidebar บน mobile ลงเพื่อให้เห็นการ์ดชัด
+      // บน Mobile ย่อ sidebar ลงเพื่อให้มองเห็น InfoCard ชัดเจน
       const sidebar = document.getElementById('sidebar');
-      if (window.innerWidth <= 768) {
+      if (window.innerWidth <= 768 && sidebar) {
         sidebar.classList.remove('expanded');
       }
     }
@@ -2671,6 +2933,9 @@
       infoCard.classList.remove('open');
       setSelected(null);
       currentFeature = null;
+      if (infoImage) {
+        infoImage.classList.remove('loaded');
+      }
     });
 
     /* ปุ่มนำทาง Google Maps */
