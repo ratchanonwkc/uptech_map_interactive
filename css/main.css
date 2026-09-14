@@ -1,0 +1,225 @@
+/* ============================================================
+   MAIN & THEME SYSTEM
+   UPTECH Campus 3D Interactive Map
+============================================================ */
+
+    :root {
+      --ink-950: #080c14;
+      --ink-900: #0e1626;
+      --ink-850: #121c30;
+      --ink-800: #18253d;
+      --ink-700: #223452;
+      --line: rgba(255, 255, 255, 0.1);
+      --line-subtle: rgba(255, 255, 255, 0.06);
+      --accent: #ff9838;
+      --accent-soft: rgba(255, 152, 56, 0.16);
+      --text-hi: #f8fafc;
+      --text-mid: #cbd5e1;
+      --text-lo: #94a3b8;
+      --highlight: #ffe600;
+
+      /* สีหมวดหมู่อาคารตามหน้าที่ (ออกแบบสำหรับบุคคลภายนอก) */
+      --cat-admin: #f59e0b;
+      /* สีทองอำพัน: จุดติดต่อราชการ / ต้อนรับ / ประชาสัมพันธ์ */
+      --cat-security: #ef4444;
+      /* สีแดงสัญญาณ: ป้อมยาม / ประตูทางเข้า-ออก */
+      --cat-academic: #0284c7;
+      /* สีฟ้ามหาสมุทร: อาคารเรียน / ฝึกอบรม / ห้องปฏิบัติการ */
+      --cat-library: #10b981;
+      /* สีเขียวมรกต: วิทยบริการ & ห้องสมุด */
+      --cat-dining: #f97316;
+      /* สีส้มอมแดง: โรงอาหาร / คาเฟ่ / สหกรณ์ */
+      --cat-hall: #ec4899;
+      /* สีชมพูมาเจนต้า: หอประชุมใหญ่ / สันทนาการ */
+      --cat-parking: #64748b;
+      /* สีเทาสเลท: ที่จอดรถ / อาคารสนับสนุน */
+      --cat-facility: #06b6d4;
+      /* สีฟ้าคราม: ห้องน้ำบริการประชาชน / จุดบริการ */
+      --cat-residential: #818cf8;
+      /* สีม่วงลาเวนเดอร์: หอพัก / ที่พักอาศัย (พื้นที่สงวน) */
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--ink-950);
+      font-family: 'Noto Sans Thai', 'Sora', sans-serif;
+      color: var(--text-hi);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #map {
+      position: absolute;
+      inset: 0;
+    }
+
+
+    /* ============================================================
+     TOAST
+  ============================================================ */
+    .toast {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(14, 22, 38, 0.95);
+      border: 1px solid var(--accent);
+      color: var(--text-hi);
+      padding: 10px 20px;
+      border-radius: 14px;
+      font-size: 12.5px;
+      z-index: 30;
+      opacity: 0;
+      transition: all .25s ease;
+      pointer-events: none;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+
+    /* ============================================================
+     RESPONSIVE (MOBILE & TABLET)
+  ============================================================ */
+    @media (max-width:768px) {
+      .top-container {
+        padding: 10px 12px;
+      }
+
+      .brand-text p {
+        display: none;
+      }
+
+      .cam-btn span {
+        display: none;
+      }
+
+      .cam-btn {
+        padding: 8px 10px;
+      }
+
+      /* ซ่อน Tooltip บนมือถือโดยเด็ดขาด (ไม่ให้ขึ้นมาบังข้อมูล) */
+      .hover-tooltip {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+
+      /* แผนผังสีบนมือถือ: วางไว้เหนือ Drawer เล็กน้อย และซ่อนเป็นค่าเริ่มต้น */
+      .map-legend {
+        left: 12px;
+        right: 12px;
+        width: auto;
+        bottom: calc(118px + env(safe-area-inset-bottom, 0px));
+        z-index: 9;
+      }
+
+      .drawer-handle-bar {
+        display: flex;
+      }
+
+      /* เมนูค้นหา/Sidebar ด้านล่างบนมือถือ: ยกสูงขึ้นให้พ้นขอบจอ ไม่โดนจอกิน พร้อมรองรับ safe-area */
+      .sidebar {
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 65%;
+        /* ตอนพับ: โผล่ขึ้นมาให้เห็น Handle Bar + หัวข้อ + กล่องค้นหาพอดีเป๊ะ */
+        transform: translateY(calc(100% - 110px - env(safe-area-inset-bottom, 0px)));
+        border-radius: 22px 22px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.65);
+        z-index: 12;
+      }
+
+      .sidebar.expanded {
+        transform: translateY(0);
+      }
+
+      .sidebar-head {
+        padding: 6px 16px 10px;
+      }
+
+      /* การ์ดรายละเอียดอาคารบนมือถือ */
+      .info-card {
+        left: 0;
+        right: 0;
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        height: 75%;
+        border-radius: 24px 24px 0 0;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        transform: translateY(120%);
+        z-index: 25;
+      }
+
+      .info-card.open {
+        transform: translateY(0);
+      }
+
+      .info-hero.has-photo {
+        height: 180px;
+      }
+
+      /* ปรับขนาดป้ายบอกตำแหน่งบนมือถือให้เล็กลงและกระชับ */
+      .gate-marker-badge {
+        padding: 4px 9px 4px 7px;
+        font-size: 10px;
+        gap: 4px;
+      }
+
+      .gate-marker-icon {
+        font-size: 11px;
+      }
+
+      .gate-marker-pulse {
+        width: 7px;
+        height: 7px;
+      }
+
+      .admin-marker-badge {
+        padding: 4px 10px 4px 8px;
+        font-size: 10.5px;
+        gap: 4px;
+      }
+
+      .admin-marker-icon {
+        font-size: 12px;
+      }
+
+      .admin-marker-tag {
+        font-size: 8.5px;
+        padding: 1px 5px;
+      }
+
+      .admin-marker-pulse {
+        width: 7px;
+        height: 7px;
+      }
+    }
+

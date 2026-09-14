@@ -1,0 +1,172 @@
+/* ============================================================
+   MAP LAYOUT, CONTROLS & OVERLAYS
+============================================================ */
+
+    /* ============================================================
+     MAP LEGEND (คำอธิบายสัญลักษณ์สี)
+     - บนคอม/แล็ปท็อป: วางที่ left: 356px (ถัดจาก sidebar กว้าง 320px + margin 20px) ไม่ให้บังกัน
+  ============================================================ */
+    .map-legend {
+      position: absolute;
+      bottom: 24px;
+      left: 356px;
+      width: 320px;
+      background: rgba(14, 22, 38, 0.92);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      z-index: 8;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      transition: all .25s ease;
+    }
+
+    .legend-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.03);
+      user-select: none;
+    }
+
+    .legend-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-arrow {
+      font-size: 10px;
+      color: var(--text-lo);
+      transition: transform .2s;
+    }
+
+    .map-legend.collapsed .legend-arrow {
+      transform: rotate(180deg);
+    }
+
+    .legend-body {
+      padding: 6px 12px 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 10px;
+      transition: max-height .25s ease, opacity .2s;
+      max-height: 220px;
+    }
+
+    .map-legend.collapsed .legend-body {
+      max-height: 0;
+      padding: 0 12px;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 10.5px;
+      color: var(--text-mid);
+      cursor: pointer;
+      padding: 3px 4px;
+      border-radius: 6px;
+      transition: background .12s;
+    }
+
+    .legend-item:hover {
+      background: var(--ink-800);
+      color: var(--text-hi);
+    }
+
+    .legend-swatch {
+      width: 11px;
+      height: 11px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ── แถบดึงขยาย Drawer บนมือถือ ── */
+    .drawer-handle-bar {
+      display: none;
+      justify-content: center;
+      padding: 6px 0 10px;
+      cursor: pointer;
+    }
+
+    .drawer-handle {
+      width: 44px;
+      height: 4.5px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      transition: background 0.15s ease;
+    }
+
+    .drawer-handle-bar:hover .drawer-handle {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+
+    /* ============================================================
+     3D HOVER TOOLTIP (แสดงเฉพาะ Laptop / PC ที่มีเมาส์ Hover เท่านั้น)
+  ============================================================ */
+    .hover-tooltip {
+      position: absolute;
+      background: rgba(10, 15, 26, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px 11px;
+      pointer-events: none;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity .15s ease, transform .1s ease;
+      transform: translate(-50%, -120%);
+      white-space: nowrap;
+    }
+
+    /* ซ่อน Tooltip บนอุปกรณ์ Touchscreen หรือจอที่ไม่มีเมาส์ Hover โดยเด็ดขาด */
+    @media (hover: none),
+    (pointer: coarse) {
+      .hover-tooltip {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+      }
+    }
+
+    .hover-tooltip.show {
+      opacity: 1;
+    }
+
+    .ht-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    .ht-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-hi);
+      line-height: 1.2;
+    }
+
+    .ht-cat {
+      font-size: 10px;
+      color: var(--text-lo);
+    }
+
