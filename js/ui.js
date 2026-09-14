@@ -3,9 +3,10 @@
    InfoCard, ระบบค้นหา, Sidebar Drawer, ปุ่มมุมกล้อง, Toast
 ====================================================================== */
 
-       5) INFO CARD (รายละเอียดสำหรับบุคคลภายนอก & ผูกข้อมูล uptech.geojson)
-       ====================================================================== */
-    const infoCard = document.getElementById('infoCard');
+/* ======================================================================
+   5) INFO CARD (รายละเอียดสำหรับบุคคลภายนอก & ผูกข้อมูล uptech.geojson)
+====================================================================== */
+const infoCard = document.getElementById('infoCard');
     const infoHero = document.getElementById('infoHero');
     const infoImage = document.getElementById('infoImage');
     const infoPhotoBadge = document.getElementById('infoPhotoBadge');
@@ -170,7 +171,15 @@
     const buildingCount = document.getElementById('buildingCount');
 
     function renderBuildingList(features, query = '', category = 'all') {
-      const q = query.trim().toLowerCase();
+      if (typeof features === 'string') {
+        category = features;
+        features = (buildingsData && buildingsData.features) ? buildingsData.features : [];
+      } else if (!Array.isArray(features)) {
+        features = (buildingsData && buildingsData.features) ? buildingsData.features : [];
+      }
+      if (!Array.isArray(features)) return;
+
+      const q = (query || '').trim().toLowerCase();
       const filtered = [];
 
       features.forEach(f => {
@@ -383,6 +392,9 @@
     let toastTimer;
     function showToast(msg) {
       const t = document.getElementById('toast');
+      if (!t) return;
       t.innerHTML = `<span>🔔</span> <span>${msg}</span>`;
       t.classList.add('show');
       clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    }

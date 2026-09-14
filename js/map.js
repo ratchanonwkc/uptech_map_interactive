@@ -64,15 +64,6 @@
     map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), "bottom-right");
     map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 
-    let buildingsData = null;
-    let selectedId = null;
-    let currentCategoryFilter = 'all';
-
-    /* ======================================================================
-       3D CAMPUS MODELS REGISTRY & MULTI-BUILDING SYSTEM
-       - รองรับไฟล์บีบอัด DRACO (.glb / .gltf) ช่วยลดขนาดไฟล์ลง 70-90%
-       - สถาปัตยกรรม Single Three.js Custom Layer รองรับการขยายได้ถึง 49 อาคาร
-       - จัดการหน่วยความจำ (VRAM), Draw calls ต่ำ และมีระบบ On-Demand / Lazy Load
 
 /* ฟังก์ชันสร้าง Inverted Masking (Campus Island Aesthetic) */
 function createInverseMask(boundaryData) {

@@ -6,6 +6,10 @@
 let buildingsData = null;
 let selectedId = null;
 let currentCategoryFilter = 'all';
+let hoveredId = null;
+let currentHovered3DBid = null;
+let currentHoveredGateId = null;
+let lastMouseMoveTime = 0;
 
 function isClickable(props) {
   if (!props) return false;
@@ -23,29 +27,41 @@ function getCentroid(feature) {
   return [sx / ring.length, sy / ring.length];
 }
 
-function isPointInPolygon(point, vs) {
-  const x = point[0], y = point[1];
-  let inside = false;
-  for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
-    const xi = vs[i][0], yi = vs[i][1];
-    const xj = vs[j][0], yj = vs[j][1];
-    const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-    if (intersect) inside = !inside;
-  }
-  return inside;
+function isDesktopPointer() {
+  return window.innerWidth > 768 && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 }
 
-function findFeatureAt(point) {
-  if (!buildingsData || !buildingsData.features) return null;
-  const lngLat = map.unproject(point);
-  const pt = [lngLat.lng, lngLat.lat];
-  for (const f of buildingsData.features) {
-    if (!f.geometry) continue;
-    if (f.geometry.type === 'Polygon') {
-      if (isPointInPolygon(pt, f.geometry.coordinates[0])) return f;
-    } else if (f.geometry.type === 'MultiPolygon') {
-      for (const poly of f.geometry.coordinates) {
-        if (isPointInPolygon(pt, poly[0])) return f;
+function check3DHit(point, lngLat) {
+  if (!lngLat) return null;
+
+  // 1) ตรวจสอบด้วย Three.js Raycaster ยิงแสงจากมุมกล้องลงสู่ 3D Mesh จริง (อาคารและซุ้มประตู)
+  if (campus3DLayer && campus3DLayer.raycast) {
+    const rayResult = campus3DLayer.raycast(point, lngLat);
+    if (rayResult && rayResult.hit) {
+      return rayResult;
+    }
+  }
+
+  // 2) ตรวจสอบควบคู่กับพื้นที่แปลงที่ดิน (Polygon Footprint) บนแผนที่ เฉพาะอาคารที่โมเดลโหลดเสร็จแล้ว
+  if (buildingsData && buildingsData.features) {
+    const b3dIds = getLoaded3DBuildingIds();
+    for (const bid of b3dIds) {
+      const f = buildingsData.features.find(ft => Number(ft.properties.bid_id) === bid);
+      if (f && f.geometry && f.geometry.coordinates) {
+        const cfg = getModelConfig(bid) || {};
+        const dLng = (Number(cfg.offsetX) || 0) * 0.0000095;
+        const dLat = (Number(cfg.offsetY) || 0) * 0.0000090;
+
+        const coords = f.geometry.type === 'Polygon' ? f.geometry.coordinates[0] : f.geometry.coordinates[0][0];
+        let inside = false;
+        const x = lngLat.lng, y = lngLat.lat;
+        for (let i = 0, j = coords.length - 1; i < coords.length; j = i++) {
+          const xi = coords[i][0] + dLng, yi = coords[i][1] + dLat;
+          const xj = coords[j][0] + dLng, yj = coords[j][1] + dLat;
+          const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+          if (intersect) inside = !inside;
+        }
+        if (inside) return { hit: true, isGate: false, bid_id: bid };
       }
     }
   }
@@ -53,32 +69,59 @@ function findFeatureAt(point) {
 }
 
 function focusBuilding(feature) {
-  if (!feature) return;
-  const centroid = getCentroid(feature);
-  selectBuilding(feature, 18.3);
+  const hoverTooltip = document.getElementById('hoverTooltip');
+  if (hoverTooltip) hoverTooltip.classList.remove('show');
+  const props = (feature && feature.properties) ? feature.properties : {};
+  const bid = Number(props.bid_id);
+
+  // ค้นหา feature ที่สมบูรณ์จาก buildingsData เพื่อให้ได้ Properties และ Geometry ที่ครบถ้วนที่สุด
+  const targetFeature = (buildingsData && buildingsData.features)
+    ? (buildingsData.features.find(ft => Number(ft.properties.bid_id) === bid) || feature)
+    : feature;
+
+  const center = getCentroid(targetFeature);
+
+  // โหลดโมเดล 3D แบบ On-Demand ทันทีหากอาคารนี้มีไฟล์ 3D ใน Registry
+  if (campus3DLayer && campus3DLayer.ensureBuildingLoaded) {
+    campus3DLayer.ensureBuildingLoaded(bid);
+  }
+
+  setSelected(bid);
+
   map.flyTo({
-    center: centroid,
-    zoom: 18.3,
-    pitch: 50,
-    bearing: 95,
-    duration: 1200
+    center: center,
+    zoom: 18.8,
+    pitch: 62,
+    bearing: map.getBearing() + 15,
+    speed: 0.9,
+    curve: 1.3,
+    essential: true
   });
+
+  openInfoCard(targetFeature);
 }
 
-function selectBuilding(feature, zoom = 18.2) {
-  const props = feature.properties;
-  const bid = Number(props.bid_id);
-  selectedId = bid;
-
-  if (campus3DLayer) {
-    campus3DLayer.setSelectedBuilding(bid);
-    campus3DLayer.setSelectedGate(null);
+function setSelected(bid) {
+  if (selectedId !== null) {
+    map.setFeatureState({ source: 'buildings', id: selectedId }, { selected: false });
   }
-  updateGateActiveState(null);
-  updateAdminActiveState(bid === 11);
+  selectedId = bid;
+  if (bid !== null) {
+    map.setFeatureState({ source: 'buildings', id: bid }, { selected: true });
+    // ยกเลิกการเลือกประตูเมื่อเลือกอาคาร
+    if (campus3DLayer && campus3DLayer.setSelectedGate) {
+      campus3DLayer.setSelectedGate(null);
+    }
+    document.querySelectorAll('.gate-marker').forEach(el => el.classList.remove('active'));
+  }
+  // อัปเดตสถานะ Active ของ Marker อาคารอำนวยการ
+  document.querySelectorAll('.admin-marker').forEach(el => el.classList.toggle('active', Number(bid) === 11));
 
-  showInfoCard(props, 'building');
-
+  // อัปเดตสถานะไฮไลต์ของโมเดล 3D ประจำอาคารที่ถูกเลือก
+  if (campus3DLayer && campus3DLayer.setSelected) {
+    campus3DLayer.setSelected(bid);
+  }
+  // อัปเดตการเน้นใน Sidebar list ด้วย
   document.querySelectorAll('.b-item').forEach(el => {
     el.classList.toggle('active', Number(el.dataset.bid) === bid);
   });
@@ -229,13 +272,20 @@ map.on('load', () => {
       p.bid_id = originalBid;
       if (!p.name) p.name = originalName || 'ไม่ระบุชื่ออาคาร';
       if (!p.category) {
-        p.category = p.type === 'deco' ? 'parking' : 'academic';
-      }
-      if (!p.color) {
-        p.color = p.type === 'deco' ? '#64748b' : '#0284c7';
-      }
-      if (!p.visitorTip) {
-        p.visitorTip = 'อาคารและสิ่งอำนวยความสะดวกภายในวิทยาลัย';
+        const name = (p.name || '').toLowerCase();
+        if (name.includes('บ้านพัก') || name.includes('หอพัก')) {
+          p.category = 'residential';
+          p.color = '#818cf8';
+          p.visitorTip = 'เขตที่พักอาศัยบุคลากร (พื้นที่ส่วนบุคคล)';
+        } else if (name.includes('จอดรถ')) {
+          p.category = 'parking';
+          p.color = '#64748b';
+          p.visitorTip = 'จุดจอดรถวิทยาลัย';
+        } else {
+          p.category = p.type === 'deco' ? 'parking' : 'academic';
+          p.color = p.type === 'deco' ? '#64748b' : '#0284c7';
+          p.visitorTip = 'อาคารและสิ่งอำนวยความสะดวกภายในวิทยาลัย';
+        }
       }
     });
 
@@ -243,168 +293,215 @@ map.on('load', () => {
     window.buildingsData = buildingsData;
 
     // อัปเดตพิกัด Centroid ของอาคาร 3D ให้ตรงกับ GeoJSON
-    CUSTOM_MODELS_CONFIG.forEach(cfg => {
-      const bid = Number(cfg.bid_id);
+    get3DBuildingIds().forEach(bid => {
       const f = data.features.find(ft => Number(ft.properties.bid_id) === bid);
       if (f && campus3DLayer && campus3DLayer.updateCentroid) {
-        const centroid = getCentroid(f);
-        campus3DLayer.updateCentroid(bid, centroid);
+        campus3DLayer.updateCentroid(bid, getCentroid(f));
       }
     });
 
-    renderBuildingList('all');
-    updateSearchMatches();
+    // อัปเดตข้อมูลบนแผนที่เพื่อให้สี extruded สะท้อนข้อมูลใหม่ทันที
+    if (map.getSource('buildings')) {
+      map.getSource('buildings').setData(data);
+    }
+
+    // แสดงรายการอาคารทั้งหมดใน Sidebar
+    renderBuildingList(data.features);
   }).catch(err => {
-    console.warn('[GeoJSON Load Error]', err);
+    showToast('ไม่พบไฟล์ uptech.geojson — โปรดวางไฟล์ไว้โฟลเดอร์เดียวกับ index.html');
+    console.error('[GeoJSON Load Error]', err);
   });
+
+  if (typeof map.setFog === 'function') map.setFog(null);
 });
 
 // ----------------------------------------------------------------------
 // MAP INTERACTIONS (Hover, Raycasting & Click)
 // ----------------------------------------------------------------------
 map.on('mousemove', (e) => {
-  const tooltip = document.getElementById('hoverTooltip');
-  if (isPhoneDevice()) {
-    if (tooltip) tooltip.classList.remove('show');
-    return;
-  }
+  const hoverTooltip = document.getElementById('hoverTooltip');
+  const htDot = document.getElementById('htDot');
+  const htName = document.getElementById('htName');
+  const htCat = document.getElementById('htCat');
 
-  let hit3D = null;
-  if (campus3DLayer && typeof campus3DLayer.raycast === 'function') {
-    hit3D = campus3DLayer.raycast(e.point);
-  }
+  const now = performance.now();
+  if (now - lastMouseMoveTime < 24) return;
+  lastMouseMoveTime = now;
 
+  const hit3D = check3DHit(e.point, e.lngLat);
   if (hit3D) {
     map.getCanvas().style.cursor = 'pointer';
 
-    if (hit3D.type === 'gate') {
-      campus3DLayer.setHoveredGate(hit3D.gateId);
-      campus3DLayer.setHoveredBuilding(null);
-      const gateCfg = getGateConfig(hit3D.gateId);
-      if (gateCfg && tooltip) {
-        tooltip.querySelector('#htDot').style.background = '#ef4444';
-        tooltip.querySelector('#htName').textContent = gateCfg.name;
-        tooltip.querySelector('#htCat').textContent = '🛡️ ซุ้มประตูทางเข้า-ออก';
-        tooltip.style.left = (e.point.x + 16) + 'px';
-        tooltip.style.top = (e.point.y + 16) + 'px';
-        tooltip.classList.add('show');
+    if (hit3D.isGate) {
+      currentHoveredGateId = hit3D.gate_id;
+      if (campus3DLayer) campus3DLayer.setHoveredGate(hit3D.gate_id);
+      if (currentHovered3DBid !== null) {
+        if (campus3DLayer) campus3DLayer.setHovered(null);
+        currentHovered3DBid = null;
+      }
+
+      if (isDesktopPointer() && hoverTooltip) {
+        const gateCfg = getGateConfig(hit3D.gate_id) || {};
+        htDot.style.background = '#ef4444';
+        htName.textContent = gateCfg.name || 'ซุ้มประตู';
+        htCat.textContent = '🛡️ ป้อมยาม & ประตูเข้า-ออก';
+
+        hoverTooltip.style.left = e.point.x + 'px';
+        hoverTooltip.style.top = e.point.y + 'px';
+        hoverTooltip.classList.add('show');
       }
       return;
     }
 
-    if (hit3D.bid_id) {
-      campus3DLayer.setHoveredBuilding(hit3D.bid_id);
+    currentHovered3DBid = hit3D.bid_id;
+    if (campus3DLayer) campus3DLayer.setHovered(hit3D.bid_id);
+    if (currentHoveredGateId !== null) {
+      if (campus3DLayer) campus3DLayer.setHoveredGate(null);
+      currentHoveredGateId = null;
+    }
+
+    if (isDesktopPointer() && hoverTooltip) {
+      const meta = VISITOR_BUILDINGS[hit3D.bid_id] || (buildingsData?.features?.find(f => Number(f.properties.bid_id) === hit3D.bid_id)?.properties) || {};
+      const catCfg = CATEGORY_MAP[meta.category || 'admin'] || CATEGORY_MAP.academic;
+      htDot.style.background = meta.color || catCfg.color;
+      htName.textContent = meta.name || 'อาคาร 3 มิติ';
+      htCat.textContent = (catCfg.icon + ' ' + catCfg.name);
+
+      hoverTooltip.style.left = e.point.x + 'px';
+      hoverTooltip.style.top = e.point.y + 'px';
+      hoverTooltip.classList.add('show');
+    }
+    return;
+  }
+
+  if (currentHovered3DBid !== null || currentHoveredGateId !== null) {
+    currentHovered3DBid = null;
+    currentHoveredGateId = null;
+    if (campus3DLayer) {
+      campus3DLayer.setHovered(null);
       campus3DLayer.setHoveredGate(null);
-      const meta = VISITOR_BUILDINGS[hit3D.bid_id] || (buildingsData?.features?.find(f => Number(f.properties.bid_id) === hit3D.bid_id)?.properties);
-      const catCfg = CATEGORY_MAP[meta?.category || 'admin'] || CATEGORY_MAP.academic;
-      if (tooltip) {
-        tooltip.querySelector('#htDot').style.background = catCfg.color;
-        tooltip.querySelector('#htName').textContent = meta?.name || ('อาคาร ID ' + hit3D.bid_id);
-        tooltip.querySelector('#htCat').textContent = catCfg.name;
-        tooltip.style.left = (e.point.x + 16) + 'px';
-        tooltip.style.top = (e.point.y + 16) + 'px';
-        tooltip.classList.add('show');
-      }
-      return;
+    }
+    const feats = map.queryRenderedFeatures(e.point, { layers: ['buildings-3d'] });
+    if (!feats.length && hoverTooltip) {
+      map.getCanvas().style.cursor = '';
+      hoverTooltip.classList.remove('show');
     }
   }
+});
 
-  if (campus3DLayer) {
-    campus3DLayer.setHoveredBuilding(null);
-    campus3DLayer.setHoveredGate(null);
+map.on('mousemove', 'buildings-3d', (e) => {
+  if (currentHovered3DBid !== null || currentHoveredGateId !== null) return;
+  if (!e.features.length) return;
+  const f = e.features[0];
+  const p = f.properties;
+  const hoverTooltip = document.getElementById('hoverTooltip');
+  const htDot = document.getElementById('htDot');
+  const htName = document.getElementById('htName');
+  const htCat = document.getElementById('htCat');
+
+  map.getCanvas().style.cursor = isClickable(p) ? 'pointer' : '';
+
+  if (!isDesktopPointer()) {
+    if (hoverTooltip) hoverTooltip.classList.remove('show');
+    return;
   }
 
-  const feature = findFeatureAt(e.point);
-  if (feature && isClickable(feature.properties)) {
-    map.getCanvas().style.cursor = 'pointer';
-    const props = feature.properties;
-    const cat = CATEGORY_MAP[props.category] || CATEGORY_MAP.academic;
-    if (tooltip) {
-      tooltip.querySelector('#htDot').style.background = cat.color;
-      tooltip.querySelector('#htName').textContent = props.name;
-      tooltip.querySelector('#htCat').textContent = cat.name;
-      tooltip.style.left = (e.point.x + 16) + 'px';
-      tooltip.style.top = (e.point.y + 16) + 'px';
-      tooltip.classList.add('show');
+  if (p.name && p.name !== '-' && hoverTooltip) {
+    const catCfg = CATEGORY_MAP[p.category] || CATEGORY_MAP.academic;
+    htDot.style.background = p.color || catCfg.color;
+    htName.textContent = p.name;
+    htCat.textContent = (catCfg.icon + ' ' + catCfg.name);
+
+    hoverTooltip.style.left = e.point.x + 'px';
+    hoverTooltip.style.top = e.point.y + 'px';
+    hoverTooltip.classList.add('show');
+  }
+
+  if (f.id !== undefined) {
+    if (hoveredId !== null && hoveredId !== f.id) {
+      map.setFeatureState({ source: 'buildings', id: hoveredId }, { hovered: false });
     }
-  } else {
-    map.getCanvas().style.cursor = '';
-    if (tooltip) tooltip.classList.remove('show');
+    hoveredId = f.id;
+    map.setFeatureState({ source: 'buildings', id: hoveredId }, { hovered: true });
+  }
+});
+
+map.on('mouseleave', 'buildings-3d', () => {
+  if (currentHovered3DBid !== null || currentHoveredGateId !== null) return;
+  map.getCanvas().style.cursor = '';
+  const hoverTooltip = document.getElementById('hoverTooltip');
+  if (hoverTooltip) hoverTooltip.classList.remove('show');
+  if (hoveredId !== null) {
+    map.setFeatureState({ source: 'buildings', id: hoveredId }, { hovered: false });
+    hoveredId = null;
   }
 });
 
 map.on('mouseleave', () => {
-  const tooltip = document.getElementById('hoverTooltip');
-  if (tooltip) tooltip.classList.remove('show');
+  const hoverTooltip = document.getElementById('hoverTooltip');
+  if (hoverTooltip) hoverTooltip.classList.remove('show');
   if (campus3DLayer) {
-    campus3DLayer.setHoveredBuilding(null);
+    campus3DLayer.setHovered(null);
     campus3DLayer.setHoveredGate(null);
   }
 });
 
 map.on('click', (e) => {
-  let hit3D = null;
-  if (campus3DLayer && typeof campus3DLayer.raycast === 'function') {
-    hit3D = campus3DLayer.raycast(e.point);
-  }
+  const hoverTooltip = document.getElementById('hoverTooltip');
+  if (hoverTooltip) hoverTooltip.classList.remove('show');
 
+  const hit3D = check3DHit(e.point, e.lngLat);
   if (hit3D) {
-    if (hit3D.type === 'gate') {
-      const gateCfg = getGateConfig(hit3D.gateId);
-      if (gateCfg) {
-        campus3DLayer.setSelectedGate(gateCfg.id);
-        campus3DLayer.setSelectedBuilding(null);
-        updateGateActiveState(gateCfg.id);
-        updateAdminActiveState(false);
-        showInfoCard(gateCfg, 'gate');
-        map.flyTo({
-          center: gateCfg.coords,
-          zoom: 18.5,
-          pitch: 50,
-          bearing: 95,
-          duration: 1000
-        });
-        return;
-      }
+    if (hit3D.isGate) {
+      focusGate(hit3D.gate_id);
+      return;
     }
-
-    if (hit3D.bid_id) {
-      const f = buildingsData?.features?.find(ft => Number(ft.properties.bid_id) === hit3D.bid_id);
-      if (f) {
-        focusBuilding(f);
-      } else {
-        const dummy = { properties: { bid_id: hit3D.bid_id, name: 'อาคาร ID ' + hit3D.bid_id } };
-        selectBuilding(dummy);
-      }
+    const f = buildingsData && buildingsData.features ?
+      buildingsData.features.find(ft => Number(ft.properties.bid_id) === hit3D.bid_id) : null;
+    if (f) {
+      focusBuilding(f);
       return;
     }
   }
 
-  const feature = findFeatureAt(e.point);
-  if (feature && isClickable(feature.properties)) {
-    focusBuilding(feature);
-  } else {
-    selectedId = null;
-    if (campus3DLayer) {
-      campus3DLayer.setSelectedBuilding(null);
-      campus3DLayer.setSelectedGate(null);
-    }
-    updateGateActiveState(null);
-    updateAdminActiveState(false);
-    hideInfoCard();
-    document.querySelectorAll('.b-item').forEach(el => el.classList.remove('active'));
+  // คลิกโดนอาคาร 3D Extrusion
+  const feats = map.queryRenderedFeatures(e.point, { layers: ['buildings-3d'] });
+  if (feats.length && isClickable(feats[0].properties)) {
+    focusBuilding(feats[0]);
+    return;
   }
+
+  // หากคลิกที่ว่าง
+  setSelected(null);
+  const infoCard = document.getElementById('infoCard');
+  if (infoCard) infoCard.classList.remove('open');
+  if (campus3DLayer) {
+    campus3DLayer.setSelected(null);
+    campus3DLayer.setSelectedGate(null);
+  }
+  document.querySelectorAll('.gate-marker').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.admin-marker').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.b-item').forEach(el => el.classList.remove('active'));
+});
+
+map.on('click', 'buildings-3d', (e) => {
+  const hoverTooltip = document.getElementById('hoverTooltip');
+  if (hoverTooltip) hoverTooltip.classList.remove('show');
+  const f = e.features[0];
+  if (!isClickable(f.properties)) return;
+  focusBuilding(f);
 });
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    hideInfoCard();
-    selectedId = null;
+    const infoCard = document.getElementById('infoCard');
+    if (infoCard) infoCard.classList.remove('open');
+    setSelected(null);
     if (campus3DLayer) {
-      campus3DLayer.setSelectedBuilding(null);
+      campus3DLayer.setSelected(null);
       campus3DLayer.setSelectedGate(null);
     }
-    updateGateActiveState(null);
-    updateAdminActiveState(false);
+    document.querySelectorAll('.gate-marker').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.admin-marker').forEach(el => el.classList.remove('active'));
   }
 });
