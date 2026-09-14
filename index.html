@@ -185,6 +185,13 @@
       transform: scale(0.96);
     }
 
+    .cam-btn.active {
+      background: rgba(30, 58, 102, 0.95);
+      border-color: rgba(56, 189, 248, 0.65);
+      color: #38bdf8;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35), 0 0 12px rgba(56, 189, 248, 0.3);
+    }
+
     /* ── แถบปุ่มด่วนสำหรับบุคคลภายนอก (Visitor Quick Navigation) ── */
     .visitor-nav {
       display: flex;
@@ -1149,6 +1156,42 @@
       .info-hero.has-photo {
         height: 180px;
       }
+
+      /* ปรับขนาดป้ายบอกตำแหน่งบนมือถือให้เล็กลงและกระชับ */
+      .gate-marker-badge {
+        padding: 4px 9px 4px 7px;
+        font-size: 10px;
+        gap: 4px;
+      }
+
+      .gate-marker-icon {
+        font-size: 11px;
+      }
+
+      .gate-marker-pulse {
+        width: 7px;
+        height: 7px;
+      }
+
+      .admin-marker-badge {
+        padding: 4px 10px 4px 8px;
+        font-size: 10.5px;
+        gap: 4px;
+      }
+
+      .admin-marker-icon {
+        font-size: 12px;
+      }
+
+      .admin-marker-tag {
+        font-size: 8.5px;
+        padding: 1px 5px;
+      }
+
+      .admin-marker-pulse {
+        width: 7px;
+        height: 7px;
+      }
     }
 
     /* ============================================================
@@ -1351,6 +1394,28 @@
         opacity: 0;
       }
     }
+
+    /* โหมดย่อขนาด (Collapsed Mini-Pins) เมื่อซูมออก ป้องกันป้ายบดบังอาคาร */
+    .gate-marker.collapsed .gate-marker-badge span:not(.gate-marker-icon),
+    .admin-marker.collapsed .admin-marker-badge span:not(.admin-marker-icon) {
+      display: none !important;
+    }
+
+    .gate-marker.collapsed .gate-marker-badge {
+      padding: 5px 6px !important;
+      border-radius: 50% !important;
+      min-width: 28px !important;
+      height: 28px !important;
+      justify-content: center !important;
+    }
+
+    .admin-marker.collapsed .admin-marker-badge {
+      padding: 5px 6px !important;
+      border-radius: 50% !important;
+      min-width: 30px !important;
+      height: 30px !important;
+      justify-content: center !important;
+    }
   </style>
 </head>
 
@@ -1381,6 +1446,7 @@
       <div class="cam-controls">
         <button class="cam-btn" id="btnReset" title="รีเซ็ตมุมมอง">↺ <span>รีเซ็ตมุมมอง</span></button>
         <button class="cam-btn" id="btnTop" title="มุมมองด้านบน 2D">⬇ <span>มุมมองบน</span></button>
+        <button class="cam-btn active" id="btnToggleMarkers" title="เปิด/ปิด ป้ายบอกตำแหน่ง">📍 <span>ป้ายบอกทาง</span></button>
         <button class="cam-btn" id="btnToggleLegend" title="สลับการแสดงผังสี">🎨 <span>ผังสี</span></button>
       </div>
     </div>
@@ -3473,32 +3539,59 @@
       updateMarkersVisibility();
     }
 
-    // ควบคุมการแสดงผลของ Marker (ทั้งซุ้มประตูและอาคารอำนวยการ) ตามระดับ Zoom
+    let markersVisible = true;
+
+    // ควบคุมการแสดงผลของ Marker (ทั้งซุ้มประตูและอาคารอำนวยการ) ตามระดับ Zoom และสถานะเปิด/ปิด
     function updateMarkersVisibility() {
       if (!map) return;
       const z = map.getZoom();
-      const visible = z >= 15.2;
+      const isMobile = window.innerWidth <= 768;
+
+      // เกณฑ์ระดับ Zoom สำหรับการซ่อน/ย่อขนาดอัตโนมัติ:
+      // บนมือถือ: หากซูมออกห่างกว่า 17.2 ให้ย่อเป็นหมุดกลมกะทัดรัด (Collapsed Mini-Pins)
+      // หากซูมออกกว้างมาก (< 16.3) ให้ซ่อนทั้งหมดเพื่อไม่ให้เกะกะสายตามุมมองภาพรวม
+      // บนเดสก์ท็อป: ย่อขนาดเมื่อซูมออก < 16.5 และซ่อนเมื่อซูมออก < 15.6
+      const minVisibleZoom = isMobile ? 16.3 : 15.6;
+      const collapseZoom = isMobile ? 17.2 : 16.5;
+
+      const shouldShow = markersVisible && (z >= minVisibleZoom);
+      const isCollapsed = z < collapseZoom;
 
       gateMarkers.forEach(m => {
         const el = m.getElement();
         if (el) {
-          el.style.opacity = visible ? '1' : '0';
-          el.style.pointerEvents = visible ? 'auto' : 'none';
-          el.style.transform = visible ? 'scale(1)' : 'scale(0.85)';
+          el.classList.toggle('collapsed', isCollapsed);
+          el.style.opacity = shouldShow ? '1' : '0';
+          el.style.pointerEvents = shouldShow ? 'auto' : 'none';
+          if (!shouldShow) {
+            el.style.transform = 'scale(0.4)';
+          } else if (isCollapsed) {
+            el.style.transform = 'scale(0.85)';
+          } else {
+            el.style.transform = 'scale(1)';
+          }
         }
       });
 
       if (adminMarker) {
         const el = adminMarker.getElement();
         if (el) {
-          el.style.opacity = visible ? '1' : '0';
-          el.style.pointerEvents = visible ? 'auto' : 'none';
-          el.style.transform = visible ? 'scale(1)' : 'scale(0.85)';
+          el.classList.toggle('collapsed', isCollapsed);
+          el.style.opacity = shouldShow ? '1' : '0';
+          el.style.pointerEvents = shouldShow ? 'auto' : 'none';
+          if (!shouldShow) {
+            el.style.transform = 'scale(0.4)';
+          } else if (isCollapsed) {
+            el.style.transform = 'scale(0.85)';
+          } else {
+            el.style.transform = 'scale(1)';
+          }
         }
       }
     }
 
     map.on('zoom', updateMarkersVisibility);
+    window.addEventListener('resize', updateMarkersVisibility);
 
     function focusGate(gateId) {
       hoverTooltip.classList.remove('show');
@@ -3895,6 +3988,16 @@
       map.flyTo({ center: map.getCenter(), zoom: TOP_VIEW.zoom, pitch: TOP_VIEW.pitch, bearing: TOP_VIEW.bearing, speed: 1.1 });
       showToast('เปลี่ยนเป็นมุมมองด้านบน 2D');
     });
+
+    const btnToggleMarkers = document.getElementById('btnToggleMarkers');
+    if (btnToggleMarkers) {
+      btnToggleMarkers.addEventListener('click', () => {
+        markersVisible = !markersVisible;
+        btnToggleMarkers.classList.toggle('active', markersVisible);
+        updateMarkersVisibility();
+        showToast(markersVisible ? '📍 เปิดแสดงป้ายบอกตำแหน่ง' : '🚫 ปิดการแสดงป้ายบอกตำแหน่ง');
+      });
+    }
 
     const mapLegend = document.getElementById('mapLegend');
     // บนมือถือ ให้เริ่มต้นแบบย่อผังสีไว้ เพื่อไม่ให้บดบังพื้นที่แผนที่
