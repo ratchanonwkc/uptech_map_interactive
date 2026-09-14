@@ -429,8 +429,8 @@ const CUSTOM_MODELS_CONFIG = [
     rotationDeg: 180,
     altitudeOffset: 0,
     heading: 26,
-    offsetX: -4,
-    offsetY: 4,
+    offsetX: -3,
+    offsetY: 5,
     coordinates: [102.789231, 17.399181],
     preload: true
   },
