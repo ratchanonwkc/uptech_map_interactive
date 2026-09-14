@@ -97,11 +97,16 @@
   ============================================================ */
     @media (max-width:768px) {
       .top-container {
-        padding: 10px 12px;
+        padding: max(10px, env(safe-area-inset-top, 10px)) 12px 6px;
+        gap: 6px;
       }
 
       .brand-text p {
         display: none;
+      }
+
+      .cam-controls {
+        gap: 6px;
       }
 
       .cam-btn span {
@@ -109,7 +114,29 @@
       }
 
       .cam-btn {
-        padding: 8px 10px;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 15px;
+        flex-shrink: 0;
+      }
+
+      .visitor-nav {
+        padding: 2px 2px 6px;
+        gap: 6px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .visitor-label {
+        padding: 5px 10px;
+        font-size: 10.5px;
+      }
+
+      .v-chip {
+        padding: 6px 11px;
+        font-size: 11px;
       }
 
       /* ซ่อน Tooltip บนมือถือโดยเด็ดขาด (ไม่ให้ขึ้นมาบังข้อมูล) */
@@ -120,20 +147,90 @@
         pointer-events: none !important;
       }
 
-      /* แผนผังสีบนมือถือ: วางไว้เหนือ Drawer เล็กน้อย และซ่อนเป็นค่าเริ่มต้น */
+      /* แผนผังสีบนมือถือ: ปรับเป็น Modal Card ลอยกึ่งกลางจอ ไม่ตกขอบจอเด็ดขาด */
       .map-legend {
-        left: 12px;
-        right: 12px;
+        position: fixed;
+        left: 16px;
+        right: 16px;
+        top: 50%;
+        bottom: auto;
         width: auto;
-        bottom: calc(118px + env(safe-area-inset-bottom, 0px));
-        z-index: 9;
+        max-width: 380px;
+        margin: 0 auto;
+        transform: translateY(-50%) scale(0.92);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 35;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+        background: rgba(14, 22, 38, 0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        max-height: 82vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .map-legend.mobile-open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(-50%) scale(1);
+      }
+
+      .legend-header {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--line-subtle);
+      }
+
+      .legend-arrow {
+        display: none;
+      }
+
+      .legend-close-btn {
+        display: flex;
+      }
+
+      .legend-body {
+        max-height: calc(75vh - 54px) !important;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        grid-template-columns: 1fr;
+        padding: 10px 14px 16px;
+        gap: 7px;
+        opacity: 1 !important;
+      }
+
+      .legend-item {
+        padding: 8px 10px;
+        font-size: 12px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .legend-item:hover,
+      .legend-item:active {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--accent);
       }
 
       .drawer-handle-bar {
         display: flex;
+        justify-content: center;
+        padding: 6px 0 8px;
+        cursor: grab;
+        touch-action: none;
       }
 
-      /* เมนูค้นหา/Sidebar ด้านล่างบนมือถือ: ยกสูงขึ้นให้พ้นขอบจอ ไม่โดนจอกิน พร้อมรองรับ safe-area */
+      .drawer-handle {
+        width: 48px;
+        height: 5px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.35);
+      }
+
+      /* เมนูค้นหา/Sidebar ด้านล่างบนมือถือ: กางได้เต็มจอ 88vh ให้ค้นหาและเลื่อนดูได้อย่างจุใจ */
       .sidebar {
         left: 0;
         right: 0;
@@ -141,41 +238,57 @@
         bottom: 0;
         width: 100%;
         max-width: 100%;
-        height: 65%;
-        /* ตอนพับ: โผล่ขึ้นมาให้เห็น Handle Bar + หัวข้อ + กล่องค้นหาพอดีเป๊ะ */
-        transform: translateY(calc(100% - 110px - env(safe-area-inset-bottom, 0px)));
-        border-radius: 22px 22px 0 0;
+        height: calc(88vh - env(safe-area-inset-top, 0px));
+        max-height: calc(100dvh - 56px);
+        /* ตอนพับ: โผล่ขึ้นมาให้เห็น Handle Bar + หัวข้อ + กล่องค้นหาพอดีเป๊ะ (~106px) */
+        transform: translateY(calc(100% - 106px - env(safe-area-inset-bottom, 0px)));
+        border-radius: 24px 24px 0 0;
         border-left: none;
         border-right: none;
         border-bottom: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.16);
         padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
-        box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.65);
-        z-index: 12;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+        z-index: 15;
+        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .sidebar.expanded {
         transform: translateY(0);
       }
 
-      .sidebar-head {
-        padding: 6px 16px 10px;
+      .drawer-collapse-btn {
+        display: flex;
       }
 
-      /* การ์ดรายละเอียดอาคารบนมือถือ */
+      .sidebar-head {
+        padding: 6px 16px 12px;
+      }
+
+      .building-list {
+        padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* การ์ดรายละเอียดอาคารบนมือถือ: ขยายเต็มตา พร้อมระยะปลอดภัย */
       .info-card {
         left: 0;
         right: 0;
         top: auto;
         bottom: 0;
         width: 100%;
-        height: 75%;
+        height: 82vh;
+        max-height: calc(100dvh - 50px);
         border-radius: 24px 24px 0 0;
         border-left: none;
         border-right: none;
         border-bottom: none;
-        padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+        padding-bottom: max(18px, env(safe-area-inset-bottom, 18px));
         transform: translateY(120%);
-        z-index: 25;
+        z-index: 30;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.75);
+        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
       }
 
       .info-card.open {
@@ -183,7 +296,17 @@
       }
 
       .info-hero.has-photo {
-        height: 180px;
+        height: 190px;
+      }
+
+      .info-actions {
+        gap: 10px;
+      }
+
+      .btn-action {
+        padding: 11px 12px;
+        font-size: 12.5px;
+        border-radius: 14px;
       }
 
       /* ปรับขนาดป้ายบอกตำแหน่งบนมือถือให้เล็กลงและกระชับ */

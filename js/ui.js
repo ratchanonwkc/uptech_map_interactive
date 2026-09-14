@@ -124,10 +124,10 @@ const infoCard = document.getElementById('infoCard');
       // แสดง InfoCard
       infoCard.classList.add('open');
 
-      // บน Mobile ย่อ sidebar ลงเพื่อให้มองเห็น InfoCard ชัดเจน
-      const sidebar = document.getElementById('sidebar');
-      if (window.innerWidth <= 768 && sidebar) {
-        sidebar.classList.remove('expanded');
+      // บน Mobile ย่อ sidebar ลงและปิดผังสีเพื่อให้มองเห็น InfoCard ชัดเจน
+      if (window.innerWidth <= 768) {
+        setSidebarExpanded(false);
+        closeMapLegend();
       }
     }
 
@@ -261,7 +261,10 @@ const infoCard = document.getElementById('infoCard');
         el.addEventListener('click', () => {
           const bid = Number(el.dataset.bid);
           const feature = buildingsData.features.find(ft => ft.properties.bid_id === bid);
-          if (feature) focusBuilding(feature);
+          if (feature) {
+            if (window.innerWidth <= 768) setSidebarExpanded(false);
+            focusBuilding(feature);
+          }
         });
       });
 
@@ -269,7 +272,10 @@ const infoCard = document.getElementById('infoCard');
       buildingList.querySelectorAll('.gate-list-item').forEach(el => {
         el.addEventListener('click', () => {
           const gid = el.dataset.gateId;
-          if (gid) focusGate(gid);
+          if (gid) {
+            if (window.innerWidth <= 768) setSidebarExpanded(false);
+            focusGate(gid);
+          }
         });
       });
     }
@@ -324,23 +330,18 @@ const infoCard = document.getElementById('infoCard');
         const bid = Number(chip.dataset.bid);
         if (!buildingsData) return;
         const feature = buildingsData.features.find(ft => ft.properties.bid_id === bid);
-        if (feature) focusBuilding(feature);
-      });
-    });
-
-    /* Legend items click to filter */
-    document.querySelectorAll('.legend-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const cat = item.dataset.cat;
-        const filterBtn = document.querySelector(`#catFilter .filter-btn[data-cat="${cat}"]`);
-        if (filterBtn) filterBtn.click();
-        showToast(`กรองหมวดหมู่: ${item.querySelector('span:last-child').textContent}`);
+        if (feature) {
+          if (window.innerWidth <= 768) {
+            setSidebarExpanded(false);
+            closeMapLegend();
+          }
+          focusBuilding(feature);
+        }
       });
     });
 
     /* ======================================================================
-
-       8) CAMERA PRESETS & LEGEND TOGGLE
+       8) CAMERA PRESETS & MAP LEGEND
        ====================================================================== */
     document.getElementById('btnReset').addEventListener('click', () => {
       setSelected(null);
@@ -366,29 +367,183 @@ const infoCard = document.getElementById('infoCard');
     }
 
     const mapLegend = document.getElementById('mapLegend');
-    // บนมือถือ ให้เริ่มต้นแบบย่อผังสีไว้ เพื่อไม่ให้บดบังพื้นที่แผนที่
-    if (window.innerWidth <= 768) {
+    const legendBackdrop = document.getElementById('legendBackdrop');
+    const legendCloseBtn = document.getElementById('legendCloseBtn');
+    const legendHeader = document.getElementById('legendHeader');
+    const btnToggleLegend = document.getElementById('btnToggleLegend');
+
+    // บนคอม/แล็ปท็อป ให้เริ่มต้นแบบพับผังสีไว้
+    if (mapLegend && window.innerWidth > 768) {
       mapLegend.classList.add('collapsed');
     }
 
-    document.getElementById('legendHeader').addEventListener('click', () => {
-      mapLegend.classList.toggle('collapsed');
-    });
-    document.getElementById('btnToggleLegend').addEventListener('click', () => {
-      mapLegend.classList.toggle('collapsed');
+    function openMapLegend() {
+      if (!mapLegend) return;
+      if (window.innerWidth <= 768) {
+        mapLegend.classList.add('mobile-open');
+        if (legendBackdrop) legendBackdrop.classList.add('active');
+        setSidebarExpanded(false);
+      } else {
+        mapLegend.classList.remove('collapsed');
+      }
+    }
+
+    function closeMapLegend() {
+      if (!mapLegend) return;
+      if (window.innerWidth <= 768) {
+        mapLegend.classList.remove('mobile-open');
+        if (legendBackdrop) legendBackdrop.classList.remove('active');
+      } else {
+        mapLegend.classList.add('collapsed');
+      }
+    }
+
+    function toggleMapLegend() {
+      if (!mapLegend) return;
+      if (window.innerWidth <= 768) {
+        const isOpen = mapLegend.classList.contains('mobile-open');
+        if (isOpen) {
+          closeMapLegend();
+        } else {
+          openMapLegend();
+        }
+      } else {
+        mapLegend.classList.toggle('collapsed');
+      }
+    }
+
+    if (btnToggleLegend) {
+      btnToggleLegend.addEventListener('click', () => {
+        toggleMapLegend();
+      });
+    }
+
+    if (legendHeader) {
+      legendHeader.addEventListener('click', (e) => {
+        if (e.target.closest('#legendCloseBtn')) return;
+        if (window.innerWidth > 768) {
+          mapLegend.classList.toggle('collapsed');
+        }
+      });
+    }
+
+    if (legendCloseBtn) {
+      legendCloseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeMapLegend();
+      });
+    }
+
+    if (legendBackdrop) {
+      legendBackdrop.addEventListener('click', () => {
+        closeMapLegend();
+      });
+    }
+
+    /* Legend items click to filter */
+    document.querySelectorAll('.legend-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const cat = item.dataset.cat;
+        const filterBtn = document.querySelector(`#catFilter .filter-btn[data-cat="${cat}"]`);
+        if (filterBtn) filterBtn.click();
+        if (window.innerWidth <= 768) {
+          closeMapLegend();
+          setSidebarExpanded(true);
+        }
+        showToast(`กรองหมวดหมู่: ${item.querySelector('span:last-child').textContent}`);
+      });
     });
 
     /* ======================================================================
-       9) MOBILE DRAWER & TOAST
+       9) MOBILE DRAWER BOTTOM SHEET & TOUCH GESTURES
        ====================================================================== */
     const sidebar = document.getElementById('sidebar');
+    const sidebarBackdrop = document.getElementById('sidebarBackdrop');
     const sidebarHead = document.querySelector('.sidebar-head');
-    sidebarHead.addEventListener('click', (e) => {
-      if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON' && window.innerWidth <= 768) {
-        sidebar.classList.toggle('expanded');
+    const btnCollapseSidebar = document.getElementById('btnCollapseSidebar');
+    const drawerHandleBar = document.getElementById('drawerHandleBar');
+
+    function setSidebarExpanded(expanded) {
+      if (!sidebar) return;
+      if (expanded) {
+        sidebar.classList.add('expanded');
+        if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+        closeMapLegend();
+      } else {
+        sidebar.classList.remove('expanded');
+        if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+        if (document.activeElement === searchInput) {
+          searchInput.blur();
+        }
+      }
+    }
+
+    // แตะช่องค้นหาให้กาง Drawer ขึ้นเต็มจอทันที
+    searchInput.addEventListener('focus', () => {
+      if (window.innerWidth <= 768) {
+        setSidebarExpanded(true);
       }
     });
 
+    if (sidebarHead) {
+      sidebarHead.addEventListener('click', (e) => {
+        if (e.target.closest('input') || e.target.closest('button')) return;
+        if (window.innerWidth <= 768) {
+          const isExpanded = sidebar.classList.contains('expanded');
+          setSidebarExpanded(!isExpanded);
+        }
+      });
+    }
+
+    if (btnCollapseSidebar) {
+      btnCollapseSidebar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSidebarExpanded(false);
+      });
+    }
+
+    if (sidebarBackdrop) {
+      sidebarBackdrop.addEventListener('click', () => {
+        setSidebarExpanded(false);
+      });
+    }
+
+    // Touch Swipe Gesture สำหรับดึง Drawer ขึ้น/ลงอย่างลื่นไหล
+    let touchStartY = 0;
+    let touchCurrentY = 0;
+    let isDraggingDrawer = false;
+    const swipeTarget = drawerHandleBar || sidebarHead;
+
+    if (swipeTarget) {
+      swipeTarget.addEventListener('touchstart', (e) => {
+        if (window.innerWidth > 768) return;
+        touchStartY = e.touches[0].clientY;
+        touchCurrentY = touchStartY;
+        isDraggingDrawer = true;
+      }, { passive: true });
+
+      swipeTarget.addEventListener('touchmove', (e) => {
+        if (!isDraggingDrawer) return;
+        touchCurrentY = e.touches[0].clientY;
+      }, { passive: true });
+
+      swipeTarget.addEventListener('touchend', () => {
+        if (!isDraggingDrawer) return;
+        isDraggingDrawer = false;
+        const diffY = touchCurrentY - touchStartY;
+        if (diffY < -30) {
+          // ปัดขึ้น -> ขยายเต็มจอ
+          setSidebarExpanded(true);
+        } else if (diffY > 30) {
+          // ปัดลง -> ย่อลง
+          setSidebarExpanded(false);
+        }
+      });
+    }
+
+    /* ======================================================================
+       10) TOAST NOTIFICATIONS
+       ====================================================================== */
     let toastTimer;
     function showToast(msg) {
       const t = document.getElementById('toast');

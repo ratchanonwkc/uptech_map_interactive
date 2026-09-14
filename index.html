@@ -78,7 +78,8 @@
     </div>
   </div>
 
-  <!-- ============ SIDEBAR (SEARCH + LIST) ============ -->
+  <!-- ============ SIDEBAR BACKDROP & DRAWER ============ -->
+  <div class="sheet-backdrop" id="sidebarBackdrop"></div>
   <div class="sidebar" id="sidebar">
     <div class="sidebar-head">
       <div class="drawer-handle-bar" id="drawerHandleBar">
@@ -86,7 +87,10 @@
       </div>
       <div class="sidebar-head-title">
         <label>ค้นหาอาคาร & จุดติดต่อ</label>
-        <span class="building-count-badge" id="buildingCount">0 อาคาร</span>
+        <div class="sidebar-head-actions">
+          <span class="building-count-badge" id="buildingCount">0 อาคาร</span>
+          <button class="drawer-collapse-btn" id="btnCollapseSidebar" title="ย่อแถบเมนู">✕</button>
+        </div>
       </div>
       <div class="search-box">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -113,11 +117,15 @@
     <div class="building-list" id="buildingList"></div>
   </div>
 
-  <!-- ============ MAP LEGEND (คำอธิบายสัญลักษณ์สี) ============ -->
+  <!-- ============ MAP LEGEND BACKDROP & MODAL/DRAWER ============ -->
+  <div class="legend-backdrop" id="legendBackdrop"></div>
   <div class="map-legend" id="mapLegend">
     <div class="legend-header" id="legendHeader">
       <span class="legend-title">🎨 แผนผังสีแยกประเภทอาคาร</span>
-      <span class="legend-arrow">▲</span>
+      <div class="legend-header-right">
+        <span class="legend-arrow">▲</span>
+        <button class="legend-close-btn" id="legendCloseBtn" title="ปิดผังสี">✕</button>
+      </div>
     </div>
     <div class="legend-body" id="legendBody">
       <div class="legend-item" data-cat="admin"><span class="legend-swatch"

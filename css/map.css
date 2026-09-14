@@ -41,10 +41,54 @@
       gap: 6px;
     }
 
+    .legend-header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .legend-arrow {
       font-size: 10px;
       color: var(--text-lo);
       transition: transform .2s;
+    }
+
+    .legend-close-btn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--ink-800);
+      border: 1px solid var(--line);
+      color: var(--text-mid);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .15s ease;
+      line-height: 1;
+    }
+
+    .legend-close-btn:hover {
+      background: var(--ink-700);
+      color: var(--text-hi);
+    }
+
+    .legend-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 9, 18, 0.65);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 34;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+
+    .legend-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .map-legend.collapsed .legend-arrow {
