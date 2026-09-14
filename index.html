@@ -1150,6 +1150,207 @@
         height: 180px;
       }
     }
+
+    /* ============================================================
+       GATE 3D LOCATION MARKERS (ประตู 1-4)
+    ============================================================ */
+    .gate-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 5;
+    }
+
+    .gate-marker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px 5px 10px;
+      border-radius: 999px;
+      background: rgba(14, 22, 38, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.55);
+      color: #f8fafc;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(56, 189, 248, 0.25);
+      white-space: nowrap;
+      transition: all 0.22s ease;
+    }
+
+    .gate-marker-icon {
+      font-size: 13px;
+      line-height: 1;
+    }
+
+    .gate-marker:hover .gate-marker-badge {
+      background: rgba(24, 37, 61, 0.98);
+      border-color: #38bdf8;
+      transform: translateY(-3px) scale(1.06);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(56, 189, 248, 0.5);
+    }
+
+    .gate-marker.active .gate-marker-badge {
+      background: rgba(30, 41, 59, 0.98);
+      border-color: #ffe600;
+      color: #ffe600;
+      transform: translateY(-3px) scale(1.08);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 18px rgba(255, 230, 0, 0.55);
+    }
+
+    .gate-marker-pulse {
+      width: 8px;
+      height: 8px;
+      background: #38bdf8;
+      border-radius: 50%;
+      margin-top: 3px;
+      box-shadow: 0 0 8px #38bdf8;
+      position: relative;
+    }
+
+    .gate-marker.active .gate-marker-pulse {
+      background: #ffe600;
+      box-shadow: 0 0 10px #ffe600;
+    }
+
+    .gate-marker-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1.5px solid #38bdf8;
+      animation: gatePulseRadar 2s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
+      opacity: 0;
+    }
+
+    .gate-marker.active .gate-marker-pulse::after {
+      border-color: #ffe600;
+    }
+
+    @keyframes gatePulseRadar {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.9;
+      }
+
+      100% {
+        transform: scale(2.8);
+        opacity: 0;
+      }
+    }
+
+    /* ============================================================
+       ADMIN BUILDING 3D LOCATION MARKER (อาคารอำนวยการ)
+    ============================================================ */
+    .admin-marker {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+      user-select: none;
+      -webkit-user-select: none;
+      z-index: 6;
+    }
+
+    .admin-marker-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px 6px 10px;
+      border-radius: 999px;
+      background: rgba(14, 22, 38, 0.94);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(245, 158, 11, 0.65);
+      color: #f8fafc;
+      font-size: 11.8px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 14px rgba(245, 158, 11, 0.35);
+      white-space: nowrap;
+      transition: all 0.22s ease;
+    }
+
+    .admin-marker-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .admin-marker-tag {
+      font-size: 10px;
+      font-weight: 600;
+      color: #f59e0b;
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      padding: 1px 6px;
+      border-radius: 999px;
+      margin-left: 2px;
+    }
+
+    .admin-marker:hover .admin-marker-badge {
+      background: rgba(24, 37, 61, 0.98);
+      border-color: #f59e0b;
+      transform: translateY(-3px) scale(1.06);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.55);
+    }
+
+    .admin-marker.active .admin-marker-badge {
+      background: rgba(30, 41, 59, 0.98);
+      border-color: #ffe600;
+      color: #ffe600;
+      transform: translateY(-3px) scale(1.08);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.65), 0 0 22px rgba(255, 230, 0, 0.6);
+    }
+
+    .admin-marker-pulse {
+      width: 9px;
+      height: 9px;
+      background: #f59e0b;
+      border-radius: 50%;
+      margin-top: 3px;
+      box-shadow: 0 0 10px #f59e0b;
+      position: relative;
+    }
+
+    .admin-marker.active .admin-marker-pulse {
+      background: #ffe600;
+      box-shadow: 0 0 12px #ffe600;
+    }
+
+    .admin-marker-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1.5px solid #f59e0b;
+      animation: adminPulseRadar 2s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
+      opacity: 0;
+    }
+
+    .admin-marker.active .admin-marker-pulse::after {
+      border-color: #ffe600;
+    }
+
+    @keyframes adminPulseRadar {
+      0% {
+        transform: scale(0.6);
+        opacity: 0.9;
+      }
+
+      100% {
+        transform: scale(2.8);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 
@@ -1680,19 +1881,30 @@
     const DEFAULT_VIEW = getDefaultView();
     const TOP_VIEW = { zoom: 17.6, pitch: 0, bearing: 0 };
 
+    const BOUNDARY_GEOJSON_PATH = './campus_boundary.geojson';
+
     const CAMPUS_BOUNDARY = {
       type: "Feature",
-      properties: {},
+      properties: {
+        name: "เขตพื้นที่วิทยาลัยสารพัดช่างอุดรธานี"
+      },
       geometry: {
         type: "Polygon",
         coordinates: [[
-          [102.7889667, 17.4000284],
-          [102.7892493, 17.3999042],
-          [102.7894823, 17.400272],
-          [102.7899321, 17.4000538],
-          [102.7886845, 17.3970481],
-          [102.7876226, 17.3975387],
-          [102.7889667, 17.4000284]
+          [102.788976, 17.400062],
+          [102.789269, 17.399928],
+          [102.789486, 17.400272],
+          [102.789921, 17.400061],
+          [102.789957, 17.400167],
+          [102.790147, 17.400111],
+          [102.790094, 17.399925],
+          [102.789536, 17.399694],
+          [102.789219, 17.398733],
+          [102.788982, 17.397889],
+          [102.788773, 17.397330],
+          [102.788620, 17.397085],
+          [102.787629, 17.397535],
+          [102.788976, 17.400062]
         ]]
       }
     };
@@ -1786,8 +1998,8 @@
       {
         bid_id: 11,
         name: 'อาคารอำนวยการ',
-        modelPath: './3d/อาคารอำนวยการ.glb',
-        fallbackModelPath: './3D/bid_11.glb',
+        modelPath: './3D/bid_11.glb',
+        fallbackModelPath: './3d/อาคารอำนวยการ.glb',
         dimensions: { width: 34, depth: 16, height: 11 },
         rotationDeg: 180,
         altitudeOffset: 0,
@@ -1798,108 +2010,38 @@
         preload: true
       },
       {
-        bid_id: 14,
-        name: 'อาคารเรียนและปฏิบัติการ 1',
-        modelPath: './3d/bid_14.glb',
-        fallbackModelPath: './3D/bid_14.glb',
-        dimensions: { width: 53, depth: 14, height: 9 },
-        rotationDeg: 88,
-        altitudeOffset: 0,
-        heading: 26,
-        offsetX: 7,
-        offsetY: -2,
-        coordinates: [102.788775, 17.398800],
-        preload: true
-      },
-      {
-        bid_id: 13,
-        name: 'อาคารเรียนและปฏิบัติการ 2 (ช่างอิเล็กทรอนิกส์)',
-        modelPath: './3d/bid_13.glb',
-        fallbackModelPath: './3D/bid_13.glb',
-        dimensions: { width: 30, depth: 15, height: 11 },
+        bid_id: 3,
+        name: 'อาคารเรียนและปฎิบัตการ 4',
+        modelPath: './3D/bid_3.glb',
+        fallbackModelPath: './3d/bid_3.glb',
+        dimensions: { width: 45, depth: 16, height: 16 },
         rotationDeg: 90,
         altitudeOffset: 0,
         heading: 26,
-        offsetX: 4,
-        offsetY: 2,
-        coordinates: [102.789127, 17.399011],
-        preload: true
-      },
-      {
-        bid_id: 21,
-        name: 'อาคารเรียนและปฏิบัติการ 5',
-        modelPath: './3d/bid_21.glb',
-        fallbackModelPath: './3D/bid_21.glb',
-        dimensions: { width: 56, depth: 26, height: 16 },
-        rotationDeg: 180,
-        altitudeOffset: 0,
-        heading: 26,
         offsetX: 0,
         offsetY: 0,
-        coordinates: [102.788492, 17.398535],
+        coordinates: [102.789686, 17.400088],
         preload: true
       },
       {
-        bid_id: 29,
-        name: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม',
-        modelPath: './3d/bid_29.glb',
-        fallbackModelPath: './3D/bid_29.glb',
-        dimensions: { width: 55, depth: 26, height: 6 },
+        bid_id: 31,
+        name: 'โดมอเนกประสงค์',
+        modelPath: './3D/bid_31.glb',
+        fallbackModelPath: './3d/bid_31.glb',
+        dimensions: { width: 48, depth: 24, height: 10 },
         rotationDeg: 90,
         altitudeOffset: 0,
         heading: 26,
-        offsetX: 4,
-        offsetY: 0,
-        coordinates: [102.788277, 17.398142],
-        preload: true
-      },
-      {
-        bid_id: 26,
-        name: 'โรงฝึกงาน',
-        modelPath: './3d/bid_26.glb',
-        fallbackModelPath: './3D/bid_26.glb',
-        dimensions: { width: 28, depth: 26, height: 6 },
-        rotationDeg: 0,
-        altitudeOffset: 0,
-        heading: 26,
-        offsetX: 8,
-        offsetY: 4,
-        coordinates: [102.788746, 17.398315],
-        preload: true
-      },
-      {
-        bid_id: 30,
-        name: 'โรงฝึกงานแผนกช่างกลโรงงาน',
-        modelPath: './3d/bid_30.glb',
-        fallbackModelPath: './3D/bid_29.glb',
-        dimensions: { width: 55, depth: 26, height: 6 },
-        rotationDeg: 0,
-        altitudeOffset: 0,
-        heading: 26,
         offsetX: 0,
         offsetY: 0,
-        coordinates: [102.787974, 17.397762],
-        preload: false
-      },
-      {
-        bid_id: 2,
-        name: 'หอพักนักศึกษา',
-        modelPath: './3d/bid_2.glb',
-        fallbackModelPath: './3D/bid_14.glb',
-        dimensions: { width: 53, depth: 14, height: 9 },
-        rotationDeg: 0,
-        altitudeOffset: 0,
-        heading: 26,
-        offsetX: 0,
-        offsetY: 0,
-        coordinates: [102.789394, 17.400001],
-        preload: false
+        coordinates: [102.788168, 17.397905],
+        preload: true
       },
       {
         bid_id: 1,
         name: 'อาคารเรียนและปฏิบัติการ 3 (วิชาชีพระยะสั้น)',
-        modelPath: './3d/bid_1.glb',
-        fallbackModelPath: './3D/bid_1.glb',
+        modelPath: './3D/bid_1.glb',
+        fallbackModelPath: './3d/bid_1.glb',
         dimensions: { width: 36, depth: 18, height: 15.5 },
         rotationDeg: 270,
         altitudeOffset: 0,
@@ -1912,8 +2054,8 @@
       {
         bid_id: 12,
         name: 'อาคารวิทยบริการและห้องสมุด',
-        modelPath: './3d/bid_12.glb',
-        fallbackModelPath: './3D/bid_12.glb',
+        modelPath: './3D/bid_12.glb',
+        fallbackModelPath: './3d/bid_12.glb',
         dimensions: { width: 30, depth: 22, height: 8.5 },
         rotationDeg: 180,
         altitudeOffset: 0,
@@ -1922,8 +2064,180 @@
         offsetY: 6,
         coordinates: [102.789231, 17.399181],
         preload: true
+      },
+      {
+        bid_id: 14,
+        name: 'อาคารเรียนและปฏิบัติการ 1',
+        modelPath: './3D/bid_14.glb',
+        fallbackModelPath: './3d/bid_14.glb',
+        dimensions: { width: 53, depth: 14, height: 9 },
+        rotationDeg: 88,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 7,
+        offsetY: -2,
+        coordinates: [102.788775, 17.398800],
+        preload: true
+      },
+      {
+        bid_id: 13,
+        name: 'อาคารเรียนและปฏิบัติการ 2 (ช่างอิเล็กทรอนิกส์)',
+        modelPath: './3D/bid_13.glb',
+        fallbackModelPath: './3d/bid_13.glb',
+        dimensions: { width: 30, depth: 15, height: 11 },
+        rotationDeg: 90,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 4,
+        offsetY: 2,
+        coordinates: [102.789127, 17.399011],
+        preload: true
+      },
+      {
+        bid_id: 21,
+        name: 'อาคารเรียนและปฏิบัติการ 5',
+        modelPath: './3D/bid_21.glb',
+        fallbackModelPath: './3d/bid_21.glb',
+        dimensions: { width: 56, depth: 26, height: 16 },
+        rotationDeg: 180,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 0,
+        offsetY: 0,
+        coordinates: [102.788492, 17.398535],
+        preload: true
+      },
+      {
+        bid_id: 29,
+        name: 'โรงฝึกงานประเภทวิชาอุตสาหกรรม',
+        modelPath: './3D/bid_29.glb',
+        fallbackModelPath: './3d/bid_29.glb',
+        dimensions: { width: 55, depth: 26, height: 6 },
+        rotationDeg: 90,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 4,
+        offsetY: 0,
+        coordinates: [102.788277, 17.398142],
+        preload: true
+      },
+      {
+        bid_id: 26,
+        name: 'โรงฝึกงาน',
+        modelPath: './3D/bid_26.glb',
+        fallbackModelPath: './3d/bid_26.glb',
+        dimensions: { width: 28, depth: 26, height: 6 },
+        rotationDeg: 0,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 8,
+        offsetY: 4,
+        coordinates: [102.788746, 17.398315],
+        preload: true
+      },
+      {
+        bid_id: 30,
+        name: 'โรงฝึกงานแผนกช่างกลโรงงาน',
+        modelPath: './3D/bid_30.glb',
+        fallbackModelPath: './3d/bid_30.glb',
+        dimensions: { width: 36, depth: 22, height: 6 },
+        rotationDeg: 90,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 2,
+        offsetY: 0,
+        coordinates: [102.787974, 17.397762],
+        preload: true
+      },
+      {
+        bid_id: 2,
+        name: 'หอพักนักศึกษา',
+        modelPath: './3D/bid_2.glb',
+        fallbackModelPath: './3D/bid_14.glb',
+        dimensions: { width: 53, depth: 14, height: 9 },
+        rotationDeg: 0,
+        altitudeOffset: 0,
+        heading: 26,
+        offsetX: 0,
+        offsetY: 0,
+        coordinates: [102.789394, 17.400001],
+        preload: false
       }
     ];
+
+    /**
+     * ======================================================================
+     * 2.1 CAMPUS GATES CONFIGURATION & PLACEMENT (GATES_CONFIG)
+     * ======================================================================
+     * ซุ้มประตูทางเข้า-ออกทั้ง 4 จุดของวิทยาลัย
+     * ใช้โมเดล 3D เดียวกัน (gate.glb) โหลดครั้งเดียวและ Clone วางตำแหน่งทั้ง 4 จุด
+     */
+    const GATES_CONFIG = [
+      {
+        id: 'gate-1',
+        gateNum: 1,
+        name: 'ประตู 1 (ทางเข้าหลัก)',
+        shortName: 'ประตู 1',
+        coords: [102.788490, 17.399091],
+        coordinates: [102.788490, 17.399091],
+        rotationDeg: 0,
+        heading: 26,
+        dimensions: { width: 12, depth: 2, height: 5.8 },
+        modelPath: './3D/gate.glb',
+        fallbackModelPath: './3d/gate.glb',
+        isMain: true,
+        desc: 'ประตูทางเข้าหลักติดถนนมิตรภาพ ด้านหน้าอาคารอำนวยการและป้อมยาม สำหรับรถยนต์ บุคคลภายนอก และการติดต่อราชการ'
+      },
+      {
+        id: 'gate-2',
+        gateNum: 2,
+        name: 'ประตู 2',
+        shortName: 'ประตู 2',
+        coords: [102.788800, 17.399695],
+        coordinates: [102.788800, 17.399695],
+        rotationDeg: 0,
+        heading: 26,
+        dimensions: { width: 10, depth: 1.8, height: 5 },
+        modelPath: './3D/gate.glb',
+        fallbackModelPath: './3d/gate.glb',
+        isMain: false,
+        desc: 'ประตูทางเข้า-ออกฝั่งทิศเหนือ ใกล้อาคารเรียน 3 และหอพักนักศึกษา สำหรับนักเรียนนักศึกษาและบุคลากร'
+      },
+      {
+        id: 'gate-3',
+        gateNum: 3,
+        name: 'ประตู 3',
+        shortName: 'ประตู 3',
+        coords: [102.788124, 17.398426],
+        coordinates: [102.788124, 17.398426],
+        rotationDeg: 0,
+        heading: 26,
+        dimensions: { width: 10, depth: 1.8, height: 5 },
+        modelPath: './3D/gate.glb',
+        fallbackModelPath: './3d/gate.glb',
+        isMain: false,
+        desc: 'ประตูทางเข้า-ออกบริเวณกลุ่มอาคารโรงฝึกงานอุตสาหกรรม สำหรับยานพาหนะและการขนส่งอุปกรณ์'
+      },
+      {
+        id: 'gate-4',
+        gateNum: 4,
+        name: 'ประตู 4',
+        shortName: 'ประตู 4',
+        coords: [102.787736, 17.397710],
+        coordinates: [102.787736, 17.397710],
+        rotationDeg: 0,
+        heading: 26,
+        dimensions: { width: 8, depth: 1.6, height: 4.8 },
+        modelPath: './3D/gate.glb',
+        fallbackModelPath: './3d/gate.glb',
+        isMain: false,
+        desc: 'ประตูทางเข้า-ออกฝั่งทิศใต้ ใกล้โดมอเนกประสงค์และแผนกช่างกลโรงงาน'
+      }
+    ];
+
+    function getGateConfig(gateId) {
+      return GATES_CONFIG.find(g => g.id === gateId);
+    }
 
     // สร้าง Map Registry สำหรับค้นหาแบบ O(1) พร้อมคงความเข้ากันได้ย้อนหลัง
     const CAMPUS_3D_REGISTRY = {};
@@ -2005,13 +2319,19 @@
           this.buildingsContainer = new THREE.Group();
           this.scene.add(this.buildingsContainer);
 
+          this.gatesContainer = new THREE.Group();
+          this.scene.add(this.gatesContainer);
+
           this.loadedModels = new Map();     // bid_id -> THREE.Group
+          this.loadedGates = new Map();      // gate_id -> THREE.Group
           this.loadingModels = new Set();
           this.raycastProxies = [];          // Lightweight Invisible Proxy Box Meshes for ultra-fast raycasting
           this.originalMaterials = new Map();
 
           this.selectedBid = null;
           this.hoveredBid = null;
+          this.selectedGateId = null;
+          this.hoveredGateId = null;
 
           // 2) แสงสภาพแวดล้อมที่สมดุลและเป็นธรรมชาติ ไม่จ้าหรือเรืองแสงพลาสติก
           const ambientLight = new THREE.AmbientLight(0xffffff, 0.45);
@@ -2043,15 +2363,19 @@
           this.gltfLoader = new THREE.GLTFLoader(this.loadingManager);
           this.gltfLoader.setDRACOLoader(this.dracoLoader);
 
-          // 5) Progressive Queue: โหลดโมเดลทีละหลังแบบ Asynchronous ไม่บล็อก Main Thread / Map Canvas
+          // 5) Progressive Queue: โหลดโมเดลแบบ Asynchronous รองรับ Concurrency เพื่อความรวดเร็ว
           this.loadQueue = [];
-          this.isProcessingQueue = false;
+          this.activeLoads = 0;
+          this.maxConcurrentLoads = 2;
 
           CUSTOM_MODELS_CONFIG.forEach(cfg => {
             if (cfg.preload) {
               this.queueBuildingLoad(cfg.bid_id);
             }
           });
+
+          // 6) โหลดและวางตำแหน่งโมเดล 3D ประตู 1-4 โดยใช้ Single Shared Model (gate.glb) แบบ Instancing / Cloning
+          this.loadGateModels();
         },
 
         // จัดคิวโหลดแบบ Progressive ไม่บล็อก UI
@@ -2063,18 +2387,15 @@
         },
 
         processQueue: function () {
-          if (this.isProcessingQueue || this.loadQueue.length === 0) return;
-          this.isProcessingQueue = true;
-
-          const nextBid = this.loadQueue.shift();
-          // พักเข้าสู่ Macro-task เพื่อคืน Thread ให้ MapLibre วาดแผนที่และรับ Event เมาส์ได้อย่างราบรื่น
-          setTimeout(() => {
+          if (this.loadQueue.length === 0) return;
+          while (this.activeLoads < this.maxConcurrentLoads && this.loadQueue.length > 0) {
+            const nextBid = this.loadQueue.shift();
+            this.activeLoads++;
             this.loadBuildingModel(nextBid, () => {
-              this.isProcessingQueue = false;
-              // เว้นระยะห่างเล็กน้อยระหว่างโมเดลเพื่อป้องกัน CPU/GPU Spike
-              setTimeout(() => this.processQueue(), 60);
+              this.activeLoads = Math.max(0, this.activeLoads - 1);
+              setTimeout(() => this.processQueue(), 40);
             });
-          }, 35);
+          }
         },
 
         // โหลดโมเดล 3D ประจำอาคาร (Progressive + Strip Glow + Proxy Mesh)
@@ -2091,10 +2412,10 @@
           const candidatePaths = [
             cfg.modelPath,
             cfg.fallbackModelPath,
-            `./3d/bid_${numBid}.glb`,
             `./3D/bid_${numBid}.glb`,
-            `./3d/${cfg.name}.glb`,
-            `./3D/${cfg.name}.glb`
+            `./3d/bid_${numBid}.glb`,
+            `./3D/${cfg.name}.glb`,
+            `./3d/${cfg.name}.glb`
           ].filter(Boolean);
 
           const uniquePaths = [...new Set(candidatePaths)];
@@ -2139,9 +2460,6 @@
                 const center = new THREE.Vector3();
                 bbox.getCenter(center);
 
-                // ปรับให้อยู่กึ่งกลางฐาน footprint และวางแนบพื้นดิน (Y = 0)
-                model.position.set(-center.x, -bbox.min.y, -center.z);
-
                 const dims = cfg.dimensions || {};
                 const targetW = Number(dims.width || cfg.targetWidth || (size.x || 1));
                 const targetD = Number(dims.depth || cfg.targetDepth || (size.z || 1));
@@ -2152,11 +2470,14 @@
                 const sy = ((size.y > 0.0001) ? (targetH / size.y) : 1) * mult;
                 const sz = ((size.z > 0.0001) ? (targetD / size.z) : 1) * mult;
 
+                // วางกึ่งกลาง Footprint และวางแนบพื้นดิน (Y = 0) พอดี โดยชดเชย Scale ในแกน Y
                 if (cfg.proportionalScale) {
                   const ps = ((size.x > 0.0001) ? (targetW / size.x) : 1) * mult;
                   model.scale.set(ps, ps, ps);
+                  model.position.set(-center.x * ps, -bbox.min.y * ps, -center.z * ps);
                 } else {
                   model.scale.set(sx, sy, sz);
+                  model.position.set(-center.x * sx, -bbox.min.y * sy, -center.z * sz);
                 }
 
                 // หมุนโมเดลตามทิศ Heading + Rotation Offset ชดเชยองศา
@@ -2275,7 +2596,11 @@
             const idx = this.loadQueue.indexOf(numBid);
             if (idx > -1) this.loadQueue.splice(idx, 1);
             this.loadQueue.unshift(numBid);
-            this.processQueue();
+            if (!this.loadingModels.has(numBid)) {
+              this.loadBuildingModel(numBid);
+            } else {
+              this.processQueue();
+            }
           }
         },
 
@@ -2321,8 +2646,146 @@
           this.updateVisualState();
         },
 
+        setSelectedGate: function (gateId) {
+          if (this.selectedGateId === gateId) return;
+          this.selectedGateId = gateId;
+          this.updateVisualState();
+        },
+
+        setHoveredGate: function (gateId) {
+          if (this.hoveredGateId === gateId) return;
+          this.hoveredGateId = gateId;
+          this.updateVisualState();
+        },
+
+        // โหลดและสร้างโมเดลซุ้มประตู 1-4 โดยใช้ single shared asset (gate.glb) แบบ Instancing / Cloning
+        loadGateModels: function () {
+          const candidatePaths = [
+            './3D/gate.glb',
+            './3d/gate.glb',
+            '3D/gate.glb',
+            '3d/gate.glb'
+          ];
+          let currentIdx = 0;
+
+          const tryLoadGate = () => {
+            if (currentIdx >= candidatePaths.length) {
+              console.warn('[3D Gate] ไม่พบไฟล์ gate.glb ในไดเรกทอรี 3D หรือ 3d');
+              return;
+            }
+            const url = candidatePaths[currentIdx++];
+            this.gltfLoader.load(
+              url,
+              (gltf) => {
+                const gateTemplate = gltf.scene;
+                this.initGatesFromTemplate(gateTemplate);
+              },
+              undefined,
+              (err) => {
+                console.warn(`[3D Gate] โหลด ${url} ไม่สำเร็จ:`, err);
+                tryLoadGate();
+              }
+            );
+          };
+
+          tryLoadGate();
+        },
+
+        initGatesFromTemplate: function (gateTemplate) {
+          if (!gateTemplate || !GATES_CONFIG.length) return;
+
+          GATES_CONFIG.forEach(gateCfg => {
+            const gateGroup = new THREE.Group();
+            gateGroup.userData = { gate_id: gateCfg.id, gateConfig: gateCfg, isGate: true };
+
+            // Clone the template model using gateTemplate.clone(true)
+            const gateModel = gateTemplate.clone(true);
+
+            // ปรับแต่ง Material: ล้างแสงเรืองที่ไม่เป็นธรรมชาติ (Anti-glow fix) และปรับผิวด้าน Matte
+            // Clone Material เพื่อให้แต่ละประตูสามารถไฮไลต์หรือเปลี่ยนสถานะได้อย่างอิสระ
+            gateModel.traverse((child) => {
+              if (child.isMesh) {
+                child.userData = { gate_id: gateCfg.id, isGate: true };
+                if (child.material) {
+                  if (Array.isArray(child.material)) {
+                    child.material = child.material.map(m => {
+                      const cloned = m.clone();
+                      cloned.side = THREE.DoubleSide;
+                      if (cloned.emissive) cloned.emissive.setHex(0x000000);
+                      if (cloned.roughness !== undefined) cloned.roughness = 0.7;
+                      if (cloned.metalness !== undefined) cloned.metalness = 0.1;
+                      cloned.needsUpdate = true;
+                      return cloned;
+                    });
+                  } else {
+                    child.material = child.material.clone();
+                    child.material.side = THREE.DoubleSide;
+                    if (child.material.emissive) child.material.emissive.setHex(0x000000);
+                    if (child.material.roughness !== undefined) child.material.roughness = 0.7;
+                    if (child.material.metalness !== undefined) child.material.metalness = 0.1;
+                    child.material.needsUpdate = true;
+                  }
+                }
+              }
+            });
+
+            // Auto-normalize และปรับขนาดโมเดลให้ตรงกับมิติโลกจริงในหน่วยเมตร ผ่าน THREE.Box3
+            const bbox = new THREE.Box3().setFromObject(gateModel);
+            const size = new THREE.Vector3();
+            bbox.getSize(size);
+            const center = new THREE.Vector3();
+            bbox.getCenter(center);
+
+            const dims = gateCfg.dimensions || { width: 10, depth: 2, height: 5 };
+            const targetW = Number(dims.width || 10);
+            const targetD = Number(dims.depth || 2);
+            const targetH = Number(dims.height || 5);
+
+            const sx = size.x > 0.0001 ? (targetW / size.x) : 1;
+            const sy = size.y > 0.0001 ? (targetH / size.y) : 1;
+            const sz = size.z > 0.0001 ? (targetD / size.z) : 1;
+            gateModel.scale.set(sx, sy, sz);
+
+            // ปรับให้อยู่กึ่งกลางฐาน footprint และวางแนบพื้นดิน (Y = 0) พอดี ไม่จมดิน
+            gateModel.position.set(-center.x * sx, -bbox.min.y * sy, -center.z * sz);
+
+            // หมุนโมเดลตามทิศ Heading + Rotation Offset ชดเชยองศา
+            const heading = gateCfg.heading !== undefined ? Number(gateCfg.heading) : 26;
+            const rotOffset = gateCfg.rotationDeg !== undefined ? Number(gateCfg.rotationDeg) : 0;
+            const rad = ((90 - heading) + rotOffset) * (Math.PI / 180);
+            gateGroup.rotation.y = rad;
+
+            // กำหนดตำแหน่ง Mercator Anchor
+            const coords = gateCfg.coords || gateCfg.coordinates;
+            const gMercator = maplibregl.MercatorCoordinate.fromLngLat(coords, 0);
+            const dx = (gMercator.x - anchorTransform.translateX) / anchorTransform.scale;
+            const dz = (gMercator.y - anchorTransform.translateY) / anchorTransform.scale;
+            const alt = Number(gateCfg.altitudeOffset || 0);
+            gateGroup.position.set(dx, alt, dz);
+
+            // สร้าง Invisible Low-Poly Proxy Box สำหรับ Raycasting โดยเฉพาะ
+            const proxyGeo = new THREE.BoxGeometry(targetW, targetH, targetD);
+            const proxyMat = new THREE.MeshBasicMaterial({ visible: false, wireframe: false });
+            const proxyMesh = new THREE.Mesh(proxyGeo, proxyMat);
+            proxyMesh.position.set(0, targetH / 2, 0);
+            proxyMesh.userData = { gate_id: gateCfg.id, isProxy: true, isGate: true };
+            gateGroup.add(proxyMesh);
+            this.raycastProxies.push(proxyMesh);
+
+            gateGroup.add(gateModel);
+            this.gatesContainer.add(gateGroup);
+            this.loadedGates.set(gateCfg.id, gateGroup);
+
+            console.log(`✅ ติดตั้งโมเดล 3D ซุ้มประตู #${gateCfg.id} (${gateCfg.name}) สำเร็จ`);
+          });
+
+          if (this.map) this.map.triggerRepaint();
+        },
+
         updateVisualState: function () {
           let needsRepaint = false;
+
+          // ไฮไลต์อาคาร
           this.loadedModels.forEach((bGroup, bid) => {
             const isSelected = this.selectedBid === bid;
             const isHovered = this.hoveredBid === bid && !isSelected;
@@ -2333,12 +2796,10 @@
                 mats.forEach(m => {
                   if (!m || !m.emissive) return;
                   if (isSelected) {
-                    // ไฮไลต์สีทองอำพันนุ่มนวลแบบผิวด้าน ไม่ฟุ้งพลาสติก
                     m.emissive.setHex(0x5a3e00);
                     m.emissiveIntensity = 0.5;
                     needsRepaint = true;
                   } else if (isHovered) {
-                    // แสงเรืองบางเบาเฉพาะตอนชี้เมาส์
                     m.emissive.setHex(0x222833);
                     m.emissiveIntensity = 0.35;
                     needsRepaint = true;
@@ -2351,10 +2812,39 @@
               }
             });
           });
+
+          // ไฮไลต์ซุ้มประตู 1-4
+          this.loadedGates.forEach((gGroup, gateId) => {
+            const isSelected = this.selectedGateId === gateId;
+            const isHovered = this.hoveredGateId === gateId && !isSelected;
+
+            gGroup.traverse((child) => {
+              if (child.isMesh && !child.userData.isProxy && child.material) {
+                const mats = Array.isArray(child.material) ? child.material : [child.material];
+                mats.forEach(m => {
+                  if (!m || !m.emissive) return;
+                  if (isSelected) {
+                    m.emissive.setHex(0x5a3e00);
+                    m.emissiveIntensity = 0.6;
+                    needsRepaint = true;
+                  } else if (isHovered) {
+                    m.emissive.setHex(0x222833);
+                    m.emissiveIntensity = 0.4;
+                    needsRepaint = true;
+                  } else {
+                    m.emissive.setHex(0x000000);
+                    m.emissiveIntensity = 0.0;
+                    needsRepaint = true;
+                  }
+                });
+              }
+            });
+          });
+
           if (needsRepaint && this.map) this.map.triggerRepaint();
         },
 
-        // Raycasting รวดเร็วเป็นพิเศษผ่าน Low-Poly Proxy Boxes เท่านั้น
+        // Raycasting รวดเร็วเป็นพิเศษผ่าน Low-Poly Proxy Boxes เท่านั้น (รองรับทั้งอาคารและประตู)
         raycast: function (point, lngLat) {
           if (!this.raycastProxies.length || !this.map) return null;
           try {
@@ -2380,8 +2870,13 @@
             const intersects = this.raycaster.intersectObjects(this.raycastProxies, false);
             if (intersects && intersects.length > 0) {
               const hit = intersects[0];
-              if (hit.object && hit.object.userData && hit.object.userData.bid_id) {
-                return { hit: true, bid_id: Number(hit.object.userData.bid_id) };
+              if (hit.object && hit.object.userData) {
+                if (hit.object.userData.isGate && hit.object.userData.gate_id) {
+                  return { hit: true, isGate: true, gate_id: hit.object.userData.gate_id };
+                }
+                if (hit.object.userData.bid_id) {
+                  return { hit: true, isGate: false, bid_id: Number(hit.object.userData.bid_id) };
+                }
               }
             }
           } catch (e) {
@@ -2447,16 +2942,32 @@
         position: [1.5, 215, 32]
       });
 
-      /* เส้นขอบเขตวิทยาลัย */
-      map.addSource('campus-boundary', { type: 'geojson', data: CAMPUS_BOUNDARY });
+      /* เส้นขอบเขตวิทยาลัย (Dashed Perimeter Line & Subtle Fill) */
+      map.addSource('campus-boundary', {
+        type: 'geojson',
+        data: (window.location.protocol === 'file:') ? CAMPUS_BOUNDARY : BOUNDARY_GEOJSON_PATH
+      });
+
+      /* เลเยอร์สีพื้นหลังขอบเขตโปร่งแสงระดับบางเบา เพื่อแยกบริเวณวิทยาลัยกับพื้นที่ภายนอก */
+      map.addLayer({
+        id: 'campus-boundary-fill',
+        type: 'fill',
+        source: 'campus-boundary',
+        paint: {
+          'fill-color': '#38bdf8',
+          'fill-opacity': 0.04
+        }
+      });
+
+      /* เลเยอร์เส้นประขอบเขตวิทยาลัย (Dashed Perimeter Border) */
       map.addLayer({
         id: 'campus-boundary-line',
         type: 'line',
         source: 'campus-boundary',
         paint: {
-          'line-color': '#ff9838',
-          'line-width': 2,
-          'line-opacity': 0.65,
+          'line-color': '#38bdf8',
+          'line-width': 2.8,
+          'line-opacity': 0.85,
           'line-dasharray': [3, 2]
         }
       });
@@ -2511,7 +3022,12 @@
       window.campus3DLayer = campus3DLayer;
       window.CAMPUS_3D_REGISTRY = CAMPUS_3D_REGISTRY;
       window.CUSTOM_MODELS_CONFIG = CUSTOM_MODELS_CONFIG;
+      window.GATES_CONFIG = GATES_CONFIG;
       map.addLayer(campus3DLayer);
+
+      /* ติดตั้ง Marker สัญลักษณ์ตำแหน่งของซุ้มประตู 1-4 และอาคารอำนวยการ บนแผนที่ */
+      initGateMarkers();
+      initAdminMarker();
 
       /* ดึงข้อมูล GeoJSON และประมวลผลข้อมูลแนะนำสำหรับผู้มาเยือน */
       fetch(GEOJSON_PATH).then(r => r.json()).then(data => {
@@ -2581,6 +3097,8 @@
     }
 
     function getCentroid(feature) {
+      if (!feature || !feature.geometry) return CAMPUS_CENTER;
+      if (feature.geometry.type === 'Point') return feature.geometry.coordinates;
       let coords = feature.geometry.coordinates;
       let ring = feature.geometry.type === 'Polygon' ? coords[0] : coords[0][0];
       let sx = 0, sy = 0;
@@ -2600,16 +3118,17 @@
     }
 
     let currentHovered3DBid = null;
+    let currentHoveredGateId = null;
 
-    // ตรวจสอบว่าพิกัด/ตำแหน่งเมาส์โดนโมเดล 3D ของอาคารใดใน CAMPUS_3D_REGISTRY หรือไม่
-    function check3DBuildingHit(point, lngLat) {
+    // ตรวจสอบว่าพิกัด/ตำแหน่งเมาส์โดนโมเดล 3D ของอาคารหรือซุ้มประตูหรือไม่
+    function check3DHit(point, lngLat) {
       if (!lngLat) return null;
 
-      // 1) ตรวจสอบด้วย Three.js Raycaster ยิงแสงจากมุมกล้องลงสู่ 3D Mesh จริง
+      // 1) ตรวจสอบด้วย Three.js Raycaster ยิงแสงจากมุมกล้องลงสู่ 3D Mesh จริง (อาคารและซุ้มประตู)
       if (campus3DLayer && campus3DLayer.raycast) {
         const rayResult = campus3DLayer.raycast(point, lngLat);
         if (rayResult && rayResult.hit) {
-          return { hit: true, bid_id: rayResult.bid_id };
+          return rayResult;
         }
       }
 
@@ -2632,7 +3151,7 @@
               const intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
               if (intersect) inside = !inside;
             }
-            if (inside) return { hit: true, bid_id: bid };
+            if (inside) return { hit: true, isGate: false, bid_id: bid };
           }
         }
       }
@@ -2640,24 +3159,56 @@
     }
 
     // เพื่อความเข้ากันได้ย้อนหลัง
+    function check3DBuildingHit(point, lngLat) {
+      return check3DHit(point, lngLat);
+    }
+
     function checkAdminBuildingHit(point, lngLat) {
-      const hit = check3DBuildingHit(point, lngLat);
+      const hit = check3DHit(point, lngLat);
       return hit && hit.bid_id === 11;
     }
 
     let lastMouseMoveTime = 0;
 
-    // ตรวจจับการเคลื่อนไหวเมาส์ทั่วทั้งแผนที่เพื่อรองรับทุกโมเดล 3D (Throttled เพื่อป้องกันอาการกระตุก)
+    // ตรวจจับการเคลื่อนไหวเมาส์ทั่วทั้งแผนที่เพื่อรองรับทุกโมเดล 3D และซุ้มประตู (Throttled เพื่อป้องกันอาการกระตุก)
     map.on('mousemove', (e) => {
       const now = performance.now();
       if (now - lastMouseMoveTime < 24) return; // จำกัดความถี่การตรวจสอบ Raycast ไม่เกิน ~40fps
       lastMouseMoveTime = now;
 
-      const hit3D = check3DBuildingHit(e.point, e.lngLat);
+      const hit3D = check3DHit(e.point, e.lngLat);
       if (hit3D) {
         map.getCanvas().style.cursor = 'pointer';
+
+        // กรณีชี้โดนโมเดล 3D ซุ้มประตู (Gates 1-4)
+        if (hit3D.isGate) {
+          currentHoveredGateId = hit3D.gate_id;
+          if (campus3DLayer) campus3DLayer.setHoveredGate(hit3D.gate_id);
+          if (currentHovered3DBid !== null) {
+            if (campus3DLayer) campus3DLayer.setHovered(null);
+            currentHovered3DBid = null;
+          }
+
+          if (isDesktopPointer()) {
+            const gateCfg = getGateConfig(hit3D.gate_id) || {};
+            htDot.style.background = '#ef4444';
+            htName.textContent = gateCfg.name || 'ซุ้มประตู';
+            htCat.textContent = '🛡️ ป้อมยาม & ประตูเข้า-ออก';
+
+            hoverTooltip.style.left = e.point.x + 'px';
+            hoverTooltip.style.top = e.point.y + 'px';
+            hoverTooltip.classList.add('show');
+          }
+          return;
+        }
+
+        // กรณีชี้โดนโมเดล 3D อาคาร
         currentHovered3DBid = hit3D.bid_id;
         if (campus3DLayer) campus3DLayer.setHovered(hit3D.bid_id);
+        if (currentHoveredGateId !== null) {
+          if (campus3DLayer) campus3DLayer.setHoveredGate(null);
+          currentHoveredGateId = null;
+        }
 
         if (isDesktopPointer()) {
           const meta = VISITOR_BUILDINGS[hit3D.bid_id] || (buildingsData?.features?.find(f => Number(f.properties.bid_id) === hit3D.bid_id)?.properties) || {};
@@ -2673,9 +3224,13 @@
         return;
       }
 
-      if (currentHovered3DBid !== null) {
+      if (currentHovered3DBid !== null || currentHoveredGateId !== null) {
         currentHovered3DBid = null;
-        if (campus3DLayer) campus3DLayer.setHovered(null);
+        currentHoveredGateId = null;
+        if (campus3DLayer) {
+          campus3DLayer.setHovered(null);
+          campus3DLayer.setHoveredGate(null);
+        }
         const feats = map.queryRenderedFeatures(e.point, { layers: ['buildings-3d'] });
         if (!feats.length) {
           map.getCanvas().style.cursor = '';
@@ -2684,11 +3239,15 @@
       }
     });
 
-    // ดักจับการคลิกที่โมเดล 3D
+    // ดักจับการคลิกที่โมเดล 3D (ทั้งอาคารและซุ้มประตู)
     map.on('click', (e) => {
-      const hit3D = check3DBuildingHit(e.point, e.lngLat);
+      const hit3D = check3DHit(e.point, e.lngLat);
       if (hit3D) {
         hoverTooltip.classList.remove('show');
+        if (hit3D.isGate) {
+          focusGate(hit3D.gate_id);
+          return;
+        }
         const f = buildingsData && buildingsData.features ?
           buildingsData.features.find(ft => Number(ft.properties.bid_id) === hit3D.bid_id) : null;
         if (f) {
@@ -2699,7 +3258,7 @@
     });
 
     map.on('mousemove', 'buildings-3d', (e) => {
-      if (currentHovered3DBid !== null) return;
+      if (currentHovered3DBid !== null || currentHoveredGateId !== null) return;
       if (!e.features.length) return;
       const f = e.features[0];
       const p = f.properties;
@@ -2735,7 +3294,7 @@
     });
 
     map.on('mouseleave', 'buildings-3d', () => {
-      if (currentHovered3DBid !== null) return;
+      if (currentHovered3DBid !== null || currentHoveredGateId !== null) return;
       map.getCanvas().style.cursor = '';
       hoverTooltip.classList.remove('show');
       if (hoveredId !== null) {
@@ -2790,7 +3349,15 @@
       selectedId = bid;
       if (bid !== null) {
         map.setFeatureState({ source: 'buildings', id: bid }, { selected: true });
+        // ยกเลิกการเลือกประตูเมื่อเลือกอาคาร
+        if (campus3DLayer && campus3DLayer.setSelectedGate) {
+          campus3DLayer.setSelectedGate(null);
+        }
+        document.querySelectorAll('.gate-marker').forEach(el => el.classList.remove('active'));
       }
+      // อัปเดตสถานะ Active ของ Marker อาคารอำนวยการ
+      document.querySelectorAll('.admin-marker').forEach(el => el.classList.toggle('active', Number(bid) === 11));
+
       // อัปเดตสถานะไฮไลต์ของโมเดล 3D ประจำอาคารที่ถูกเลือก
       if (campus3DLayer && campus3DLayer.setSelected) {
         campus3DLayer.setSelected(bid);
@@ -2799,6 +3366,192 @@
       document.querySelectorAll('.b-item').forEach(el => {
         el.classList.toggle('active', Number(el.dataset.bid) === bid);
       });
+    }
+
+    /* ======================================================================
+       4.1) CAMPUS GATES INTERACTION & MARKERS
+       ====================================================================== */
+    const gateMarkers = [];
+
+    function initGateMarkers() {
+      // ล้าง Markers เดิมหากมี
+      gateMarkers.forEach(m => m.remove());
+      gateMarkers.length = 0;
+
+      GATES_CONFIG.forEach(gateCfg => {
+        const el = document.createElement('div');
+        el.className = 'gate-marker';
+        el.dataset.gateId = gateCfg.id;
+        el.title = `${gateCfg.name} — คลิกเพื่อนำทางและดูรายละเอียด`;
+
+        el.innerHTML = `
+          <div class="gate-marker-badge">
+            <span class="gate-marker-icon">🚪</span>
+            <span>${gateCfg.shortName || gateCfg.name}</span>
+          </div>
+          <div class="gate-marker-pulse"></div>
+        `;
+
+        el.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          focusGate(gateCfg.id);
+        });
+
+        const marker = new maplibregl.Marker({
+          element: el,
+          anchor: 'bottom'
+        })
+          .setLngLat(gateCfg.coords || gateCfg.coordinates)
+          .addTo(map);
+
+        gateMarkers.push(marker);
+      });
+
+      updateMarkersVisibility();
+    }
+
+    /* ======================================================================
+       4.2) ADMIN BUILDING 3D LOCATION MARKER (อาคารอำนวยการ - ติดต่อราชการ)
+       ====================================================================== */
+    let adminMarker = null;
+
+    function initAdminMarker() {
+      if (adminMarker) {
+        adminMarker.remove();
+        adminMarker = null;
+      }
+
+      const adminCoords = [102.788829, 17.399158];
+
+      const el = document.createElement('div');
+      el.className = 'admin-marker';
+      el.dataset.bid = '11';
+      el.title = 'อาคารอำนวยการ (ศูนย์ประสานงานและจุดติดต่อราชการหลัก) — คลิกเพื่อนำทางและดูรายละเอียด';
+
+      el.innerHTML = `
+        <div class="admin-marker-badge">
+          <span class="admin-marker-icon">🏛️</span>
+          <span>อาคารอำนวยการ</span>
+          <span class="admin-marker-tag">ติดต่อราชการ</span>
+        </div>
+        <div class="admin-marker-pulse"></div>
+      `;
+
+      el.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        const f = buildingsData && buildingsData.features ?
+          buildingsData.features.find(ft => Number(ft.properties.bid_id) === 11) : null;
+        if (f) {
+          focusBuilding(f);
+        } else {
+          focusBuilding({
+            properties: {
+              bid_id: 11,
+              name: 'อาคารอำนวยการ',
+              category: 'admin',
+              color: '#f59e0b',
+              isStar: true,
+              starLabel: '⭐ จุดติดต่อราชการหลัก',
+              visitorTip: 'ศูนย์ประสานงานและจุดติดต่อราชการหลักของวิทยาลัย ชั้น 1 งานทะเบียน การเงิน กิจการนักศึกษา',
+              clickable: 'TRUE'
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: adminCoords
+            }
+          });
+        }
+      });
+
+      adminMarker = new maplibregl.Marker({
+        element: el,
+        anchor: 'bottom'
+      })
+        .setLngLat(adminCoords)
+        .addTo(map);
+
+      updateMarkersVisibility();
+    }
+
+    // ควบคุมการแสดงผลของ Marker (ทั้งซุ้มประตูและอาคารอำนวยการ) ตามระดับ Zoom
+    function updateMarkersVisibility() {
+      if (!map) return;
+      const z = map.getZoom();
+      const visible = z >= 15.2;
+
+      gateMarkers.forEach(m => {
+        const el = m.getElement();
+        if (el) {
+          el.style.opacity = visible ? '1' : '0';
+          el.style.pointerEvents = visible ? 'auto' : 'none';
+          el.style.transform = visible ? 'scale(1)' : 'scale(0.85)';
+        }
+      });
+
+      if (adminMarker) {
+        const el = adminMarker.getElement();
+        if (el) {
+          el.style.opacity = visible ? '1' : '0';
+          el.style.pointerEvents = visible ? 'auto' : 'none';
+          el.style.transform = visible ? 'scale(1)' : 'scale(0.85)';
+        }
+      }
+    }
+
+    map.on('zoom', updateMarkersVisibility);
+
+    function focusGate(gateId) {
+      hoverTooltip.classList.remove('show');
+      const gateCfg = getGateConfig(gateId);
+      if (!gateCfg) return;
+
+      setSelected(null);
+      if (campus3DLayer && campus3DLayer.setSelectedGate) {
+        campus3DLayer.setSelectedGate(gateId);
+      }
+
+      document.querySelectorAll('.gate-marker').forEach(el => {
+        el.classList.toggle('active', el.dataset.gateId === gateId);
+      });
+      document.querySelectorAll('.admin-marker').forEach(el => el.classList.remove('active'));
+
+      const coords = gateCfg.coords || gateCfg.coordinates;
+      map.flyTo({
+        center: coords,
+        zoom: 19.2,
+        pitch: 58,
+        bearing: (gateCfg.heading || 26) + 4,
+        speed: 0.9,
+        curve: 1.3,
+        essential: true
+      });
+
+      openGateInfoCard(gateCfg);
+    }
+
+    function openGateInfoCard(gateConfig) {
+      const coords = gateConfig.coords || gateConfig.coordinates;
+      const gateFeature = {
+        properties: {
+          bid_id: null,
+          name: gateConfig.name,
+          category: 'security',
+          color: '#ef4444',
+          isStar: gateConfig.isMain || gateConfig.id === 'gate-1',
+          starLabel: gateConfig.isMain ? '⭐ ทางเข้าหลักวิทยาลัย' : '🛡️ ประตูทางเข้า-ออก',
+          visitorTip: gateConfig.isMain
+            ? 'ทางเข้าหลักติดถนนมิตรภาพ ตรงข้ามป้อมยาม สำหรับรถยนต์ บุคคลภายนอก และการติดต่อราชการ'
+            : 'ประตูทางเข้า-ออกวิทยาลัย สำหรับนักเรียนนักศึกษา บุคลากร และยานพาหนะ',
+          desc: gateConfig.desc || `ซุ้มประตูทางเข้า-ออกของวิทยาลัย (${gateConfig.name})`,
+          isGate: true,
+          gate_id: gateConfig.id
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: coords
+        }
+      };
+      openInfoCard(gateFeature);
     }
 
     /* ======================================================================
@@ -2989,7 +3742,20 @@
         filtered.push(f);
       });
 
-      buildingCount.textContent = `${filtered.length} อาคาร`;
+      // ค้นหาซุ้มประตู 1-4
+      const matchedGates = [];
+      GATES_CONFIG.forEach(g => {
+        const name = (g.name || '').toLowerCase();
+        const desc = (g.desc || '').toLowerCase();
+        const matchesQuery = !q || name.includes(q) || desc.includes(q) || 'ประตู'.includes(q) || 'ทางเข้า'.includes(q);
+        const matchesCategory = (category === 'all' || category === 'admin' || category === 'security');
+        if (matchesQuery && matchesCategory) {
+          matchedGates.push(g);
+        }
+      });
+
+      const totalItems = filtered.length + matchedGates.length;
+      buildingCount.textContent = `${totalItems} จุดบริการ`;
 
       // แยกกลุ่ม อาคารสำคัญ/ผู้มาติดต่อ กับ สิ่งปลูกสร้างทั่วไป
       const starItems = [];
@@ -3001,26 +3767,51 @@
       });
 
       let html = '';
+
+      // แสดงรายการซุ้มประตู (ถ้ามีผลการค้นหาตรง)
+      if (matchedGates.length) {
+        html += '<div class="list-section-title">🚪 ประตูทางเข้า-ออกวิทยาลัย</div>';
+        matchedGates.forEach(g => {
+          html += `
+            <div class="b-item gate-list-item" data-gate-id="${g.id}" data-clickable="1">
+              <div class="b-dot" style="background:#ef4444; color:#ef4444"></div>
+              <div class="b-text">
+                <div class="b-name">${g.name}</div>
+                <div class="b-sub">🛡️ ป้อมยาม & ประตูเข้า-ออก</div>
+              </div>
+              <div class="b-arrow">›</div>
+            </div>`;
+        });
+      }
+
       if (starItems.length) {
         html += '<div class="list-section-title">⭐ จุดติดต่อสำคัญสำหรับผู้มาเยือน</div>';
         starItems.forEach(f => html += buildingItemHTML(f));
       }
       if (normalItems.length) {
-        html += `<div class="list-section-title">${starItems.length ? 'อาคารและพื้นที่อื่นๆ' : 'ผลการค้นหา'}</div>`;
+        html += `<div class="list-section-title">${starItems.length || matchedGates.length ? 'อาคารและพื้นที่อื่นๆ' : 'ผลการค้นหา'}</div>`;
         normalItems.forEach(f => html += buildingItemHTML(f));
       }
-      if (!filtered.length) {
-        html = '<div class="list-section-title" style="text-align:center; padding:24px 10px;">ไม่พบอาคารตามเงื่อนไขที่เลือก</div>';
+      if (!totalItems) {
+        html = '<div class="list-section-title" style="text-align:center; padding:24px 10px;">ไม่พบอาคารหรือประตูตามเงื่อนไขที่เลือก</div>';
       }
 
       buildingList.innerHTML = html;
 
-      // ผูกคลิก
-      buildingList.querySelectorAll('.b-item[data-clickable="1"]').forEach(el => {
+      // ผูกคลิกอาคาร
+      buildingList.querySelectorAll('.b-item[data-bid]').forEach(el => {
         el.addEventListener('click', () => {
           const bid = Number(el.dataset.bid);
           const feature = buildingsData.features.find(ft => ft.properties.bid_id === bid);
           if (feature) focusBuilding(feature);
+        });
+      });
+
+      // ผูกคลิกซุ้มประตู
+      buildingList.querySelectorAll('.gate-list-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const gid = el.dataset.gateId;
+          if (gid) focusGate(gid);
         });
       });
     }
