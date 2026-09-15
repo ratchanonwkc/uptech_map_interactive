@@ -1,348 +1,141 @@
 /* ============================================================
-   MAIN & THEME SYSTEM
-   UPTECH Campus 3D Interactive Map
+   MAIN.CSS — BASE TOKENS, RESET, LAYOUT VARIABLES
+   Mobile-First Campus Map — UPTECH Udonthani
 ============================================================ */
 
-    :root {
-      --ink-950: #080c14;
-      --ink-900: #0e1626;
-      --ink-850: #121c30;
-      --ink-800: #18253d;
-      --ink-700: #223452;
-      --line: rgba(255, 255, 255, 0.1);
-      --line-subtle: rgba(255, 255, 255, 0.06);
-      --accent: #ff9838;
-      --accent-soft: rgba(255, 152, 56, 0.16);
-      --text-hi: #f8fafc;
-      --text-mid: #cbd5e1;
-      --text-lo: #94a3b8;
-      --highlight: #ffe600;
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap');
 
-      /* สีหมวดหมู่อาคารตามหน้าที่ (ออกแบบสำหรับบุคคลภายนอก) */
-      --cat-admin: #f59e0b;
-      /* สีทองอำพัน: จุดติดต่อราชการ / ต้อนรับ / ประชาสัมพันธ์ */
-      --cat-security: #ef4444;
-      /* สีแดงสัญญาณ: ป้อมยาม / ประตูทางเข้า-ออก */
-      --cat-academic: #0284c7;
-      /* สีฟ้ามหาสมุทร: อาคารเรียน / ฝึกอบรม / ห้องปฏิบัติการ */
-      --cat-library: #10b981;
-      /* สีเขียวมรกต: วิทยบริการ & ห้องสมุด */
-      --cat-dining: #f97316;
-      /* สีส้มอมแดง: โรงอาหาร / คาเฟ่ / สหกรณ์ */
-      --cat-hall: #ec4899;
-      /* สีชมพูมาเจนต้า: หอประชุมใหญ่ / สันทนาการ */
-      --cat-parking: #64748b;
-      /* สีเทาสเลท: ที่จอดรถ / อาคารสนับสนุน */
-      --cat-facility: #06b6d4;
-      /* สีฟ้าคราม: ห้องน้ำบริการประชาชน / จุดบริการ */
-      --cat-residential: #818cf8;
-      /* สีม่วงลาเวนเดอร์: หอพัก / ที่พักอาศัย (พื้นที่สงวน) */
-    }
+/* ── Design Tokens ────────────────────────────────────────── */
+:root {
+  /* Layout dimensions */
+  --header-h:       56px;   /* app-header height (mobile) */
+  --header-h-desk:  60px;   /* app-header height (desktop) */
+  --visitor-bar-h:  52px;   /* bottom visitor bar (mobile only) */
+  --sidebar-w:      320px;  /* sidebar width (desktop only) */
+  --info-card-w:    360px;  /* info card width (desktop only) */
 
-    * {
-      box-sizing: border-box;
-    }
+  /* UI surfaces */
+  --surface-0: #ffffff;
+  --surface-1: #f8fafc;
+  --surface-2: #f1f5f9;
+  --surface-3: #e2e8f0;
 
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      background: var(--ink-950);
-      font-family: 'Noto Sans Thai', 'Sora', sans-serif;
-      color: var(--text-hi);
-      overflow: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
+  /* Text */
+  --text-heading:     #1e293b;
+  --text-body:        #334155;
+  --text-caption:     #64748b;
+  --text-placeholder: #94a3b8;
 
-    #map {
-      position: absolute;
-      inset: 0;
-    }
+  /* Borders */
+  --border:        #e2e8f0;
+  --border-focus:  #3b82f6;
+  --border-strong: #cbd5e1;
+
+  /* Accent: warm institutional amber */
+  --accent:        #d97706;
+  --accent-hover:  #b45309;
+  --accent-light:  #fffbeb;
+  --accent-border: #fde68a;
+
+  /* Action blue */
+  --blue:      #1d4ed8;
+  --blue-hover:#1e40af;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.10);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+  --shadow-lg: 0 8px 30px rgba(0,0,0,0.14);
+  --shadow-xl: 0 16px 50px rgba(0,0,0,0.18);
+
+  /* Legacy compat vars (referenced by map layers + config.js) */
+  --ink-950: #080c14; --ink-900: #0e1626; --ink-850: #121c30;
+  --ink-800: #18253d; --ink-700: #223452;
+  --line: rgba(255,255,255,0.10); --line-subtle: rgba(255,255,255,0.06);
+  --text-hi: #f8fafc; --text-mid: #cbd5e1; --text-lo: #94a3b8;
+  --highlight: #ffe600; --accent-soft: rgba(255,152,56,0.16);
+
+  /* Category colors (map layer — do not change) */
+  --cat-admin:       #f59e0b;
+  --cat-security:    #ef4444;
+  --cat-academic:    #0284c7;
+  --cat-library:     #10b981;
+  --cat-dining:      #f97316;
+  --cat-hall:        #ec4899;
+  --cat-parking:     #64748b;
+  --cat-facility:    #06b6d4;
+  --cat-residential: #818cf8;
+}
+
+/* ── Reset ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html, body, button, input, select, textarea {
+  font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html, body {
+  margin: 0; padding: 0;
+  height: 100%; width: 100%;
+  background: #0b0f19;
+  font-size: 16px;
+  color: var(--text-body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* All buttons: accessible tap target */
+button {
+  min-height: 40px;
+  cursor: pointer;
+}
+
+/* Map: behind all UI, full viewport */
+#map {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
 
 
-    /* ============================================================
-     TOAST
-  ============================================================ */
-    .toast {
-      position: absolute;
-      bottom: 28px;
-      left: 50%;
-      transform: translateX(-50%) translateY(20px);
-      background: rgba(14, 22, 38, 0.95);
-      border: 1px solid var(--accent);
-      color: var(--text-hi);
-      padding: 10px 20px;
-      border-radius: 14px;
-      font-size: 12.5px;
-      z-index: 30;
-      opacity: 0;
-      transition: all .25s ease;
-      pointer-events: none;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+/* ── Toast ────────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(18px);
+  background: #1e293b;
+  border: 1px solid #334155;
+  color: #f8fafc;
+  padding: 10px 22px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  z-index: 999;
+  opacity: 0;
+  transition: all 0.24s cubic-bezier(0.16,1,0.3,1);
+  pointer-events: none;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.28);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  max-width: calc(100vw - 40px);
+}
 
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
 
-
-    /* ============================================================
-     RESPONSIVE (MOBILE & TABLET)
-  ============================================================ */
-    @media (max-width:768px) {
-      .top-container {
-        padding: max(10px, env(safe-area-inset-top, 10px)) 12px 6px;
-        gap: 6px;
-      }
-
-      .brand-text p {
-        display: none;
-      }
-
-      .cam-controls {
-        gap: 6px;
-      }
-
-      .cam-btn span {
-        display: none;
-      }
-
-      .cam-btn {
-        width: 38px;
-        height: 38px;
-        padding: 0;
-        justify-content: center;
-        border-radius: 12px;
-        font-size: 15px;
-        flex-shrink: 0;
-      }
-
-      .visitor-nav {
-        padding: 2px 2px 6px;
-        gap: 6px;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .visitor-label {
-        padding: 5px 10px;
-        font-size: 10.5px;
-      }
-
-      .v-chip {
-        padding: 6px 11px;
-        font-size: 11px;
-      }
-
-      /* ซ่อน Tooltip บนมือถือโดยเด็ดขาด (ไม่ให้ขึ้นมาบังข้อมูล) */
-      .hover-tooltip {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        pointer-events: none !important;
-      }
-
-      /* แผนผังสีบนมือถือ: ปรับเป็น Modal Card ลอยกึ่งกลางจอ ไม่ตกขอบจอเด็ดขาด */
-      .map-legend {
-        position: fixed;
-        left: 16px;
-        right: 16px;
-        top: 50%;
-        bottom: auto;
-        width: auto;
-        max-width: 380px;
-        margin: 0 auto;
-        transform: translateY(-50%) scale(0.92);
-        opacity: 0;
-        pointer-events: none;
-        z-index: 35;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
-        background: rgba(14, 22, 38, 0.96);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-        max-height: 82vh;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .map-legend.mobile-open {
-        opacity: 1;
-        pointer-events: auto;
-        transform: translateY(-50%) scale(1);
-      }
-
-      .legend-header {
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--line-subtle);
-      }
-
-      .legend-arrow {
-        display: none;
-      }
-
-      .legend-close-btn {
-        display: flex;
-      }
-
-      .legend-body {
-        max-height: calc(75vh - 54px) !important;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        grid-template-columns: 1fr;
-        padding: 10px 14px 16px;
-        gap: 7px;
-        opacity: 1 !important;
-      }
-
-      .legend-item {
-        padding: 8px 10px;
-        font-size: 12px;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.03);
-      }
-
-      .legend-item:hover,
-      .legend-item:active {
-        background: rgba(255, 255, 255, 0.08);
-        color: var(--accent);
-      }
-
-      .drawer-handle-bar {
-        display: flex;
-        justify-content: center;
-        padding: 6px 0 8px;
-        cursor: grab;
-        touch-action: none;
-      }
-
-      .drawer-handle {
-        width: 48px;
-        height: 5px;
-        border-radius: 4px;
-        background: rgba(255, 255, 255, 0.35);
-      }
-
-      /* เมนูค้นหา/Sidebar ด้านล่างบนมือถือ: กางได้เต็มจอ 88vh ให้ค้นหาและเลื่อนดูได้อย่างจุใจ */
-      .sidebar {
-        left: 0;
-        right: 0;
-        top: auto;
-        bottom: 0;
-        width: 100%;
-        max-width: 100%;
-        height: calc(88vh - env(safe-area-inset-top, 0px));
-        max-height: calc(100dvh - 56px);
-        /* ตอนพับ: โผล่ขึ้นมาให้เห็น Handle Bar + หัวข้อ + กล่องค้นหาพอดีเป๊ะ (~106px) */
-        transform: translateY(calc(100% - 106px - env(safe-area-inset-bottom, 0px)));
-        border-radius: 24px 24px 0 0;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.16);
-        padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
-        z-index: 15;
-        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .sidebar.expanded {
-        transform: translateY(0);
-      }
-
-      .drawer-collapse-btn {
-        display: flex;
-      }
-
-      .sidebar-head {
-        padding: 6px 16px 12px;
-      }
-
-      .building-list {
-        padding-bottom: calc(36px + env(safe-area-inset-bottom, 0px));
-        -webkit-overflow-scrolling: touch;
-      }
-
-      /* การ์ดรายละเอียดอาคารบนมือถือ: ขยายเต็มตา พร้อมระยะปลอดภัย */
-      .info-card {
-        left: 0;
-        right: 0;
-        top: auto;
-        bottom: 0;
-        width: 100%;
-        height: 82vh;
-        max-height: calc(100dvh - 50px);
-        border-radius: 24px 24px 0 0;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.18);
-        padding-bottom: max(18px, env(safe-area-inset-bottom, 18px));
-        transform: translateY(120%);
-        z-index: 30;
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.75);
-        transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .info-card.open {
-        transform: translateY(0);
-      }
-
-      .info-hero.has-photo {
-        height: 190px;
-      }
-
-      .info-actions {
-        gap: 10px;
-      }
-
-      .btn-action {
-        padding: 11px 12px;
-        font-size: 12.5px;
-        border-radius: 14px;
-      }
-
-      /* ปรับขนาดป้ายบอกตำแหน่งบนมือถือให้เล็กลงและกระชับ */
-      .gate-marker-badge {
-        padding: 4px 9px 4px 7px;
-        font-size: 10px;
-        gap: 4px;
-      }
-
-      .gate-marker-icon {
-        font-size: 11px;
-      }
-
-      .gate-marker-pulse {
-        width: 7px;
-        height: 7px;
-      }
-
-      .admin-marker-badge {
-        padding: 4px 10px 4px 8px;
-        font-size: 10.5px;
-        gap: 4px;
-      }
-
-      .admin-marker-icon {
-        font-size: 12px;
-      }
-
-      .admin-marker-tag {
-        font-size: 8.5px;
-        padding: 1px 5px;
-      }
-
-      .admin-marker-pulse {
-        width: 7px;
-        height: 7px;
-      }
-    }
-
+/* On mobile, bump toast above visitor bar */
+@media (max-width: 767px) {
+  .toast {
+    bottom: calc(var(--visitor-bar-h) + env(safe-area-inset-bottom, 0px) + 12px);
+  }
+  /* When info card is open, hide visitor bar */
+  body.info-open .visitor-bar {
+    transform: translateY(100%);
+    pointer-events: none;
+  }
+}

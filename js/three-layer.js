@@ -37,6 +37,18 @@
         scale: anchorMercator.meterInMercatorCoordinateUnits()
       };
 
+      // Precompute static matrices once to eliminate GC thrashing during 60/120fps render loop
+      const rotationX = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), anchorTransform.rotateX);
+      const rotationY = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), anchorTransform.rotateY);
+      const rotationZ = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), anchorTransform.rotateZ);
+      const staticTransformMatrix = new THREE.Matrix4()
+        .makeTranslation(anchorTransform.translateX, anchorTransform.translateY, anchorTransform.translateZ)
+        .scale(new THREE.Vector3(anchorTransform.scale, -anchorTransform.scale, anchorTransform.scale))
+        .multiply(rotationX)
+        .multiply(rotationY)
+        .multiply(rotationZ);
+      const tempMatrix = new THREE.Matrix4();
+
       return {
         id: 'campus-3d-models-layer',
         type: 'custom',
@@ -269,7 +281,6 @@
                 };
                 requestAnimationFrame(fadeStep);
 
-                console.log(`✅ โหลดโมเดล 3D อาคาร #${numBid} (${cfg.name}) สำเร็จ`);
                 if (onComplete) onComplete();
               },
               undefined,
@@ -311,7 +322,6 @@
             this.updateBuildingPosition(bGroup, cfg.coordinates);
             if (this.map) this.map.triggerRepaint();
           }
-          console.log(`📍 อาคาร #${bid} (${cfg.name}): offsetX=${cfg.offsetX}m, offsetY=${cfg.offsetY}m, altitudeOffset=${cfg.altitudeOffset || 0}m`);
         },
 
         setRotation: function (bid, degOffset) {
@@ -322,7 +332,6 @@
             cfg.rotationOffsetDeg = degOffset;
           }
           this.applyHeadingRotation(bid, degOffset);
-          console.log(`🔄 อาคาร #${bid} (${cfg.name}): rotationDeg=${cfg.rotationDeg}°`);
         },
 
         ensureBuildingLoaded: function (bid) {
@@ -512,7 +521,7 @@
             this.gatesContainer.add(gateGroup);
             this.loadedGates.set(gateCfg.id, gateGroup);
 
-            console.log(`✅ ติดตั้งโมเดล 3D ซุ้มประตู #${gateCfg.id} (${gateCfg.name}) สำเร็จ`);
+
           });
 
           if (this.map) this.map.triggerRepaint();
@@ -622,38 +631,8 @@
         },
 
         render: function (gl, matrix) {
-          const rotationX = new THREE.Matrix4().makeRotationAxis(
-            new THREE.Vector3(1, 0, 0),
-            anchorTransform.rotateX
-          );
-          const rotationY = new THREE.Matrix4().makeRotationAxis(
-            new THREE.Vector3(0, 1, 0),
-            anchorTransform.rotateY
-          );
-          const rotationZ = new THREE.Matrix4().makeRotationAxis(
-            new THREE.Vector3(0, 0, 1),
-            anchorTransform.rotateZ
-          );
-
-          const m = new THREE.Matrix4().fromArray(matrix);
-          const l = new THREE.Matrix4()
-            .makeTranslation(
-              anchorTransform.translateX,
-              anchorTransform.translateY,
-              anchorTransform.translateZ
-            )
-            .scale(
-              new THREE.Vector3(
-                anchorTransform.scale,
-                -anchorTransform.scale,
-                anchorTransform.scale
-              )
-            )
-            .multiply(rotationX)
-            .multiply(rotationY)
-            .multiply(rotationZ);
-
-          this.camera.projectionMatrix = m.multiply(l);
+          tempMatrix.fromArray(matrix).multiply(staticTransformMatrix);
+          this.camera.projectionMatrix.copy(tempMatrix);
           if (this.camera.projectionMatrixInverse) {
             this.camera.projectionMatrixInverse.copy(this.camera.projectionMatrix).invert();
           }

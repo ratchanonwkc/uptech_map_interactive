@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>UPTECH Campus 3D — วิทยาลัยสารพัดช่างอุดรธานี (ระบบนำทางผู้มาติดต่อ)</title>
+  <meta name="description" content="แผนที่ 3D แบบโต้ตอบของวิทยาลัยสารพัดช่างอุดรธานี สำหรับผู้มาติดต่อราชการ ผู้ปกครอง และบุคคลภายนอก" />
 
   <!-- MapLibre GL JS -->
   <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
@@ -18,11 +19,10 @@
   <!-- Turf.js for Geospatial Analysis & Boundary Masking -->
   <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts: Sarabun — readable Thai/Latin for all ages -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Modular Stylesheets -->
   <link rel="stylesheet" href="css/main.css" />
@@ -33,10 +33,12 @@
 
 <body>
 
-  <!-- แผนที่หลัก MapLibre GL Container -->
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       MAP — always full screen behind all UI panels
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <div id="map"></div>
 
-  <!-- ============ 3D HOVER TOOLTIP ============ -->
+  <!-- 3D Hover Tooltip (desktop/mouse only — hidden on touch) -->
   <div id="hoverTooltip" class="hover-tooltip">
     <div class="ht-dot" id="htDot"></div>
     <div>
@@ -45,64 +47,94 @@
     </div>
   </div>
 
-  <!-- ============ TOP CONTAINER ============ -->
-  <div class="top-container">
-    <!-- Brand + Camera Controls -->
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-mark">UP</div>
-        <div class="brand-text">
-          <h1>UPTECH Campus 3D</h1>
-          <p>วิทยาลัยสารพัดช่างอุดรธานี • แผนที่บริการบุคคลภายนอก</p>
-        </div>
-      </div>
-      <div class="cam-controls">
-        <button class="cam-btn" id="btnReset" title="รีเซ็ตมุมมอง">↺ <span>รีเซ็ตมุมมอง</span></button>
-        <button class="cam-btn" id="btnTop" title="มุมมองด้านบน 2D">⬇ <span>มุมมองบน</span></button>
-        <button class="cam-btn active" id="btnToggleMarkers" title="เปิด/ปิด ป้ายบอกตำแหน่ง">📍 <span>ป้ายบอกทาง</span></button>
-        <button class="cam-btn" id="btnToggleLegend" title="สลับการแสดงผังสี">🎨 <span>ผังสี</span></button>
-      </div>
-    </div>
 
-    <!-- แถบปุ่มด่วนสำหรับบุคคลภายนอก (Visitor Quick Jump) -->
-    <div class="visitor-nav">
-      <div class="visitor-label"><span class="pulse-dot"></span> ผู้มาติดต่อ:</div>
-      <button class="v-chip v-gold" data-bid="11">🏛️ อาคารอำนวยการ (ติดต่อราชการ)</button>
-      <button class="v-chip v-gold" data-bid="17">ℹ️ ประชาสัมพันธ์</button>
-      <button class="v-chip" data-bid="18" style="border-color:rgba(239,68,68,0.45); color:#fecaca;">🛡️ ป้อมยาม</button>
-      <button class="v-chip v-orange" data-bid="22">🍽️ โรงอาหาร</button>
-      <button class="v-chip v-orange" data-bid="19">☕ คาเฟ่</button>
-      <button class="v-chip v-green" data-bid="12">📚 วิทยบริการ/ห้องสมุด</button>
-      <button class="v-chip" data-bid="31" style="border-color:rgba(236,72,153,0.45); color:#fbcfe8;">🎪 หอประชุมใหญ่</button>
-      <button class="v-chip" data-bid="6" style="border-color:rgba(100,116,139,0.45); color:#e2e8f0;">🚗 ที่จอดรถผู้มาติดต่อ</button>
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       APP HEADER — thin fixed bar, full width
+       Mobile: icon-only buttons | Desktop: icon + label
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <header class="app-header" id="appHeader">
+    <div class="app-brand">
+      <div class="brand-mark">UP</div>
+      <div class="brand-text">
+        <h1>UPTECH Campus 3D</h1>
+        <p>วิทยาลัยสารพัดช่างอุดรธานี • แผนที่บริการบุคคลภายนอก</p>
+      </div>
     </div>
+    <div class="header-controls">
+      <button class="hdr-btn" id="btnReset" title="รีเซ็ตมุมมองแผนที่">
+        ↺ <span class="hdr-label">รีเซ็ต</span>
+      </button>
+      <button class="hdr-btn" id="btnTop" title="เปลี่ยนเป็นมุมมองด้านบน 2D">
+        ⬇ <span class="hdr-label">มุมบน</span>
+      </button>
+      <button class="hdr-btn hdr-active" id="btnToggleMarkers" title="เปิด/ปิด ป้ายบอกตำแหน่ง">
+        📍 <span class="hdr-label">ป้าย</span>
+      </button>
+      <button class="hdr-btn" id="btnToggleLegend" title="แสดงผังสีแยกประเภทอาคาร">
+        🎨 <span class="hdr-label">ผังสี</span>
+      </button>
+    </div>
+  </header>
+
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       FLOATING SEARCH PILL
+       Mobile only — floats on the map just below header
+       Tapping opens the full-screen search overlay
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="search-pill-wrap" id="searchPillWrap">
+    <button class="search-pill-btn" id="btnOpenSearch" aria-label="เปิดการค้นหาอาคาร">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <span>ค้นหาอาคาร หรือแผนก เช่น ทะเบียน, โรงอาหาร...</span>
+    </button>
   </div>
 
-  <!-- ============ SIDEBAR BACKDROP & DRAWER ============ -->
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       SIDEBAR — desktop only (always visible left panel)
+       Contains: visitor quick chips + search + filter + list
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <!-- Legacy backdrop kept for JS compatibility (unused on new layout) -->
   <div class="sheet-backdrop" id="sidebarBackdrop"></div>
-  <div class="sidebar" id="sidebar">
-    <div class="sidebar-head">
-      <div class="drawer-handle-bar" id="drawerHandleBar">
-        <div class="drawer-handle"></div>
+
+  <aside class="sidebar" id="sidebar">
+
+    <!-- Visitor quick-jump strip (desktop: inside sidebar top) -->
+    <div class="sidebar-visitor-strip">
+      <div class="sidebar-visitor-label">
+        <span class="pulse-dot"></span>
+        จุดติดต่อด่วนสำหรับผู้มาเยือน
       </div>
-      <div class="sidebar-head-title">
-        <label>ค้นหาอาคาร & จุดติดต่อ</label>
-        <div class="sidebar-head-actions">
-          <span class="building-count-badge" id="buildingCount">0 อาคาร</span>
-          <button class="drawer-collapse-btn" id="btnCollapseSidebar" title="ย่อแถบเมนู">✕</button>
-        </div>
-      </div>
-      <div class="search-box">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-          <circle cx="11" cy="11" r="7" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-        <input id="searchInput" type="text" placeholder="พิมพ์ชื่ออาคาร หรือ แผนก เช่น ทะเบียน, หอประชุม..." />
-        <button class="clear-btn" id="clearSearch">✕</button>
+      <div class="sidebar-visitor-scroll">
+        <button class="v-chip v-gold" data-bid="11">🏛️ อาคารอำนวยการ</button>
+        <button class="v-chip v-gold" data-bid="17">ℹ️ ประชาสัมพันธ์</button>
+        <button class="v-chip v-red" data-bid="18">🛡️ ป้อมยาม</button>
+        <button class="v-chip v-orange" data-bid="22">🍽️ โรงอาหาร</button>
+        <button class="v-chip v-orange" data-bid="19">☕ คาเฟ่</button>
+        <button class="v-chip v-green" data-bid="12">📚 ห้องสมุด</button>
+        <button class="v-chip v-pink" data-bid="31">🎪 หอประชุม</button>
+        <button class="v-chip v-gray" data-bid="6">🚗 ที่จอดรถ</button>
       </div>
     </div>
 
-    <!-- Filter Buttons -->
+    <!-- Search -->
+    <div class="sidebar-head">
+      <div class="sidebar-search-row">
+        <span class="sidebar-search-label">ค้นหาอาคาร &amp; จุดติดต่อ</span>
+        <span class="building-count-badge" id="buildingCount">0 อาคาร</span>
+      </div>
+      <div class="search-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="searchInput" type="text" placeholder="พิมพ์ชื่ออาคาร หรือแผนก เช่น ทะเบียน..." />
+        <button class="clear-btn" id="clearSearch" aria-label="ล้างการค้นหา">✕</button>
+      </div>
+    </div>
+
+    <!-- Category filter -->
     <div class="category-filter" id="catFilter">
       <button class="filter-btn active" data-cat="all">ทั้งหมด</button>
       <button class="filter-btn" data-cat="admin">🏛️ ติดต่อราชการ</button>
@@ -114,49 +146,115 @@
       <button class="filter-btn" data-cat="residential">🏠 ที่พัก</button>
     </div>
 
+    <!-- Building list -->
     <div class="building-list" id="buildingList"></div>
+
+    <!-- Legacy elements kept for JS compatibility -->
+    <div id="drawerHandleBar" style="display:none;"></div>
+    <button id="btnCollapseSidebar" style="display:none;" aria-hidden="true"></button>
+  </aside>
+
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       SEARCH OVERLAY — mobile only, slides up full screen
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="search-overlay" id="searchOverlay" aria-modal="true" role="dialog" aria-label="ค้นหาอาคาร">
+
+    <div class="search-overlay-hdr">
+      <button class="search-back-btn" id="btnCloseSearch" aria-label="กลับ">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        กลับ
+      </button>
+      <div class="search-box search-box-overlay">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round">
+          <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input id="searchInputMobile" type="text" placeholder="ค้นหาอาคาร หรือแผนก..." />
+        <button class="clear-btn" id="clearSearchMobile" aria-label="ล้างการค้นหา">✕</button>
+      </div>
+    </div>
+
+    <div class="category-filter" id="catFilterMobile">
+      <button class="filter-btn active" data-cat="all">ทั้งหมด</button>
+      <button class="filter-btn" data-cat="admin">🏛️ ติดต่อราชการ</button>
+      <button class="filter-btn" data-cat="academic">🎓 อาคารเรียน</button>
+      <button class="filter-btn" data-cat="library">📚 ห้องสมุด</button>
+      <button class="filter-btn" data-cat="dining">☕ อาหาร/คาเฟ่</button>
+      <button class="filter-btn" data-cat="hall">🎪 หอประชุม</button>
+      <button class="filter-btn" data-cat="parking">🚗 ที่จอดรถ</button>
+      <button class="filter-btn" data-cat="residential">🏠 ที่พัก</button>
+    </div>
+
+    <div class="building-list" id="buildingListMobile"></div>
   </div>
 
-  <!-- ============ MAP LEGEND BACKDROP & MODAL/DRAWER ============ -->
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       VISITOR BAR — mobile only, fixed bottom (thumb-zone)
+       Shows the same quick-access chips as desktop sidebar top
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="visitor-bar" id="visitorBar">
+    <span class="visitor-bar-label">
+      <span class="pulse-dot"></span>
+      ผู้มาติดต่อ:
+    </span>
+    <div class="visitor-bar-scroll">
+      <button class="v-chip v-gold" data-bid="11">🏛️ อาคารอำนวยการ</button>
+      <button class="v-chip v-gold" data-bid="17">ℹ️ ประชาสัมพันธ์</button>
+      <button class="v-chip v-red" data-bid="18">🛡️ ป้อมยาม</button>
+      <button class="v-chip v-orange" data-bid="22">🍽️ โรงอาหาร</button>
+      <button class="v-chip v-orange" data-bid="19">☕ คาเฟ่</button>
+      <button class="v-chip v-green" data-bid="12">📚 ห้องสมุด</button>
+      <button class="v-chip v-pink" data-bid="31">🎪 หอประชุม</button>
+      <button class="v-chip v-gray" data-bid="6">🚗 ที่จอดรถ</button>
+    </div>
+  </div>
+
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       MAP LEGEND — modal dialog (mobile) / panel (desktop)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <div class="legend-backdrop" id="legendBackdrop"></div>
   <div class="map-legend" id="mapLegend">
     <div class="legend-header" id="legendHeader">
       <span class="legend-title">🎨 แผนผังสีแยกประเภทอาคาร</span>
       <div class="legend-header-right">
         <span class="legend-arrow">▲</span>
-        <button class="legend-close-btn" id="legendCloseBtn" title="ปิดผังสี">✕</button>
+        <button class="legend-close-btn" id="legendCloseBtn" title="ปิดผังสี" aria-label="ปิดผังสี">✕</button>
       </div>
     </div>
     <div class="legend-body" id="legendBody">
-      <div class="legend-item" data-cat="admin"><span class="legend-swatch"
-          style="background:var(--cat-admin)"></span><span>ติดต่อราชการ/ต้อนรับ</span></div>
-      <div class="legend-item" data-cat="security"><span class="legend-swatch"
-          style="background:var(--cat-security)"></span><span>ป้อมยาม/ประตูทางเข้า</span></div>
-      <div class="legend-item" data-cat="academic"><span class="legend-swatch"
-          style="background:var(--cat-academic)"></span><span>อาคารเรียน/โรงฝึกงาน</span></div>
-      <div class="legend-item" data-cat="library"><span class="legend-swatch"
-          style="background:var(--cat-library)"></span><span>วิทยบริการ & ห้องสมุด</span></div>
-      <div class="legend-item" data-cat="dining"><span class="legend-swatch"
-          style="background:var(--cat-dining)"></span><span>โรงอาหาร & คาเฟ่</span></div>
-      <div class="legend-item" data-cat="hall"><span class="legend-swatch"
-          style="background:var(--cat-hall)"></span><span>หอประชุม & พิธีการ</span></div>
-      <div class="legend-item" data-cat="parking"><span class="legend-swatch"
-          style="background:var(--cat-parking)"></span><span>ลานจอดรถ & พัสดุ</span></div>
-      <div class="legend-item" data-cat="facility"><span class="legend-swatch"
-          style="background:var(--cat-facility)"></span><span>ห้องน้ำบริการประชาชน</span></div>
-      <div class="legend-item" data-cat="residential"><span class="legend-swatch"
-          style="background:var(--cat-residential)"></span><span>เขตหอพัก/ที่พักครู</span></div>
+      <div class="legend-item" data-cat="admin"><span class="legend-swatch" style="background:var(--cat-admin)"></span><span>ติดต่อราชการ/ต้อนรับ</span></div>
+      <div class="legend-item" data-cat="security"><span class="legend-swatch" style="background:var(--cat-security)"></span><span>ป้อมยาม/ประตูทางเข้า</span></div>
+      <div class="legend-item" data-cat="academic"><span class="legend-swatch" style="background:var(--cat-academic)"></span><span>อาคารเรียน/โรงฝึกงาน</span></div>
+      <div class="legend-item" data-cat="library"><span class="legend-swatch" style="background:var(--cat-library)"></span><span>วิทยบริการ & ห้องสมุด</span></div>
+      <div class="legend-item" data-cat="dining"><span class="legend-swatch" style="background:var(--cat-dining)"></span><span>โรงอาหาร & คาเฟ่</span></div>
+      <div class="legend-item" data-cat="hall"><span class="legend-swatch" style="background:var(--cat-hall)"></span><span>หอประชุม & พิธีการ</span></div>
+      <div class="legend-item" data-cat="parking"><span class="legend-swatch" style="background:var(--cat-parking)"></span><span>ลานจอดรถ & พัสดุ</span></div>
+      <div class="legend-item" data-cat="facility"><span class="legend-swatch" style="background:var(--cat-facility)"></span><span>ห้องน้ำบริการประชาชน</span></div>
+      <div class="legend-item" data-cat="residential"><span class="legend-swatch" style="background:var(--cat-residential)"></span><span>เขตหอพัก/ที่พักครู</span></div>
     </div>
   </div>
 
-  <!-- ============ INFO CARD (รายละเอียดอาคารสำหรับผู้มาเยือน) ============ -->
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       INFO CARD — bottom sheet (mobile) / right panel (desktop)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <div class="info-card" id="infoCard">
+
+    <!-- Drag handle (mobile bottom sheet) -->
+    <div class="info-card-handle-bar" id="infoCardHandleBar">
+      <div class="info-card-handle"></div>
+    </div>
+
     <div class="info-hero" id="infoHero" title="คลิกเพื่อดูภาพขนาดเต็ม">
       <img id="infoImage" class="info-hero-img" src="" alt="ภาพถ่ายอาคาร" />
       <div class="info-hero-gradient"></div>
       <div class="hero-glow" id="heroGlow"></div>
       <div class="visitor-star-badge" id="visitorStarBadge" style="display:none;">⭐ จุดบริการผู้มาติดต่อ</div>
-      <div class="info-close" id="infoClose" title="ปิด">✕</div>
+      <button class="info-close" id="infoClose" aria-label="ปิดรายละเอียดอาคาร">✕</button>
       <div class="info-hero-icon" id="infoHeroIcon">🏛️</div>
       <div class="info-photo-badge" id="infoPhotoBadge" style="display:none;">📷 ภาพถ่ายสถานที่จริง</div>
     </div>
@@ -166,19 +264,16 @@
         <div class="dot" id="infoDot"></div>
         <span id="infoType">ประเภทอาคาร</span>
       </div>
-
       <div class="info-id" id="infoId">ID —</div>
       <h2 id="infoName">ชื่ออาคาร</h2>
 
-      <!-- กล่องคำแนะนำสำหรับบุคคลภายนอก -->
       <div class="visitor-tip-box" id="visitorTipBox">
         <div class="vtb-title"><span>ℹ️</span> ข้อมูลสำหรับผู้มาติดต่อ</div>
-        <div class="vtb-desc" id="infoVisitorTip">จุดติดต่อสำคัญและคำแนะนำสำหรับผู้มาเยือน</div>
+        <div class="vtb-desc" id="infoVisitorTip">จุดติดต่อและคำแนะนำสำหรับผู้มาเยือน</div>
       </div>
 
-      <!-- ปุ่ม Action สำหรับผู้มาติดต่อ -->
       <div class="info-actions">
-        <button class="btn-action btn-nav" id="btnGoogleMaps" title="เปิดแผนที่นำทางด้วย Google Maps">
+        <button class="btn-action btn-nav" id="btnGoogleMaps" title="เปิดเส้นทางนำทางใน Google Maps">
           <span>📍</span> นำทาง (Google Maps)
         </button>
         <button class="btn-action btn-copy" id="btnCopyName" title="คัดลอกชื่ออาคาร">
@@ -187,37 +282,25 @@
       </div>
 
       <div class="info-desc" id="infoDesc">รายละเอียดอาคาร</div>
-
-      <div class="info-note">🛈
-        ข้อมูลและรายละเอียดการบริการของอาคารนี้จัดทำขึ้นเพื่ออำนวยความสะดวกแก่บุคคลภายนอกและผู้ปกครอง</div>
+      <div class="info-note">🛈 ข้อมูลนี้จัดทำเพื่ออำนวยความสะดวกแก่บุคคลภายนอกและผู้ปกครองนักเรียนนักศึกษา</div>
     </div>
   </div>
 
-  <!-- Toast Notification -->
+
+  <!-- Toast notification -->
   <div class="toast" id="toast"></div>
 
-  <!-- ============ APPLICATION SCRIPTS (MODULAR ARCHITECTURE) ============ -->
-  <!-- 1. ข้อมูลสำรองและค่าคงที่ Viewport -->
+
+  <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+       APPLICATION SCRIPTS (MODULAR ARCHITECTURE)
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
   <script src="js/data.js"></script>
-
-  <!-- 2. คอนฟิกหมวดหมู่, โมเดล 3D (รวม bid_2) และซุ้มประตู -->
   <script src="js/config.js"></script>
-
-  <!-- 3. แผนที่ MapLibre GL, maxBounds, และ Inverse Mask (Turf.js) -->
   <script src="js/map.js"></script>
-
-  <!-- 4. Three.js Custom Layer และตัวโหลดโมเดล 3D -->
   <script src="js/three-layer.js"></script>
-
-  <!-- 5. ป้ายบอกตำแหน่งซุ้มประตู 1-4 และอาคารอำนวยการ -->
   <script src="js/markers.js"></script>
-
-  <!-- 6. ส่วนประสานผู้ใช้: ระบบค้นหา, Sidebar, InfoCard, ปุ่มควบคุม -->
   <script src="js/ui.js"></script>
-
-  <!-- 7. สคริปต์หลักประสานงาน (Bootstrap & Event Orchestrator) -->
   <script src="js/app.js"></script>
 
 </body>
-
 </html>

@@ -5,7 +5,6 @@
 
 let buildingsData = null;
 let selectedId = null;
-let currentCategoryFilter = 'all';
 let hoveredId = null;
 let currentHovered3DBid = null;
 let currentHoveredGateId = null;
@@ -319,6 +318,8 @@ map.on('load', () => {
 // MAP INTERACTIONS (Hover, Raycasting & Click)
 // ----------------------------------------------------------------------
 map.on('mousemove', (e) => {
+  if (!isDesktopPointer()) return;
+
   const hoverTooltip = document.getElementById('hoverTooltip');
   const htDot = document.getElementById('htDot');
   const htName = document.getElementById('htName');
@@ -340,7 +341,7 @@ map.on('mousemove', (e) => {
         currentHovered3DBid = null;
       }
 
-      if (isDesktopPointer() && hoverTooltip) {
+      if (hoverTooltip) {
         const gateCfg = getGateConfig(hit3D.gate_id) || {};
         htDot.style.background = '#ef4444';
         htName.textContent = gateCfg.name || 'ซุ้มประตู';
@@ -360,7 +361,7 @@ map.on('mousemove', (e) => {
       currentHoveredGateId = null;
     }
 
-    if (isDesktopPointer() && hoverTooltip) {
+    if (hoverTooltip) {
       const meta = VISITOR_BUILDINGS[hit3D.bid_id] || (buildingsData?.features?.find(f => Number(f.properties.bid_id) === hit3D.bid_id)?.properties) || {};
       const catCfg = CATEGORY_MAP[meta.category || 'admin'] || CATEGORY_MAP.academic;
       htDot.style.background = meta.color || catCfg.color;
@@ -390,6 +391,7 @@ map.on('mousemove', (e) => {
 });
 
 map.on('mousemove', 'buildings-3d', (e) => {
+  if (!isDesktopPointer()) return;
   if (currentHovered3DBid !== null || currentHoveredGateId !== null) return;
   if (!e.features.length) return;
   const f = e.features[0];
@@ -400,11 +402,6 @@ map.on('mousemove', 'buildings-3d', (e) => {
   const htCat = document.getElementById('htCat');
 
   map.getCanvas().style.cursor = isClickable(p) ? 'pointer' : '';
-
-  if (!isDesktopPointer()) {
-    if (hoverTooltip) hoverTooltip.classList.remove('show');
-    return;
-  }
 
   if (p.name && p.name !== '-' && hoverTooltip) {
     const catCfg = CATEGORY_MAP[p.category] || CATEGORY_MAP.academic;
@@ -427,6 +424,7 @@ map.on('mousemove', 'buildings-3d', (e) => {
 });
 
 map.on('mouseleave', 'buildings-3d', () => {
+  if (!isDesktopPointer()) return;
   if (currentHovered3DBid !== null || currentHoveredGateId !== null) return;
   map.getCanvas().style.cursor = '';
   const hoverTooltip = document.getElementById('hoverTooltip');
@@ -438,6 +436,7 @@ map.on('mouseleave', 'buildings-3d', () => {
 });
 
 map.on('mouseleave', () => {
+  if (!isDesktopPointer()) return;
   const hoverTooltip = document.getElementById('hoverTooltip');
   if (hoverTooltip) hoverTooltip.classList.remove('show');
   if (campus3DLayer) {
@@ -471,10 +470,9 @@ map.on('click', (e) => {
     return;
   }
 
-  // หากคลิกที่ว่าง
+  // Click on empty space — deselect everything and close InfoCard
   setSelected(null);
-  const infoCard = document.getElementById('infoCard');
-  if (infoCard) infoCard.classList.remove('open');
+  if (typeof closeInfoCard === 'function') closeInfoCard();
   if (campus3DLayer) {
     campus3DLayer.setSelected(null);
     campus3DLayer.setSelectedGate(null);
@@ -494,9 +492,7 @@ map.on('click', 'buildings-3d', (e) => {
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    const infoCard = document.getElementById('infoCard');
-    if (infoCard) infoCard.classList.remove('open');
-    setSelected(null);
+    if (typeof closeInfoCard === 'function') closeInfoCard();
     if (campus3DLayer) {
       campus3DLayer.setSelected(null);
       campus3DLayer.setSelectedGate(null);

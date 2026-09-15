@@ -1,227 +1,224 @@
 /* ============================================================
    3D LOCATION MARKERS (GATES & ADMIN BUILDING)
+   — Fixed anchor positioning; no position:fixed, no backdrop-filter
 ============================================================ */
 
-    /* ============================================================
-       GATE 3D LOCATION MARKERS (ประตู 1-4)
-    ============================================================ */
-    .gate-marker {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      pointer-events: auto;
-      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
-      user-select: none;
-      -webkit-user-select: none;
-      z-index: 5;
-    }
 
-    .gate-marker-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 12px 5px 10px;
-      border-radius: 999px;
-      background: rgba(14, 22, 38, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(56, 189, 248, 0.55);
-      color: #f8fafc;
-      font-size: 11.5px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45), 0 0 12px rgba(56, 189, 248, 0.25);
-      white-space: nowrap;
-      transition: all 0.22s ease;
-    }
+/* ============================================================
+   GATE MARKERS (ประตู 1–4)
+============================================================ */
 
-    .gate-marker-icon {
-      font-size: 13px;
-      line-height: 1;
-    }
+/*
+  CRITICAL: .gate-marker must NEVER use position:fixed or any transform
+  that overrides MapLibre's canvas transform matrix. The parent
+  maplibregl-marker element handles all geographic projection.
+  We only style the child badge element.
+*/
+.gate-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+  /* Use transition only on opacity/scale — NOT position properties */
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  /* No z-index here — MapLibre manages stacking via the marker container */
+}
 
-    .gate-marker:hover .gate-marker-badge {
-      background: rgba(24, 37, 61, 0.98);
-      border-color: #38bdf8;
-      transform: translateY(-3px) scale(1.06);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55), 0 0 16px rgba(56, 189, 248, 0.5);
-    }
+.gate-marker-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px 7px 11px;
+  border-radius: 999px;
+  /* Solid opaque — NO backdrop-filter (causes GPU layer detach = floating/sticky bug) */
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid rgba(148, 163, 184, 0.70);
+  color: #f1f5f9;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
 
-    .gate-marker.active .gate-marker-badge {
-      background: rgba(30, 41, 59, 0.98);
-      border-color: #ffe600;
-      color: #ffe600;
-      transform: translateY(-3px) scale(1.08);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 18px rgba(255, 230, 0, 0.55);
-    }
+.gate-marker-icon {
+  font-size: 15px;
+  line-height: 1;
+}
 
-    .gate-marker-pulse {
-      width: 8px;
-      height: 8px;
-      background: #38bdf8;
-      border-radius: 50%;
-      margin-top: 3px;
-      box-shadow: 0 0 8px #38bdf8;
-      position: relative;
-    }
+.gate-marker:hover .gate-marker-badge {
+  background: rgba(15, 23, 42, 0.99);
+  border-color: rgba(203, 213, 225, 0.90);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.42);
+}
 
-    .gate-marker.active .gate-marker-pulse {
-      background: #ffe600;
-      box-shadow: 0 0 10px #ffe600;
-    }
+/* Active: warm amber — matches institutional palette, clear to older adults */
+.gate-marker.active .gate-marker-badge {
+  background: #d97706;
+  border-color: #fde68a;
+  color: #ffffff;
+  box-shadow: 0 5px 18px rgba(217,119,6,0.42);
+}
 
-    .gate-marker-pulse::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 1.5px solid #38bdf8;
-      animation: gatePulseRadar 2s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
-      opacity: 0;
-    }
+/* ── Pulse dot ── */
+.gate-marker-pulse {
+  width: 9px;
+  height: 9px;
+  background: #94a3b8;
+  border-radius: 50%;
+  margin-top: 3px;
+  position: relative;
+  flex-shrink: 0;
+}
 
-    .gate-marker.active .gate-marker-pulse::after {
-      border-color: #ffe600;
-    }
+.gate-marker.active .gate-marker-pulse {
+  background: #f59e0b;
+}
 
-    @keyframes gatePulseRadar {
-      0% {
-        transform: scale(0.6);
-        opacity: 0.9;
-      }
+.gate-marker-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid #38bdf8;
+  animation: gatePulseRadar 2.2s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
+  will-change: transform, opacity;
+  opacity: 0;
+}
 
-      100% {
-        transform: scale(2.8);
-        opacity: 0;
-      }
-    }
+.gate-marker.active .gate-marker-pulse::after {
+  border-color: #ea6c00;
+}
+
+@keyframes gatePulseRadar {
+  0%   { transform: scale(0.6); opacity: 0.85; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
 
 
-    /* ============================================================
-       ADMIN BUILDING 3D LOCATION MARKER (อาคารอำนวยการ)
-    ============================================================ */
-    .admin-marker {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      pointer-events: auto;
-      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
-      user-select: none;
-      -webkit-user-select: none;
-      z-index: 6;
-    }
+/* ============================================================
+   ADMIN BUILDING MARKER (อาคารอำนวยการ)
+============================================================ */
+.admin-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
 
-    .admin-marker-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px 6px 10px;
-      border-radius: 999px;
-      background: rgba(14, 22, 38, 0.94);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(245, 158, 11, 0.65);
-      color: #f8fafc;
-      font-size: 11.8px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 14px rgba(245, 158, 11, 0.35);
-      white-space: nowrap;
-      transition: all 0.22s ease;
-    }
+.admin-marker-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 15px 8px 11px;
+  border-radius: 999px;
+  /* Solid opaque — NO backdrop-filter */
+  background: rgba(15, 23, 42, 0.95);
+  border: 1.5px solid rgba(245, 158, 11, 0.75);
+  color: #f1f5f9;
+  font-size: 14px;
+  font-weight: 700;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.35);
+  white-space: nowrap;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
 
-    .admin-marker-icon {
-      font-size: 14px;
-      line-height: 1;
-    }
+.admin-marker-icon {
+  font-size: 16px;
+  line-height: 1;
+}
 
-    .admin-marker-tag {
-      font-size: 10px;
-      font-weight: 600;
-      color: #f59e0b;
-      background: rgba(245, 158, 11, 0.16);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      padding: 1px 6px;
-      border-radius: 999px;
-      margin-left: 2px;
-    }
+.admin-marker-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fcd34d;
+  background: rgba(245,158,11,0.20);
+  border: 1px solid rgba(245,158,11,0.40);
+  padding: 2px 7px;
+  border-radius: 999px;
+  margin-left: 2px;
+}
 
-    .admin-marker:hover .admin-marker-badge {
-      background: rgba(24, 37, 61, 0.98);
-      border-color: #f59e0b;
-      transform: translateY(-3px) scale(1.06);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(245, 158, 11, 0.55);
-    }
+.admin-marker:hover .admin-marker-badge {
+  background: rgba(15, 23, 42, 0.99);
+  border-color: rgba(245, 158, 11, 1);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.40);
+}
 
-    .admin-marker.active .admin-marker-badge {
-      background: rgba(30, 41, 59, 0.98);
-      border-color: #ffe600;
-      color: #ffe600;
-      transform: translateY(-3px) scale(1.08);
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.65), 0 0 22px rgba(255, 230, 0, 0.6);
-    }
+/* Active state: solid amber — warm, clear, senior-readable */
+.admin-marker.active .admin-marker-badge {
+  background: #d97706;
+  border-color: #fde68a;
+  color: #ffffff;
+  box-shadow: 0 5px 18px rgba(217,119,6,0.42);
+}
 
-    .admin-marker-pulse {
-      width: 9px;
-      height: 9px;
-      background: #f59e0b;
-      border-radius: 50%;
-      margin-top: 3px;
-      box-shadow: 0 0 10px #f59e0b;
-      position: relative;
-    }
+/* ── Pulse dot ── */
+.admin-marker-pulse {
+  width: 10px;
+  height: 10px;
+  background: #f59e0b;
+  border-radius: 50%;
+  margin-top: 3px;
+  position: relative;
+  flex-shrink: 0;
+}
 
-    .admin-marker.active .admin-marker-pulse {
-      background: #ffe600;
-      box-shadow: 0 0 12px #ffe600;
-    }
+.admin-marker.active .admin-marker-pulse {
+  background: #ea6c00;
+  box-shadow: 0 0 10px rgba(234,108,0,0.75);
+}
 
-    .admin-marker-pulse::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 1.5px solid #f59e0b;
-      animation: adminPulseRadar 2s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
-      opacity: 0;
-    }
+.admin-marker-pulse::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid #f59e0b;
+  animation: adminPulseRadar 2.2s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
+  will-change: transform, opacity;
+  opacity: 0;
+}
 
-    .admin-marker.active .admin-marker-pulse::after {
-      border-color: #ffe600;
-    }
+.admin-marker.active .admin-marker-pulse::after {
+  border-color: #ea6c00;
+}
 
-    @keyframes adminPulseRadar {
-      0% {
-        transform: scale(0.6);
-        opacity: 0.9;
-      }
+@keyframes adminPulseRadar {
+  0%   { transform: scale(0.6); opacity: 0.85; }
+  100% { transform: scale(2.8); opacity: 0; }
+}
 
-      100% {
-        transform: scale(2.8);
-        opacity: 0;
-      }
-    }
 
-    /* โหมดย่อขนาด (Collapsed Mini-Pins) เมื่อซูมออก ป้องกันป้ายบดบังอาคาร */
-    .gate-marker.collapsed .gate-marker-badge span:not(.gate-marker-icon),
-    .admin-marker.collapsed .admin-marker-badge span:not(.admin-marker-icon) {
-      display: none !important;
-    }
+/* ============================================================
+   COLLAPSED MINI-PINS (when zoomed out)
+   Only the label text hides; icon stays visible
+============================================================ */
+.gate-marker.collapsed .gate-marker-badge span:not(.gate-marker-icon),
+.admin-marker.collapsed .admin-marker-badge span:not(.admin-marker-icon),
+.admin-marker.collapsed .admin-marker-tag {
+  display: none !important;
+}
 
-    .gate-marker.collapsed .gate-marker-badge {
-      padding: 5px 6px !important;
-      border-radius: 50% !important;
-      min-width: 28px !important;
-      height: 28px !important;
-      justify-content: center !important;
-    }
+.gate-marker.collapsed .gate-marker-badge {
+  padding: 6px 7px !important;
+  border-radius: 50% !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  justify-content: center !important;
+}
 
-    .admin-marker.collapsed .admin-marker-badge {
-      padding: 5px 6px !important;
-      border-radius: 50% !important;
-      min-width: 30px !important;
-      height: 30px !important;
-      justify-content: center !important;
-    }
+.admin-marker.collapsed .admin-marker-badge {
+  padding: 7px 8px !important;
+  border-radius: 50% !important;
+  min-width: 34px !important;
+  height: 34px !important;
+  justify-content: center !important;
+}
